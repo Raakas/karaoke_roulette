@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter, Route} from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+const lastFmData = require('./json/lastfm.json');
+
+class App extends React.Component {
+
+  state = {
+    data: null
+  }
+
+  componentDidMount() {
+    this.setState({
+      data: lastFmData.tracks.track[12].name
+    })
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+      <Route path="/" render={() => (
+        <div>
+          <h1>Karaoke roulette</h1>
+          <div id="player">
+            <p>{this.state.data}</p>
+          </div>
+        </div>
+      )}/>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
