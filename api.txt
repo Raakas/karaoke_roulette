@@ -1,0 +1,4 @@
+Application name 	Karaoke Roulette
+API key 	16203e6d3ef2c183a3621b4a4e92e86c
+Shared secret 	0229370475765f290809aef387c7f9ac
+Registered to 	Raakas
