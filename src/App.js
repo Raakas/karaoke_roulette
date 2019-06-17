@@ -1,12 +1,12 @@
 import React from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
-import PlayerComponent from './components/PlayerComponent'
 
+const api = require('../src/api.json');
 const lastFmData = require('./json/lastfm.json');
-const data = [];
-const API_KEY = 'AIzaSyBixbrC7OcjguABsPRHaz1x9qJphT5XsRU';
+
 const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
+const data = [];
 
 class App extends React.Component {
 
@@ -19,13 +19,16 @@ class App extends React.Component {
         data[i] = lastFmData.tracks.track[i].name;
     }
 
-    const track = data[4];
+    let nmbr = Math.floor(Math.random() * 50);
+    console.log(nmbr);
+
+    const track = data[nmbr];
 
     this.setState({
       title: track
     })
     
-    fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${API_KEY}&q=${track}&type=video`)
+    fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=${track}&type=video`)
     .then(response => response.json())
     .then(res => {
 
