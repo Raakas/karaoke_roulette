@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
-const api = require('../api.json');
+const api = require('../json/api.json'));
 
 export function getLastFm (value) {
     let res;

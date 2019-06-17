@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
 
-const api = require('../src/api.json');
+const api = require('./json/api.json');
 const lastFmData = require('./json/lastfm.json');
 
 const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
@@ -11,7 +11,8 @@ const data = [];
 class App extends React.Component {
 
   state = {
-    title: null
+    title: null,
+    src: "http://www.youtube.com/embed/xDMP3i36naA"
   }
 
   getLastFm() {
@@ -20,7 +21,6 @@ class App extends React.Component {
     }
 
     let nmbr = Math.floor(Math.random() * 50);
-    console.log(nmbr);
 
     const track = data[nmbr];
 
@@ -31,12 +31,10 @@ class App extends React.Component {
     fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=${track}&type=video`)
     .then(response => response.json())
     .then(res => {
-
-          console.log(res);
           
-        const source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
+        //const source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
+        let source = "http://www.youtube.com/embed/v9-TjgzyqSI";
         
-        console.log(source);
         this.setState({
           src: source
         })
@@ -60,15 +58,16 @@ class App extends React.Component {
           </div>
           <div id="player">
             <iframe 
-            title="youtube"
-            id="player-frame"
-            width="560" 
-            height="315" 
-            src={this.state.source}
-            frameBorder="0" 
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-            allowFullScreen>
+              title="youtube"
+              id="player-frame"
+              width="500px" 
+              height="300px"
+              src={this.state.src}
+              frameBorder="0" 
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen>
             </iframe>
+            <button id="playButton">Play</button>
           </div>
         </div>
       )}/>
@@ -76,5 +75,4 @@ class App extends React.Component {
     );
   }
 }
-
 export default App;
