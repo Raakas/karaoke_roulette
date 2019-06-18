@@ -1,5 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
+import PlayerComponent from './components/PlayerComponent';
+
 
 const api = require('./json/api.json');
 const lastFmData = require('./json/lastfm.json');
@@ -8,11 +10,13 @@ const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
 const data = [];
 
+
 class App extends React.Component {
 
   state = {
     title: "Welcome",
-    source: null
+    source: "https://www.youtube.com/embed/FXRAsUOblV4",
+    singers: ["Arttu", "Akseli", "Erkki"]
   }
 
   getSong() {
@@ -32,31 +36,31 @@ class App extends React.Component {
     })
 
     if(window.localStorage.getItem(this.state.title, this.state.source)){
-      console.log('item found');
-      return;
+      console.log('localstorage ' + track);
+      this.setState({
+        title: track,
+        source: source
+      })
     }
-    else{
-      console.log('item not found, fetch' + track);
+    else {
+      console.log('fetch ' + track);
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
       .then(response => response.json())
       .then(res => {
-          let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
-          
-          this.setState({
-            title: track,
-            source: source
-          })
-  
-          window.localStorage.setItem(this.state.title, this.state.source);
-  
-          })
-          .catch(error => {
-            console.log('quota used, return');
-              this.getSong();
-            });
-    }
-      
+        let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
+        
+        this.setState({
+          title: track,
+          source: source
+        })
 
+        window.localStorage.setItem(this.state.title, this.state.source);
+    })
+    .catch(error => {
+      console.log(error + ' find new');
+        this.getSong();
+      });
+    }
   }
 
   componentDidMount(){
@@ -67,25 +71,15 @@ class App extends React.Component {
     return (
       <BrowserRouter>
       <Route path="/" render={() => (
-        <div>
-          <h1>Karaoke roulette</h1>
-          <div id="player">
-            <p>{this.state.title}</p>
-          </div>
-          <div id="player">
-            <iframe 
-              title="youtube"
-              id="player-frame"
-              width="500px" 
-              height="300px"
-              src={this.state.source}
-              frameBorder="0" 
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen>
-            </iframe>
-          </div>
-        </div>
-      )}/>
+      <>
+        <PlayerComponent 
+        singer1={this.state.singers[0]}
+        singer2={this.state.singers[1]}
+        title={this.state.title}
+        source={this.state.source}
+        />
+      </>
+      )} />
       </BrowserRouter>
     );
   }
