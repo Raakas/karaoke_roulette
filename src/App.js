@@ -16,7 +16,7 @@ class App extends React.Component {
   state = {
     title: "Welcome",
     source: "https://www.youtube.com/embed/FXRAsUOblV4",
-    singers: ["Arttu", "Akseli", "Erkki"]
+    singers: ["Arttu", "Kalle", "Erkki"]
   }
 
   getSong() {
@@ -28,22 +28,14 @@ class App extends React.Component {
     let nmbr = Math.floor(Math.random() * 50);
 
     const track = data[nmbr];
-    const source = window.localStorage.getItem(track)
 
-    this.setState({
-      title: track,
-      source: source
-    })
-
-    if(window.localStorage.getItem(this.state.title, this.state.source)){
-      console.log('localstorage ' + track);
+    if(window.localStorage.getItem(track)){
       this.setState({
         title: track,
-        source: source
+        source: window.localStorage.getItem(track)
       })
     }
     else {
-      console.log('fetch ' + track);
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
       .then(response => response.json())
       .then(res => {
@@ -57,8 +49,7 @@ class App extends React.Component {
         window.localStorage.setItem(this.state.title, this.state.source);
     })
     .catch(error => {
-      console.log(error + ' find new');
-        this.getSong();
+      this.getSong();
       });
     }
   }
@@ -77,11 +68,16 @@ class App extends React.Component {
         singer2={this.state.singers[1]}
         title={this.state.title}
         source={this.state.source}
+        play={this.fullScreen.bind(this)}
         />
       </>
       )} />
       </BrowserRouter>
     );
+  }
+  fullScreen(){
+    const elem = document.querySelector('iframe');
+    elem.requestFullscreen();
   }
 }
 export default App;
