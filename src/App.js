@@ -32,7 +32,7 @@ class App extends React.Component {
     if(window.localStorage.getItem(track)){
       this.setState({
         title: track,
-        source: window.localStorage.getItem(track)
+        source: window.localStorage.getItem(track) + "?autoplay=1"
       })
     }
     else {
@@ -78,6 +78,7 @@ class App extends React.Component {
   fullScreen(){
     const elem = document.querySelector('iframe');
     elem.requestFullscreen();
+    elem.src += "&autoplay=1"
   }
 }
 export default App;

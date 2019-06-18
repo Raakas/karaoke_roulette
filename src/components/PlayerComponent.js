@@ -15,7 +15,8 @@ const PlayerComponent = (props) => {
           height="300px"
           src={props.source}
           frameBorder="0" 
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" >
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen>
         </iframe>
         <button id="play-button" onClick={props.play}>Play</button>
       </div>
