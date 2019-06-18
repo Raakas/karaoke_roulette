@@ -11,40 +11,56 @@ const data = [];
 class App extends React.Component {
 
   state = {
-    title: null,
-    src: "http://www.youtube.com/embed/xDMP3i36naA"
+    title: "Welcome",
+    source: null
   }
 
-  getLastFm() {
+  getSong() {
+
     for(let i in lastFmData.tracks.track){
-        data[i] = lastFmData.tracks.track[i].name;
+        data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
     }
 
     let nmbr = Math.floor(Math.random() * 50);
 
     const track = data[nmbr];
+    const source = window.localStorage.getItem(track)
 
     this.setState({
-      title: track
+      title: track,
+      source: source
     })
-    
-    fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=${track}&type=video`)
-    .then(response => response.json())
-    .then(res => {
-          
-        //const source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
-        let source = "http://www.youtube.com/embed/v9-TjgzyqSI";
-        
-        this.setState({
-          src: source
-        })
 
-        })
-        .catch(error => console.log(error));
+    if(window.localStorage.getItem(this.state.title, this.state.source)){
+      console.log('item found');
+      return;
+    }
+    else{
+      console.log('item not found, fetch' + track);
+      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
+      .then(response => response.json())
+      .then(res => {
+          let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
+          
+          this.setState({
+            title: track,
+            source: source
+          })
+  
+          window.localStorage.setItem(this.state.title, this.state.source);
+  
+          })
+          .catch(error => {
+            console.log('quota used, return');
+              this.getSong();
+            });
+    }
+      
+
   }
 
   componentDidMount(){
-    this.getLastFm();
+    this.getSong();
   }
 
   render() {
@@ -62,12 +78,11 @@ class App extends React.Component {
               id="player-frame"
               width="500px" 
               height="300px"
-              src={this.state.src}
+              src={this.state.source}
               frameBorder="0" 
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen>
             </iframe>
-            <button id="playButton">Play</button>
           </div>
         </div>
       )}/>
