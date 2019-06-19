@@ -1,12 +1,14 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 const PlayerComponent = (props) => {
   
     return (
       <div id="player">
-      <h3>Singer: {props.singer1}</h3>
-      <h3>Next singer: {props.singer2}</h3>
-      <p>{props.title}</p>
+        <Link to="/host">New game</Link>
+        <h3>Singer: {props.singer1}</h3>
+        <h3>Next singer: {props.singer2}</h3>
+        <p>{props.title}</p>
         <iframe 
           title="youtube"
           id="player-frame"

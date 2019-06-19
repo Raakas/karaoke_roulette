@@ -16,6 +16,23 @@ const data = [];
 
 class App extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
   state = {
     title: "Welcome",
     source: "https://www.youtube.com/embed/FXRAsUOblV4",
@@ -50,6 +67,7 @@ class App extends React.Component {
         })
 
         window.localStorage.setItem(this.state.title, this.state.source);
+
     })
     .catch(error => {
       this.getSong();
@@ -58,30 +76,29 @@ class App extends React.Component {
   }
 
   componentDidMount(){
+    this.getSong();
   }
 
   render() {
     return (
       <BrowserRouter>
       <Route path="/" render={() => (
-        <>
-        <StartComponent />
-        </>
+        <Redirect to="start" />
       )} />
+      <Route path="/start" render={() =>(
+        <StartComponent />
+      )}/>
       <Route path="/host" render={() => (
         <HostComponent 
-        startGame={this.startGame.bind(this)}
-        />
-      )
-      }/>
+        onChange={this.handleChange.bind(this)}/>
+      )}/>
       <Route path="/join" render={() => (
-        <JoinComponent 
-        startGame={this.startGame.bind(this)}
-        />
+        <JoinComponent />
       )}/>
       <Route path="/player" render={() => (
       <>
         <PlayerComponent 
+        onSubmit={this.handleSubmit()}
         singer1={this.state.singers[0]}
         singer2={this.state.singers[1]}
         title={this.state.title}
@@ -92,9 +109,6 @@ class App extends React.Component {
       )} />
       </BrowserRouter>
     );
-  }
-  startGame(){
-    return <Redirect to='/player'  />;
   }
   fullScreen(){
     const elem = document.querySelector('iframe');

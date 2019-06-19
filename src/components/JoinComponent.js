@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from 'react-router-dom';
 
 const JoinComponent = (props) => {
     return(
@@ -6,7 +7,8 @@ const JoinComponent = (props) => {
             <h1>Join a game</h1>
             <p>Enter the name of the game</p>
             <input type="text" />
-            <button id="start-button" onClick={props.startGame}>Start singing!</button>
+            <Link to="/player">Join game!</Link>
+            <Link to="/start">Back</Link>
         </div>
     )
 }
