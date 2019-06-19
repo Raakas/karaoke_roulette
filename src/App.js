@@ -1,6 +1,9 @@
 import React from 'react';
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Redirect} from 'react-router-dom';
+import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
+import HostComponent from './components/HostComponent';
+import JoinComponent from './components/JoinComponent';
 
 
 const api = require('./json/api.json');
@@ -55,13 +58,28 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    this.getSong();
   }
 
   render() {
     return (
       <BrowserRouter>
       <Route path="/" render={() => (
+        <>
+        <StartComponent />
+        </>
+      )} />
+      <Route path="/host" render={() => (
+        <HostComponent 
+        startGame={this.startGame.bind(this)}
+        />
+      )
+      }/>
+      <Route path="/join" render={() => (
+        <JoinComponent 
+        startGame={this.startGame.bind(this)}
+        />
+      )}/>
+      <Route path="/player" render={() => (
       <>
         <PlayerComponent 
         singer1={this.state.singers[0]}
@@ -75,10 +93,13 @@ class App extends React.Component {
       </BrowserRouter>
     );
   }
+  startGame(){
+    return <Redirect to='/player'  />;
+  }
   fullScreen(){
     const elem = document.querySelector('iframe');
     elem.requestFullscreen();
-    elem.src += "&autoplay=1"
+    elem.src += "?autoplay=1"
   }
 }
 export default App;

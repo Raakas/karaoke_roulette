@@ -4,7 +4,6 @@ const PlayerComponent = (props) => {
   
     return (
       <div id="player">
-      <h1>Karaoke Roulette</h1>
       <h3>Singer: {props.singer1}</h3>
       <h3>Next singer: {props.singer2}</h3>
       <p>{props.title}</p>

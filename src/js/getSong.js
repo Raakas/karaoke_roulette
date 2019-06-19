@@ -14,15 +14,12 @@ export default function getSong(){
     let nmbr = Math.floor(Math.random() * 50);
 
     const track = data[nmbr];
-    const source = window.localStorage.getItem(track)
 
 
-    if(window.localStorage.getItem(track, source)){
-      console.log('localstorage ' + track);
-      return source;
+    if(window.localStorage.getItem(track)){
+      return window.localStorage.getItem(track);
     }
     else {
-      console.log('fetch ' + track);
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
       .then(response => response.json())
       .then(res => {
@@ -34,7 +31,6 @@ export default function getSong(){
 
     })
     .catch(error => {
-      console.log(error + ' find new');
         getSong();
       });
     }
