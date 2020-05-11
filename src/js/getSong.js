@@ -23,14 +23,17 @@ export default function getSong(){
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
       .then(response => response.json())
       .then(res => {
+        console.log(res)
         let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
         
         window.localStorage.setItem(track, source);
 
+        console.log(source)
         return source;
 
     })
     .catch(error => {
+        console.log(error);
         getSong();
       });
     }

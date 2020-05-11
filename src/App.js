@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, Route, Redirect, Link} from 'react-router-dom';
+import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import HostComponent from './components/HostComponent';
@@ -7,7 +7,6 @@ import JoinComponent from './components/JoinComponent';
 
 const api = require('./json/api.json');
 const lastFmData = require('./json/lastfm.json');
-const player = '';
 
 const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
