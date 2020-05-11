@@ -1,18 +1,17 @@
 import React from 'react';
-import {BrowserRouter, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter, Route, Redirect, Link} from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import HostComponent from './components/HostComponent';
 import JoinComponent from './components/JoinComponent';
 
-
 const api = require('./json/api.json');
 const lastFmData = require('./json/lastfm.json');
+const player = '';
 
 const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
 const data = [];
-
 
 class App extends React.Component {
 
@@ -24,26 +23,30 @@ class App extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  state = {
+    title: "Welcome",
+    source: "https://www.youtube.com/embed/FXRAsUOblV4"
+  }
+
   handleChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({
+      value: event.target.value
+    });
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
+    const name = event.target[0].attributes.value.value;
+    this.setState({
+      player: name
+    })
     event.preventDefault();
-  }
-
-  state = {
-    title: "Welcome",
-    source: "https://www.youtube.com/embed/FXRAsUOblV4",
-    singers: ["Arttu", "Kalle", "Erkki"]
   }
 
   getSong() {
 
     for(let i in lastFmData.tracks.track){
-        data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
-    }
+      data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
+  }
 
     let nmbr = Math.floor(Math.random() * 50);
 
@@ -70,14 +73,11 @@ class App extends React.Component {
 
     })
     .catch(error => {
-      this.getSong();
+      console.log(error);
       });
     }
   }
 
-  componentDidMount(){
-    this.getSong();
-  }
 
   render() {
     return (
@@ -89,8 +89,7 @@ class App extends React.Component {
         <StartComponent />
       )}/>
       <Route path="/host" render={() => (
-        <HostComponent 
-        onChange={this.handleChange.bind(this)}/>
+        <HostComponent />
       )}/>
       <Route path="/join" render={() => (
         <JoinComponent />
@@ -98,22 +97,23 @@ class App extends React.Component {
       <Route path="/player" render={() => (
       <>
         <PlayerComponent 
-        onSubmit={this.handleSubmit()}
-        singer1={this.state.singers[0]}
-        singer2={this.state.singers[1]}
-        title={this.state.title}
-        source={this.state.source}
-        play={this.fullScreen.bind(this)}
+          title={this.state.title}
+          player={this.state.player}
+          source={this.state.source}
+          play={this.fullScreen.bind(this)}
+          newSong={this.newSong.bind(this)}
         />
       </>
       )} />
       </BrowserRouter>
     );
   }
+  newSong(){
+    this.getSong();
+  }
   fullScreen(){
     const elem = document.querySelector('iframe');
     elem.requestFullscreen();
-    elem.src += "?autoplay=1"
   }
 }
 export default App;

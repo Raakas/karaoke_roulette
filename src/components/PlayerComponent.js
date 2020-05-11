@@ -2,26 +2,26 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 
 const PlayerComponent = (props) => {
-  
+
     return (
       <div id="player">
-        <Link to="/host">New game</Link>
-        <h3>Singer: {props.singer1}</h3>
-        <h3>Next singer: {props.singer2}</h3>
+        <Link to="/start">Back</Link>
+        <h3>Singer: {props.player}</h3>
+        <h3>Next singer: {props.player}</h3>
         <p>{props.title}</p>
         <iframe 
           title="youtube"
           id="player-frame"
-          width="500px" 
+          width="500px"
           height="300px"
           src={props.source}
-          frameBorder="0" 
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen>
         </iframe>
-        <button id="play-button" onClick={props.play}>Play</button>
+        <button onClick={props.newSong}>New song</button>
       </div>
     )
   }
-  
+
 export default PlayerComponent;
