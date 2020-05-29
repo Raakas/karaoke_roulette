@@ -19,7 +19,8 @@ const PlayerComponent = (props) => {
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen>
         </iframe>
-        <button onClick={props.newSong}>New song</button>
+        <button onClick={props.getSong}>New song</button>
+        <button onClick={props.updateSong}>Update song</button>
       </div>
     )
   }

@@ -22,9 +22,11 @@ class App extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  songlist = [];
+
   state = {
-    title: "Welcome",
-    source: "https://www.youtube.com/embed/FXRAsUOblV4"
+    title: "",
+    source: ""
   }
 
   handleChange(event) {
@@ -40,42 +42,6 @@ class App extends React.Component {
     })
     event.preventDefault();
   }
-
-  getSong() {
-    for(let i in lastFmData.tracks.track){
-      data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
-  }
-
-    let nmbr = Math.floor(Math.random() * 50);
-
-    const track = data[nmbr];
-
-    if(window.localStorage.getItem(track)){
-      this.setState({
-        title: track,
-        source: window.localStorage.getItem(track)
-      })
-    }
-    else {
-      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
-      .then(response => response.json())
-      .then(res => {
-        console.log(res);
-        let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId + "?autoplay=1";
-        
-        this.setState({
-          title: track,
-          source: source
-        });
-
-        window.localStorage.setItem(this.state.title, this.state.source);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    }
-  }
-
 
   render() {
     return (
@@ -99,15 +65,60 @@ class App extends React.Component {
           player={this.state.player}
           source={this.state.source}
           play={this.fullScreen.bind(this)}
-          newSong={this.newSong.bind(this)}
+          getSong={this.getSong.bind(this)}
+          updateSong={this.updateSong.bind(this)}
         />
       </>
       )} />
       </BrowserRouter>
     );
   }
-  newSong(){
-    this.getSong();
+  
+  getSong() {
+    this.songlist = [];
+
+    for(let i in lastFmData.tracks.track){
+      data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
+    }
+
+    let nmbr = Math.floor(Math.random() * 50);
+
+    const track = data[nmbr];
+
+    /*
+    if(window.localStorage.getItem(track)){
+      this.setState({
+        title: track,
+        source: window.localStorage.getItem(track)
+      })
+    }
+    else {
+    */
+      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
+      .then(response => response.json())
+      .then(res => {
+        console.log(res);
+
+        let i = 0;
+        for(i in res.items){
+          this.songlist.push(ROOT_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
+        }
+
+        this.setState({
+          title: track,
+          source: this.songlist[0]
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    //}
+  }
+  updateSong(){
+    console.log(this.songlist[1]);
+    this.setState({
+      source: this.songlist[1]
+    });
   }
   fullScreen(){
     const elem = document.querySelector('iframe');
