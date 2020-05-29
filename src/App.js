@@ -10,7 +10,6 @@ const lastFmData = require('./json/lastfm.json');
 
 const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
-const data = [];
 
 class App extends React.Component {
 
@@ -22,7 +21,9 @@ class App extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  tracklist = [];
   songlist = [];
+  currentTrack = '';
 
   state = {
     title: "",
@@ -50,7 +51,9 @@ class App extends React.Component {
         <Redirect to="start" />
       )} />
       <Route path="/start" render={() =>(
-        <StartComponent />
+        <StartComponent 
+          fetchTracklist={this.fetchTracklist.bind(this)}
+        />
       )}/>
       <Route path="/host" render={() => (
         <HostComponent />
@@ -73,20 +76,18 @@ class App extends React.Component {
       </BrowserRouter>
     );
   }
-  
+  fetchTracklist(){
+    for(let i in lastFmData.tracks.track){
+      this.tracklist[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
+    }
+    console.log(this.tracklist);
+  }
   getSong() {
     this.songlist = [];
-
-    for(let i in lastFmData.tracks.track){
-      data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
-    }
-
-    let nmbr = Math.floor(Math.random() * 50);
-
-    const track = data[nmbr];
-
+    this.currentTrack = this.tracklist[Math.floor(Math.random() * 5)];
+    console.log(this.currentTrack);
     /*
-    if(window.localStorage.getItem(track)){
+    if(window.localStorage.getItem(currentTrack)){
       this.setState({
         title: track,
         source: window.localStorage.getItem(track)
@@ -94,7 +95,7 @@ class App extends React.Component {
     }
     else {
     */
-      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
+      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
         console.log(res);
@@ -103,9 +104,10 @@ class App extends React.Component {
         for(i in res.items){
           this.songlist.push(ROOT_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
         }
+        console.log(this.songlist);
 
         this.setState({
-          title: track,
+          title: this.currentTrack,
           source: this.songlist[0]
         });
       })
