@@ -86,7 +86,7 @@ class App extends React.Component {
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * 5)];
     console.log(this.currentTrack);
-    /*
+    
     if(window.localStorage.getItem(currentTrack)){
       this.setState({
         title: track,
@@ -94,7 +94,6 @@ class App extends React.Component {
       })
     }
     else {
-    */
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
@@ -114,7 +113,7 @@ class App extends React.Component {
       .catch(error => {
         console.log(error);
       });
-    //}
+    }
   }
   updateSong(){
     console.log(this.songlist[1]);
