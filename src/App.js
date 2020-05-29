@@ -80,35 +80,31 @@ class App extends React.Component {
     for(let i in lastFmData.tracks.track){
       this.tracklist[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
     }
-    console.log(this.tracklist);
   }
   getSong() {
     this.songlist = [];
-    this.currentTrack = this.tracklist[Math.floor(Math.random() * 5)];
-    console.log(this.currentTrack);
+    this.currentTrack = this.tracklist[Math.floor(Math.random() * 50)];
     
-    if(window.localStorage.getItem(currentTrack)){
+    if(window.localStorage.getItem(this.currentTrack)){
       this.setState({
-        title: track,
-        source: window.localStorage.getItem(track)
+        title: this.currentTrack,
+        source: window.localStorage.getItem(this.currentTrack)
       })
     }
     else {
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
-        console.log(res);
-
         let i = 0;
         for(i in res.items){
           this.songlist.push(ROOT_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
         }
-        console.log(this.songlist);
-
         this.setState({
           title: this.currentTrack,
           source: this.songlist[0]
         });
+
+        window.localStorage.setItem(this.currentTrack, this.songlist[0])
       })
       .catch(error => {
         console.log(error);
@@ -116,10 +112,18 @@ class App extends React.Component {
     }
   }
   updateSong(){
-    console.log(this.songlist[1]);
-    this.setState({
-      source: this.songlist[1]
-    });
+    this.songlist.shift()
+    window.localStorage.removeItem(this.currentTrack)
+
+    if(this.songlist.length > 1) {
+      this.setState({
+        source: this.songlist[0]
+      });
+      window.localStorage.setItem(this.currentTrack, this.songlist[0])
+    }
+    else {
+      this.getSong();
+    }
   }
   fullScreen(){
     const elem = document.querySelector('iframe');
