@@ -42,7 +42,6 @@ class App extends React.Component {
   }
 
   getSong() {
-
     for(let i in lastFmData.tracks.track){
       data[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
   }
@@ -54,25 +53,25 @@ class App extends React.Component {
     if(window.localStorage.getItem(track)){
       this.setState({
         title: track,
-        source: window.localStorage.getItem(track) + "?autoplay=1"
+        source: window.localStorage.getItem(track)
       })
     }
     else {
       fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${track}&type=video`)
       .then(response => response.json())
       .then(res => {
-        let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId;
+        console.log(res);
+        let source = ROOT_URL_EMBED + "/" + res.items[0].id.videoId + "?autoplay=1";
         
         this.setState({
           title: track,
           source: source
-        })
+        });
 
         window.localStorage.setItem(this.state.title, this.state.source);
-
-    })
-    .catch(error => {
-      console.log(error);
+      })
+      .catch(error => {
+        console.log(error);
       });
     }
   }
