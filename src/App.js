@@ -3,8 +3,6 @@ import axios from 'axios';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
-import HostComponent from './components/HostComponent';
-import JoinComponent from './components/JoinComponent';
 
 const api = require('./json/api.json');
 
@@ -20,7 +18,6 @@ class App extends React.Component {
     this.state = {value: ''};
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   tracklist = [];
@@ -29,21 +26,14 @@ class App extends React.Component {
 
   state = {
     title: "",
-    source: ""
+    source: "",
+    genre: "rock"
   }
 
   handleChange(event) {
     this.setState({
       genre: event.target.value
     });
-  }
-
-  handleSubmit(event) {
-    const name = event.target[0].attributes.value.value;
-    this.setState({
-      player: name
-    })
-    event.preventDefault();
   }
 
   render() {
@@ -58,19 +48,13 @@ class App extends React.Component {
           fetchTracklist={this.fetchTracklist.bind(this)}
         />
       )}/>
-      <Route path="/host" render={() => (
-        <HostComponent />
-      )}/>
-      <Route path="/join" render={() => (
-        <JoinComponent />
-      )}/>
       <Route path="/player" render={() => (
       <>
         <PlayerComponent 
           title={this.state.title}
           player={this.state.player}
           source={this.state.source}
-          play={this.fullScreen.bind(this)}
+          fullscreen={this.fullscreen.bind(this)}
           getSong={this.getSong.bind(this)}
           updateSong={this.updateSong.bind(this)}
         />
@@ -79,6 +63,7 @@ class App extends React.Component {
       </BrowserRouter>
     );
   }
+  
   fetchTracklist() {
     axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
         .then(res => {
@@ -88,6 +73,7 @@ class App extends React.Component {
         })
         .catch(error => { console.log(error) });
   }
+
   getSong() {
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * 50)];
@@ -118,6 +104,7 @@ class App extends React.Component {
       });
     }
   }
+
   updateSong() {
     this.songlist.shift()
     localStorage.removeItem(this.currentTrack)
@@ -132,10 +119,6 @@ class App extends React.Component {
     else {
       this.getSong();
     }
-  }
-  fullScreen(){
-    const elem = document.querySelector('iframe');
-    elem.requestFullscreen();
   }
 }
 export default App;
