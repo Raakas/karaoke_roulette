@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
@@ -6,10 +7,11 @@ import HostComponent from './components/HostComponent';
 import JoinComponent from './components/JoinComponent';
 
 const api = require('./json/api.json');
-const lastFmData = require('./json/lastfm.json');
 
-const ROOT_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
-const ROOT_URL_EMBED = 'https://www.youtube.com/embed';
+const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
+const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
+const LAST_FM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
+
 
 class App extends React.Component {
 
@@ -32,7 +34,7 @@ class App extends React.Component {
 
   handleChange(event) {
     this.setState({
-      value: event.target.value
+      genre: event.target.value
     });
   }
 
@@ -51,7 +53,8 @@ class App extends React.Component {
         <Redirect to="start" />
       )} />
       <Route path="/start" render={() =>(
-        <StartComponent 
+        <StartComponent
+          handleChange={this.handleChange.bind(this)}
           fetchTracklist={this.fetchTracklist.bind(this)}
         />
       )}/>
@@ -76,50 +79,55 @@ class App extends React.Component {
       </BrowserRouter>
     );
   }
-  fetchTracklist(){
-    for(let i in lastFmData.tracks.track){
-      this.tracklist[i] = lastFmData.tracks.track[i].artist.name + " - " + lastFmData.tracks.track[i].name;
-    }
+  fetchTracklist() {
+    axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
+        .then(res => {
+          for(let i in res.data.tracks.track){
+            this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
+          }
+        })
+        .catch(error => { console.log(error) });
   }
   getSong() {
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * 50)];
     
-    if(window.localStorage.getItem(this.currentTrack)){
+    if(localStorage.getItem(this.currentTrack)){
       this.setState({
         title: this.currentTrack,
-        source: window.localStorage.getItem(this.currentTrack)
+        source: localStorage.getItem(this.currentTrack)
       })
     }
     else {
-      fetch(`${ROOT_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
+      fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
         let i = 0;
         for(i in res.items){
-          this.songlist.push(ROOT_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
+          this.songlist.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
         }
         this.setState({
           title: this.currentTrack,
           source: this.songlist[0]
         });
 
-        window.localStorage.setItem(this.currentTrack, this.songlist[0])
+        localStorage.setItem(this.currentTrack, this.songlist[0])
       })
       .catch(error => {
         console.log(error);
       });
     }
   }
-  updateSong(){
+  updateSong() {
     this.songlist.shift()
-    window.localStorage.removeItem(this.currentTrack)
+    localStorage.removeItem(this.currentTrack)
 
     if(this.songlist.length > 1) {
       this.setState({
         source: this.songlist[0]
       });
-      window.localStorage.setItem(this.currentTrack, this.songlist[0])
+      
+      localStorage.setItem(this.currentTrack, this.songlist[0])
     }
     else {
       this.getSong();
