@@ -54,7 +54,6 @@ class App extends React.Component {
           title={this.state.title}
           player={this.state.player}
           source={this.state.source}
-          fullscreen={this.fullscreen.bind(this)}
           getSong={this.getSong.bind(this)}
           updateSong={this.updateSong.bind(this)}
         />
@@ -63,7 +62,7 @@ class App extends React.Component {
       </BrowserRouter>
     );
   }
-  
+
   fetchTracklist() {
     axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
         .then(res => {
