@@ -22,7 +22,7 @@ class App extends React.Component {
 
   tracklist = [];
   songlist = [];
-  currentTrack = '';
+  currentTrack = "";
 
   state = {
     title: "",
@@ -30,10 +30,10 @@ class App extends React.Component {
     genre: "rock"
   }
 
-  handleChange(event) {
+  handleChange(event){
     this.setState({
       genre: event.target.value
-    });
+    })
   }
 
   render() {
@@ -54,6 +54,7 @@ class App extends React.Component {
           title={this.state.title}
           player={this.state.player}
           source={this.state.source}
+          resetSong={this.resetSong.bind(this)}
           getSong={this.getSong.bind(this)}
           updateSong={this.updateSong.bind(this)}
         />
@@ -75,7 +76,7 @@ class App extends React.Component {
 
   getSong() {
     this.songlist = [];
-    this.currentTrack = this.tracklist[Math.floor(Math.random() * 50)];
+    this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
     
     if(localStorage.getItem(this.currentTrack)){
       this.setState({
@@ -118,6 +119,17 @@ class App extends React.Component {
     else {
       this.getSong();
     }
+  }
+
+  resetSong(){
+    this.setState({
+      title: "",
+      source: "",
+      genre: ""
+    })
+    this.tracklist = [];
+    this.songlist = [];
+    this.currentTrack = "";
   }
 }
 export default App;

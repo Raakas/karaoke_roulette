@@ -5,7 +5,7 @@ const PlayerComponent = (props) => {
 
     return (
       <div id="player">
-        <Link to="/start">Back</Link>
+        <Link to="/start" onClick={props.resetSong}>Back</Link>
         <h3>Singer: {props.player}</h3>
         <h3>Next singer: {props.player}</h3>
         <p>{props.title}</p>
