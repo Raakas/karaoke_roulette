@@ -1,4 +1,5 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To run the project, create /json/api.json with your personal api keys to lastfm and youtube APIs. See api_example.json.
 
 ## Available Scripts
 
