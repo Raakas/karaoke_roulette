@@ -79,9 +79,8 @@ class App extends React.Component {
   getSong() {
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
-    
-    if(localStorage.getItem(this.currentTrack)){
 
+    if(localStorage.getItem(this.currentTrack)){
       this.setState({
         title: this.currentTrack,
         source: localStorage.getItem(this.currentTrack)
@@ -91,7 +90,8 @@ class App extends React.Component {
       fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
-        let i = 0;
+        let i = 0;  
+
         for(i in res.items){
           this.songlist.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
         }
@@ -130,7 +130,8 @@ class App extends React.Component {
     this.setState({
       title: "",
       source: "",
-      genre: ""
+      genre: "",
+      updateCounter: ""
     })
     this.tracklist = [];
     this.songlist = [];
