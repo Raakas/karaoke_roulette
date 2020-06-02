@@ -16,12 +16,12 @@ const PlayerComponent = (props) => {
           height="300px"
           src={props.source}
           frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allow=""
           allowFullScreen>
         </iframe>
         <br/>
         <button onClick={props.getSong}>New song</button>
-        <button onClick={props.updateSong}>Update song</button>
+      <button onClick={props.updateSong}>Update song {props.updateCounter}</button>
       </div>
     )
   }
