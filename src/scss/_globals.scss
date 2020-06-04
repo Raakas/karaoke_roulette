@@ -11,11 +11,12 @@ body {
 
 h1 {
     font-family: "header";
+    font-size: 50pt;
 }
 
 h2 {
     font-family: "paragraph";
-    font-size: 1.4em;
+    font-size: 20pt;
 }
 
 a {
@@ -26,11 +27,12 @@ a {
 
 p {
     font-family: "paragraph";
+    font-size: 25pt;
 }
 
 .button {
     font-family: "action";
-    font-size: 1.1em;
+    font-size: 13pt;
     color: $black;
     text-decoration: none;
     width: 150px;
