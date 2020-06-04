@@ -30,7 +30,7 @@ class App extends React.Component {
     title: "",
     source: "",
     genre: "rock",
-    update: 0
+    updateCounter: ""
   }
 
   handleChange(event){
@@ -87,7 +87,8 @@ class App extends React.Component {
     if(localStorage.getItem(this.currentTrack)){
       this.setState({
         title: this.currentTrack,
-        source: localStorage.getItem(this.currentTrack)
+        source: localStorage.getItem(this.currentTrack),
+        updateCounter: ""
       })
     }
     else {
