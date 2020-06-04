@@ -30,6 +30,19 @@ p {
     font-size: 25pt;
 }
 
+input[type="text"] {
+    height: 30px;
+    width: 75%;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 13pt;
+    margin: 15px;
+    text-transform: capitalize;
+    &::placeholder {
+        text-transform: initial;
+    }
+}
+
 .button {
     font-family: "action";
     font-size: 13pt;
