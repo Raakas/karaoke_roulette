@@ -4,11 +4,9 @@ import {Link} from 'react-router-dom';
 const PlayerComponent = (props) => {
 
     return (
-      <div id="player">
-        <Link to="/start" onClick={props.resetSong}>Back</Link>
-        <h3>Singer: {props.player}</h3>
-        <h3>Next singer: {props.player}</h3>
-        <p>{props.title}</p>
+      <div className="player">
+        <Link to="/start" onClick={props.resetSong} className="align-left">Back</Link>
+        <h2>{props.title}</h2>
         <iframe 
           title="youtube"
           id="player-frame"
@@ -20,8 +18,10 @@ const PlayerComponent = (props) => {
           allowFullScreen>
         </iframe>
         <br/>
-        <button onClick={props.getSong}>New song</button>
-      <button onClick={props.updateSong}>Update song {props.updateCounter}</button>
+        <div className="buttons">
+          <button className="button button-green" onClick={props.getSong}>New song</button>
+          <button className="button button-blue" onClick={props.updateSong}>Update song {props.updateCounter}</button>
+        </div>
       </div>
     )
   }

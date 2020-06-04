@@ -3,6 +3,8 @@ import axios from 'axios';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
+import './app.scss'
+
 
 const api = require('./json/api.json');
 
@@ -39,30 +41,32 @@ class App extends React.Component {
 
   render() {
     return (
-      <BrowserRouter>
-      <Route path="/" render={() => (
-        <Redirect to="start" />
-      )} />
-      <Route path="/start" render={() =>(
-        <StartComponent
-          handleChange={this.handleChange.bind(this)}
-          fetchTracklist={this.fetchTracklist.bind(this)}
-        />
-      )}/>
-      <Route path="/player" render={() => (
-      <>
-        <PlayerComponent 
-          title={this.state.title}
-          player={this.state.player}
-          source={this.state.source}
-          resetSong={this.resetSong.bind(this)}
-          getSong={this.getSong.bind(this)}
-          updateSong={this.updateSong.bind(this)}
-          updateCounter={this.state.updateCounter}
-        />
-      </>
-      )} />
-      </BrowserRouter>
+      <div className="main">
+        <BrowserRouter>
+        <Route path="/" render={() => (
+          <Redirect to="start" />
+        )} />
+        <Route path="/start" render={() =>(
+          <StartComponent
+            handleChange={this.handleChange.bind(this)}
+            fetchTracklist={this.fetchTracklist.bind(this)}
+          />
+        )}/>
+        <Route path="/player" render={() => (
+        <>
+          <PlayerComponent 
+            title={this.state.title}
+            player={this.state.player}
+            source={this.state.source}
+            resetSong={this.resetSong.bind(this)}
+            getSong={this.getSong.bind(this)}
+            updateSong={this.updateSong.bind(this)}
+            updateCounter={this.state.updateCounter}
+          />
+        </>
+        )} />
+        </BrowserRouter>
+      </div>
     );
   }
 
