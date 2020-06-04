@@ -10,8 +10,6 @@ const PlayerComponent = (props) => {
         <iframe 
           title="youtube"
           id="player-frame"
-          width="500px"
-          height="300px"
           src={props.source}
           frameBorder="0"
           allow=""
@@ -20,7 +18,7 @@ const PlayerComponent = (props) => {
         <br/>
         <div className="buttons">
           <button className="button button-green" onClick={props.getSong}>New song</button>
-          <button className="button button-blue" onClick={props.updateSong}>Update song {props.updateCounter}</button>
+          <button className="button button-blue" onClick={props.updateSong}>Update {props.updateCounter}</button>
         </div>
       </div>
     )
