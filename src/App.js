@@ -25,6 +25,7 @@ class App extends React.Component {
   tracklist = [];
   songlist = [];
   currentTrack = "";
+  errorCounter = 0;
 
   state = {
     title: "",
@@ -71,6 +72,7 @@ class App extends React.Component {
   }
 
   fetchTracklist() {
+    console.log("fetch tracklist")
     axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
         .then(res => {
           for(let i in res.data.tracks.track){
@@ -78,13 +80,23 @@ class App extends React.Component {
           }
         })
         .catch(error => { console.log(error) });
+        console.log(this.tracklist)
   }
 
   getSong() {
+    console.log("get song")
+    console.log(this.errorCounter + " errors")
+    if(this.errorCounter > 5){
+      console.log("too much error, search something else");
+      return;
+    }
+
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
+    console.log(this.currentTrack)
 
     if(localStorage.getItem(this.currentTrack)){
+      console.log("found from localstorage")
       this.setState({
         title: this.currentTrack,
         source: localStorage.getItem(this.currentTrack),
@@ -95,18 +107,36 @@ class App extends React.Component {
       fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
-        let i = 0;  
+        let i = 0;
 
+        console.log(res)
+
+        if(res.items === undefined || res.items === "undefined"){
+          console.log("undefined, fetch again");
+          this.errorCounter++;
+          return this.getSong();
+        }
+        
+        console.log(res.items.length)
+
+        if (res.items.length === 0){
+          console.log("empty list, fetch again");
+          this.errorCounter++;
+          return this.getSong();
+        }
+        
         for(i in res.items){
           this.songlist.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
         }
+
         this.setState({
           title: this.currentTrack,
           source: this.songlist[0],
           updateCounter: this.songlist.length
         });
 
-        localStorage.setItem(this.currentTrack, this.songlist[0])
+      localStorage.setItem(this.currentTrack, this.songlist[0])
+
       })
       .catch(error => {
         console.log(error);
@@ -116,7 +146,6 @@ class App extends React.Component {
 
   updateSong() {
     this.songlist.shift()
-    localStorage.removeItem(this.currentTrack)
     
     if(this.songlist.length > 0) {
       this.setState({
@@ -127,6 +156,8 @@ class App extends React.Component {
       localStorage.setItem(this.currentTrack, this.songlist[0])
     }
     else {
+      localStorage.removeItem(this.currentTrack)
+      console.log("empty list, get new")
       this.getSong();
     }
   }
