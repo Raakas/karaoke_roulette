@@ -71,15 +71,19 @@ class App extends React.Component {
     );
   }
 
-  fetchTracklist() {
-    axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
-        .then(res => {
-          for(let i in res.data.tracks.track){
-            this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
-          }
-        })
-        .catch(error => { console.log(error) });
-        console.log(this.tracklist)
+  fetchTracklist = async () => {
+    try{
+      let res = await axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
+
+      for(let i in res.data.tracks.track){
+        this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
+      }
+
+      this.getSong();
+    }
+    catch(error){
+      console.log(error)
+    }
   }
 
   getSong() {
@@ -89,7 +93,6 @@ class App extends React.Component {
 
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
-    console.log(this.currentTrack)
 
     if(localStorage.getItem(this.currentTrack)){
       this.setState({
@@ -104,14 +107,10 @@ class App extends React.Component {
       .then(res => {
         let i = 0;
 
-        console.log(res)
-
         if(res.items === undefined || res.items === "undefined"){
           this.errorCounter++;
           return this.getSong();
         }
-        
-        console.log(res.items.length)
 
         if (res.items.length === 0){
           this.errorCounter++;
