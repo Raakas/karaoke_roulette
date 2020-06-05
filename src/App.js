@@ -5,13 +5,11 @@ import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import './app.scss'
 
-
 const api = require('./json/api.json');
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
 const LAST_FM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
-
 
 class App extends React.Component {
 
@@ -78,7 +76,7 @@ class App extends React.Component {
       for(let i in res.data.tracks.track){
         this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
       }
-
+      console.log(this.tracklist)
       this.getSong();
     }
     catch(error){
@@ -90,7 +88,6 @@ class App extends React.Component {
     if(this.errorCounter > 5){
       return;
     }
-
     this.songlist = [];
     this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
 
@@ -107,12 +104,11 @@ class App extends React.Component {
       .then(res => {
         let i = 0;
 
-        if(res.items === undefined || res.items === "undefined"){
-          this.errorCounter++;
-          return this.getSong();
+        if(res.error){
+          console.log(res.error.message)
         }
 
-        if (res.items.length === 0){
+        if(res.items === undefined || res.items === "undefined" || res.items.length === 0){
           this.errorCounter++;
           return this.getSong();
         }
