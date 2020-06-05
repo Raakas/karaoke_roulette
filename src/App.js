@@ -72,7 +72,6 @@ class App extends React.Component {
   }
 
   fetchTracklist() {
-    console.log("fetch tracklist")
     axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
         .then(res => {
           for(let i in res.data.tracks.track){
@@ -84,10 +83,7 @@ class App extends React.Component {
   }
 
   getSong() {
-    console.log("get song")
-    console.log(this.errorCounter + " errors")
     if(this.errorCounter > 5){
-      console.log("too much error, search something else");
       return;
     }
 
@@ -96,7 +92,6 @@ class App extends React.Component {
     console.log(this.currentTrack)
 
     if(localStorage.getItem(this.currentTrack)){
-      console.log("found from localstorage")
       this.setState({
         title: this.currentTrack,
         source: localStorage.getItem(this.currentTrack),
@@ -112,7 +107,6 @@ class App extends React.Component {
         console.log(res)
 
         if(res.items === undefined || res.items === "undefined"){
-          console.log("undefined, fetch again");
           this.errorCounter++;
           return this.getSong();
         }
@@ -120,7 +114,6 @@ class App extends React.Component {
         console.log(res.items.length)
 
         if (res.items.length === 0){
-          console.log("empty list, fetch again");
           this.errorCounter++;
           return this.getSong();
         }
@@ -157,7 +150,6 @@ class App extends React.Component {
     }
     else {
       localStorage.removeItem(this.currentTrack)
-      console.log("empty list, get new")
       this.getSong();
     }
   }
