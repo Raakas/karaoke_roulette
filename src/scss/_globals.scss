@@ -1,6 +1,6 @@
 body {
     color: $white;
-    background-color: $blue;
+    background-color: $blue-dark;
 }
 
 .main {
@@ -50,18 +50,21 @@ input[type="text"] {
     text-decoration: none;
     width: 150px;
     height: 50px;
-    border-radius: 5px;
+    border-radius: 25px;
     margin: 10px;
     border: solid 1px $black;
     box-shadow: 0px 0px 10px 2px $grey;
     &-green {
-        background-color: $green;  
+        background-color: $green;
+        &:hover {
+            background-color: $green-light;
+        }
     }
     &-blue {
-        background-color: $blue-light;
-    }      
-    &:hover {
-        background-color: $green-light;
+        background-color: $blue;
+        &:hover {
+            background-color: $blue-light;
+        }
     }
 }
 
