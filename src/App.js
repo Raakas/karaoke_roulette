@@ -5,11 +5,11 @@ import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import './app.scss'
 
-const api = require('./json/api.json');
+require('dotenv').config();
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
-const LAST_FM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
+const LASTFM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
 
 class App extends React.Component {
 
@@ -71,21 +71,30 @@ class App extends React.Component {
 
   fetchTracklist = async () => {
     try{
-      let res = await axios.get(`${LAST_FM_URL}tag=${this.state.genre}&api_key=${api.keys[1].lastfm}&format=json`)
+      let res = await axios.get(`${LASTFM_URL}tag=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`)
 
       for(let i in res.data.tracks.track){
         this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
       }
-      console.log(this.tracklist)
-      this.getSong();
     }
     catch(error){
       console.log(error)
     }
+    
+    console.log(this.tracklist)
+    if(this.tracklist.length > 0) {
+      this.getSong();
+    }
+    else {
+      console.log("no track founds, try again");
+      return;
+    }
+    
   }
 
   getSong() {
     if(this.errorCounter > 5){
+      console.log("too many errors, try again");
       return;
     }
     this.songlist = [];
@@ -99,7 +108,7 @@ class App extends React.Component {
       })
     }
     else {
-      fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${api.keys[0].youtube}&q=karaoke+${this.currentTrack}&type=video`)
+      fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.currentTrack}&type=video`)
       .then(response => response.json())
       .then(res => {
         let i = 0;
