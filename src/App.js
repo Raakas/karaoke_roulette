@@ -139,10 +139,12 @@ class App extends React.Component {
 
     this.youtubeVideos = [];
 
-    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.state.title}&type=video`)
+    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.state.title}&type=video&videoEmbeddable=true&safeSearch=strict`)
     .then(response => response.json())
     .then(res => {
       let i = 0;
+
+      console.log(res);
 
       if(res.error){
         console.log(res.error.message)
