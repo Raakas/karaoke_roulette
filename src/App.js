@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
+import firebase from 'firebase'
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import './app.scss'
@@ -10,6 +11,14 @@ require('dotenv').config();
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
 const LASTFM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
+
+firebase.initializeApp({
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID
+})
+
+const db = firebase.firestore();
 
 class App extends React.Component {
 
@@ -21,11 +30,11 @@ class App extends React.Component {
   }
 
   tracklist = [];
-  songlist = [];
-  currentTrack = "";
+  youtubeVideos = [];
   errorCounter = 0;
 
   state = {
+    songId: "",
     title: "",
     source: "",
     genre: "rock",
@@ -33,8 +42,9 @@ class App extends React.Component {
   }
 
   handleChange(event){
+    let str = event.target.value.toLowerCase()
     this.setState({
-      genre: event.target.value
+      genre: str
     })
   }
 
@@ -58,7 +68,7 @@ class App extends React.Component {
             player={this.state.player}
             source={this.state.source}
             resetSong={this.resetSong.bind(this)}
-            getSong={this.getSong.bind(this)}
+            getSongFromDatabase={this.getSongFromDatabase.bind(this)}
             updateSong={this.updateSong.bind(this)}
             updateCounter={this.state.updateCounter}
           />
@@ -74,87 +84,112 @@ class App extends React.Component {
       let res = await axios.get(`${LASTFM_URL}tag=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`)
 
       for(let i in res.data.tracks.track){
-        this.tracklist[i] = res.data.tracks.track[i].artist.name + " - " + res.data.tracks.track[i].name;
+        this.tracklist[i] = res.data.tracks.track[i].artist.name + ", " + res.data.tracks.track[i].name;
       }
     }
     catch(error){
       console.log(error)
     }
     
-    console.log(this.tracklist)
     if(this.tracklist.length > 0) {
-      this.getSong();
+      this.getSongFromDatabase();
     }
     else {
       console.log("no track founds, try again");
       return;
     }
-    
   }
 
-  getSong() {
+  getSongFromDatabase = async () => {
+
+    this.youtubeVideos = [];
+    this.setState({updateCounter: ""})
+
+    let title = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
+    let source = await db.collection("good_songs").doc(this.state.genre).collection(title).doc("details")
+    .get()
+    .then(function(doc) {
+      if (doc.exists) {
+        return doc.data().source;
+      } else {
+        return doc.data()
+      }
+    })
+    .catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+
+    this.setState({ title: title })
+
+    if(source === undefined){
+      return this.getSongFromYoutube();
+    }
+    else {
+      this.setState({
+        source: source
+      })
+    }
+  }
+
+  getSongFromYoutube() {
     if(this.errorCounter > 5){
       console.log("too many errors, try again");
       return;
     }
-    this.songlist = [];
-    this.currentTrack = this.tracklist[Math.floor(Math.random() * this.tracklist.length)];
 
-    if(localStorage.getItem(this.currentTrack)){
+    this.youtubeVideos = [];
+
+    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.state.title}&type=video`)
+    .then(response => response.json())
+    .then(res => {
+      let i = 0;
+
+      if(res.error){
+        console.log(res.error.message)
+      }
+
+      if(res.items === undefined || res.items === "undefined" || res.items.length === 0){
+        this.errorCounter++;
+        return this.getSongFromYoutube();
+      }
+      
+      for(i in res.items){
+        this.youtubeVideos.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
+      }
+
       this.setState({
-        title: this.currentTrack,
-        source: localStorage.getItem(this.currentTrack),
-        updateCounter: ""
-      })
-    }
-    else {
-      fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.currentTrack}&type=video`)
-      .then(response => response.json())
-      .then(res => {
-        let i = 0;
+        source: this.youtubeVideos[0],
+        updateCounter: this.youtubeVideos.length
+      });
 
-        if(res.error){
-          console.log(res.error.message)
-        }
-
-        if(res.items === undefined || res.items === "undefined" || res.items.length === 0){
-          this.errorCounter++;
-          return this.getSong();
-        }
-        
-        for(i in res.items){
-          this.songlist.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
-        }
-
-        this.setState({
-          title: this.currentTrack,
-          source: this.songlist[0],
-          updateCounter: this.songlist.length
-        });
-
-      localStorage.setItem(this.currentTrack, this.songlist[0])
-
+      db.collection("good_songs").doc(this.state.genre).collection(this.state.title).doc("details").set({
+        title: this.state.title,
+        source: this.state.source
       })
       .catch(error => {
-        console.log(error);
+          console.error("Error adding document: ", error);
       });
-    }
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
   updateSong() {
-    this.songlist.shift()
+    this.youtubeVideos.shift()
     
-    if(this.songlist.length > 0) {
+    if(this.youtubeVideos.length > 0) {
       this.setState({
-        source: this.songlist[0],
-        updateCounter: this.songlist.length
+        source: this.youtubeVideos[0],
+        updateCounter: this.youtubeVideos.length
       });
-      
-      localStorage.setItem(this.currentTrack, this.songlist[0])
+
+      db.collection("good_songs").doc(this.state.genre).collection(this.state.title).doc("details").update({
+        source: this.youtubeVideos[0]
+      })
     }
     else {
-      localStorage.removeItem(this.currentTrack)
-      this.getSong();
+      this.getSongFromYoutube();
     }
   }
 
@@ -166,8 +201,8 @@ class App extends React.Component {
       updateCounter: ""
     })
     this.tracklist = [];
-    this.songlist = [];
-    this.currentTrack = "";
+    this.youtubeVideos = [];
+    this.errorCounter = 0;
   }
 }
 export default App;

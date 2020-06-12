@@ -17,7 +17,7 @@ const PlayerComponent = (props) => {
         </iframe>
         <br/>
         <div className="buttons">
-          <button className="button button-green" onClick={props.getSong}>New song</button>
+          <button className="button button-green" onClick={props.getSongFromDatabase}>New song</button>
           <button className="button button-blue" onClick={props.updateSong}>Update {props.updateCounter}</button>
         </div>
       </div>
