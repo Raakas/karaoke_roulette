@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
-const LASTFM_URL = 'http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
+const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
 
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
