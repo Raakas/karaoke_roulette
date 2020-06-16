@@ -75,3 +75,10 @@ input[type="text"] {
 .align-right {
     align-self: flex-end;
 }
+
+@media screen and (max-height: 500px){
+    h1, p {
+        padding: 5px;
+        margin: 5px;
+    }
+}
