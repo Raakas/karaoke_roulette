@@ -2,10 +2,16 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 
 const PlayerComponent = (props) => {
+  let singer = ''
+
+  if (props.queue !== undefined){
+    let random = Math.floor(Math.random() * props.queue.length)
+    singer = props.queue[random].name
+  }
 
     return (
       <div className="player">
-        <Link to="/start" onClick={props.resetSong} className="align-left">Back</Link>
+        <p>{singer}</p>
         <h2>{props.title}</h2>
         <iframe 
           title="youtube"
@@ -17,8 +23,11 @@ const PlayerComponent = (props) => {
         </iframe>
         <br/>
         <div className="buttons">
-          <button className="button button-green" onClick={props.getSongFromDatabase}>New song</button>
+          <Link to="start">
+              <button className="button button-grey">Back</button>
+          </Link>
           <button className="button button-blue" onClick={props.updateSong}>Update {props.updateCounter}</button>
+          <button className="button button-green" onClick={props.getSongFromDatabase}>New song</button>
         </div>
       </div>
     )
