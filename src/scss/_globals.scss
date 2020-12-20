@@ -1,6 +1,6 @@
 body {
     color: $white;
-    background-color: $blue-dark;
+    background-color: $grey_dark;
 }
 
 .main {
@@ -28,6 +28,9 @@ a {
 p {
     font-family: "paragraph";
     font-size: 25pt;
+    &.text-small {
+        font-size: 20pt;
+    }
 }
 
 input[type="text"] {
@@ -39,7 +42,8 @@ input[type="text"] {
     margin: 15px;
     text-transform: capitalize;
     &::placeholder {
-        text-transform: initial;
+        text-transform: capitalize;
+        color: black;
     }
 }
 
@@ -50,20 +54,31 @@ input[type="text"] {
     text-decoration: none;
     width: 150px;
     height: 50px;
+    border: none;
     border-radius: 25px;
     margin: 10px;
-    border: solid 1px $black;
-    box-shadow: 0px 0px 10px 2px $grey;
     &-green {
-        background-color: $green;
+        background-color: $orange;
         &:hover {
-            background-color: $green-light;
+            background-color: $orange_light;
         }
     }
     &-blue {
         background-color: $blue;
         &:hover {
-            background-color: $blue-light;
+            background-color: $blue_light;
+        }
+    }
+    &-yellow {
+        background-color: $yellow;
+        &:hover {
+            background-color: $yellow_light;
+        }
+    }
+    &-grey {
+        background-color: $grey;
+        &:hover {
+            background-color: $grey_light;
         }
     }
 }
