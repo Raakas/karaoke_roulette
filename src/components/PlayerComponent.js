@@ -5,7 +5,7 @@ const PlayerComponent = (props) => {
 
     return (
       <div className="player">
-        <p className="capitalize">{props.currentSinger.name}</p>
+        <p>{props.currentSinger.name}</p>
         <h2>{props.title}</h2>
         <iframe 
           title="youtube"

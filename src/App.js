@@ -33,6 +33,7 @@ class App extends React.Component {
       genre: "rock",
       queue: [],
       currentSinger: "",
+      index: 0,
       updateCounter: "",
       modalVisible: false,
       message: {
@@ -60,10 +61,13 @@ class App extends React.Component {
   }
 
   addSinger = (event) => {
-    let match = this.singers.find(a => a.id === event.target.id)
+    let id = parseInt(event.target.id)
+    let queue = this.state.queue
+
+    let match = queue.find(a => a.id === id)
 
     if(match !== undefined){
-      this.singers = this.singers.filter(a => a !== match)
+      queue = queue.filter(a => a !== match)
     }
     
     let string = event.target.value
@@ -73,7 +77,8 @@ class App extends React.Component {
           id: parseInt(event.target.id),
           name: string
       }
-      this.singers.push(singer)
+      queue.push(singer)
+      this.singers = queue
     }
   }
 
@@ -81,6 +86,16 @@ class App extends React.Component {
       this.setState({
         queue: this.singers
       })
+  }
+
+  removeSinger = (event) => {
+    let id = parseInt(event.target.id)
+    let queue = this.state.queue
+    queue = queue.filter(a => a.id !== id)
+    this.setState({
+      queue: queue
+    })
+    this.singers = queue
   }
 
   resetSingers = () => {
@@ -107,6 +122,7 @@ class App extends React.Component {
               queue={this.state.queue}
               addSinger={this.addSinger.bind(this)}
               saveSingers={this.saveSingers.bind(this)}
+              removeSinger={this.removeSinger.bind(this)}
               resetSingers={this.resetSingers.bind(this)}
             />
           )} />
@@ -202,20 +218,20 @@ class App extends React.Component {
     this.setState({ title: title });
     
     if (this.state.queue.length > 0){
-      let index = 0
+      let index = this.state.index
       if (this.state.currentSinger === ""){
         index = Math.floor(Math.random() * this.state.queue.length)
       }
       else {
-        index = this.state.currentSinger.id + 1
+        index = index + 1
         if (index > this.state.queue.length - 1){
           index = 0
         }
       }
-      this.setState({ currentSinger: this.state.queue[index]})
+      this.setState({ currentSinger: this.state.queue[index], index: index})
     }
     else {
-      this.setState({ currentSinger: ''})
+      this.setState({ currentSinger: '', index: 0})
     }
 
     if (source === undefined) {

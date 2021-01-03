@@ -3,20 +3,16 @@ import {Link} from 'react-router-dom';
 
 const AddSingersComponent = (props) => {
     let all_singers = []
-    let singer_length = 3
+    let singer_amount = 3
     let i = 0
 
-    while(i < singer_length){
-        if(props.queue !== undefined){
-            if(props.queue[i] !== undefined){
-                all_singers.push({id: props.queue[i].id, name: props.queue[i].name})
-            }
-            else {
-                all_singers.push({id:i, name:'Singer ' + (i + 1)})
-            }
+    while(i < singer_amount){
+        if(props.queue !== undefined && props.queue[i] !== undefined){
+            all_singers.push({id: props.queue[i].id, name: props.queue[i].name})
         }
         else {
-            all_singers.push({id:i, name:'Singer ' + (i + 1)})
+            let random = Math.floor(Math.random() * 1000)
+            all_singers.push({id:random, name:'Singer ' + (i + 1)})
         }
         i++
     }
@@ -29,12 +25,13 @@ const AddSingersComponent = (props) => {
             {all_singers.map((item, index)=>(
                 <div key={index}>
                     <input 
-                        id={index}
+                        id={item ? item.id : index}
                         type="text" 
                         value={props.value}
                         onBlur={props.addSinger}
                         placeholder={item ? item.name: `Singer ${index}`}
                     />
+                    <i id={item ? item.id : index} className="remove-singer" onClick={props.removeSinger}>Remove</i>
                     <br/>
                 </div>
             ))}
