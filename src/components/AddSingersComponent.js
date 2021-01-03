@@ -2,7 +2,6 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 
 const AddSingersComponent = (props) => {
-    console.log(props.queue)
     let all_singers = []
     let singer_length = 3
     let i = 0
@@ -43,8 +42,9 @@ const AddSingersComponent = (props) => {
             <Link to="start">
                 <button className="button button-grey">Back</button>
             </Link>
+            <button className="button button-blue" onClick={props.resetSingers}>Reset</button>
             <Link to="start" onClick={props.updateSingers}>
-                <button className="button button-yellow">Save</button>
+                <button className="button button-orange">Save</button>
             </Link>
         </div>
     )

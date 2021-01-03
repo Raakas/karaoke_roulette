@@ -81,6 +81,12 @@ input[type="text"] {
             background-color: $grey_light;
         }
     }
+    &-orange {
+        background-color: $orange;
+        &:hover {
+            background-color: $orange_light;
+        }
+    }
 }
 
 .align-left {

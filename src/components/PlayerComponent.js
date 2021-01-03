@@ -2,16 +2,10 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 
 const PlayerComponent = (props) => {
-  let singer = ''
-
-  if (props.queue !== undefined){
-    let random = Math.floor(Math.random() * props.queue.length)
-    singer = props.queue[random].name
-  }
 
     return (
       <div className="player">
-        <p>{singer}</p>
+        <p>{props.currentSinger}</p>
         <h2>{props.title}</h2>
         <iframe 
           title="youtube"

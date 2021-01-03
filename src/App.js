@@ -42,6 +42,7 @@ class App extends React.Component {
     source: "",
     genre: "rock",
     queue: [],
+    currentSinger: "",
     updateCounter: "",
     modalVisible: false,
     message: {
@@ -79,6 +80,11 @@ class App extends React.Component {
       })
   }
 
+  resetSingers = () => {
+    this.singers = []
+    this.setState({ queue: [] })
+  }
+
   render() {
     return (
       <div className="main">
@@ -97,14 +103,14 @@ class App extends React.Component {
               queue={this.state.queue}
               addSinger={this.addSinger.bind(this)}
               updateSingers={this.updateSingers.bind(this)}
+              resetSingers={this.resetSingers.bind(this)}
             />
           )} />
           <Route path="/player" render={() => (
             <PlayerComponent
               title={this.state.title}
-              player={this.state.player}
+              currentSinger={this.state.currentSinger}
               source={this.state.source}
-              queue={this.state.queue}
               resetSong={this.resetSong.bind(this)}
               getSongFromDatabase={this.getSongFromDatabase.bind(this)}
               updateSong={this.updateSong.bind(this)}
@@ -124,7 +130,6 @@ class App extends React.Component {
   }
   
   setModalVisibility() {
-    console.log('modal visibility')
     if (this.state.modalVisible === true) {
       this.setState({
         modalVisible: true
@@ -190,7 +195,10 @@ class App extends React.Component {
         return this.getSongFromYoutube();
       });
 
-    this.setState({ title: title });
+    this.setState({ 
+      title: title,
+      currentSinger: this.state.queue[0].name
+     });
 
     if (source === undefined) {
       return this.getSongFromYoutube();
