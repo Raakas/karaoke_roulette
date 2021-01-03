@@ -43,7 +43,7 @@ const AddSingersComponent = (props) => {
                 <button className="button button-grey">Back</button>
             </Link>
             <button className="button button-blue" onClick={props.resetSingers}>Reset</button>
-            <Link to="start" onClick={props.updateSingers}>
+            <Link to="start" onClick={props.saveSingers}>
                 <button className="button button-orange">Save</button>
             </Link>
         </div>

@@ -5,7 +5,7 @@ const PlayerComponent = (props) => {
 
     return (
       <div className="player">
-        <p>{props.currentSinger}</p>
+        <p className="capitalize">{props.currentSinger.name}</p>
         <h2>{props.title}</h2>
         <iframe 
           title="youtube"
@@ -17,7 +17,7 @@ const PlayerComponent = (props) => {
         </iframe>
         <br/>
         <div className="buttons">
-          <Link to="start">
+          <Link to="start" onClick={props.resetSong}>
               <button className="button button-grey">Back</button>
           </Link>
           <button className="button button-blue" onClick={props.updateSong}>Update {props.updateCounter}</button>

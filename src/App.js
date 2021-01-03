@@ -26,9 +26,23 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { value: '' };
+    this.state = {
+      songId: "",
+      title: "",
+      source: "",
+      genre: "rock",
+      queue: [],
+      currentSinger: "",
+      updateCounter: "",
+      modalVisible: false,
+      message: {
+        title: "",
+        message: ""
+      },
+      path: ""
+    }
 
-    this.handleChange = this.handleChange.bind(this);
+    this.updateGenre = this.updateGenre.bind(this);
   }
 
   tracklist = [];
@@ -36,23 +50,8 @@ class App extends React.Component {
   singers = [];
   errorCounter = 0;
 
-  state = {
-    songId: "",
-    title: "",
-    source: "",
-    genre: "rock",
-    queue: [],
-    currentSinger: "",
-    updateCounter: "",
-    modalVisible: false,
-    message: {
-      title: "",
-      message: ""
-    },
-    path: ""
-  }
 
-  handleChange(event) {
+  updateGenre(event) {
     let string = event.target.value.toLowerCase()
 
     this.setState({
@@ -66,15 +65,19 @@ class App extends React.Component {
     if(match !== undefined){
       this.singers = this.singers.filter(a => a !== match)
     }
-
-    let singer = {
-        id: event.target.id,
-        name: event.target.value
+    
+    let string = event.target.value
+    string = string.trim()
+    if(string !== ''){
+      let singer = {
+          id: parseInt(event.target.id),
+          name: string
+      }
+      this.singers.push(singer)
     }
-    this.singers.push(singer)
   }
 
-  updateSingers = () => {
+  saveSingers = () => {
       this.setState({
         queue: this.singers
       })
@@ -94,15 +97,16 @@ class App extends React.Component {
           )} />
           <Route path="/start" render={() => (
             <StartComponent
-              handleChange={this.handleChange.bind(this)}
+              updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
+              queue={this.state.queue}
             />
           )} />
           <Route path="/add-singers" render={() => (
             <AddSingersComponent
               queue={this.state.queue}
               addSinger={this.addSinger.bind(this)}
-              updateSingers={this.updateSingers.bind(this)}
+              saveSingers={this.saveSingers.bind(this)}
               resetSingers={this.resetSingers.bind(this)}
             />
           )} />
@@ -195,10 +199,24 @@ class App extends React.Component {
         return this.getSongFromYoutube();
       });
 
-    this.setState({ 
-      title: title,
-      currentSinger: this.state.queue[0].name
-     });
+    this.setState({ title: title });
+    
+    if (this.state.queue.length > 0){
+      let index = 0
+      if (this.state.currentSinger === ""){
+        index = Math.floor(Math.random() * this.state.queue.length)
+      }
+      else {
+        index = this.state.currentSinger.id + 1
+        if (index > this.state.queue.length - 1){
+          index = 0
+        }
+      }
+      this.setState({ currentSinger: this.state.queue[index]})
+    }
+    else {
+      this.setState({ currentSinger: ''})
+    }
 
     if (source === undefined) {
       return this.getSongFromYoutube();
@@ -221,8 +239,6 @@ class App extends React.Component {
       .then(response => response.json())
       .then(res => {
         let i = 0;
-
-        console.log(res);
 
         if (res.error) {
           console.log(res.error.message);
@@ -277,7 +293,8 @@ class App extends React.Component {
     this.setState({
       title: "",
       source: "",
-      genre: "",
+      genre: "rock",
+      currentSinger: "",
       updateCounter: ""
     })
     this.tracklist = [];
