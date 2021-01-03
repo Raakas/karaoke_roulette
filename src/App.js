@@ -301,7 +301,7 @@ class App extends React.Component {
       })
     }
     else {
-      this.fetchTracklist();
+      this.getSongFromYoutube();
     }
   }
 
