@@ -1,18 +1,21 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import CurrentSingersComponent from './CurrentSingersComponent';
 
 const StartComponent = (props) => {
 
     return (
         <div className="start">
             <h1>Karaoke Roulette</h1>
-            <p>The karaoke party machine</p>
-            <br/>
+            <p>The random karaoke party machine</p>
+            
+            {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
+            <br />
             <input 
                 id="sing-input"
                 type="text" 
                 value={props.value} 
-                onChange={props.handleChange} 
+                onChange={props.updateGenre} 
                 placeholder="Type in genre or artist"
             />
             <br/>

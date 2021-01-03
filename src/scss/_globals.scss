@@ -31,6 +31,12 @@ p {
     &.text-small {
         font-size: 20pt;
     }
+    &.text-tiny {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16pt;
+        margin: 0;
+        font-weight: 400;
+    }
 }
 
 input[type="text"] {
@@ -40,9 +46,7 @@ input[type="text"] {
     text-align: center;
     font-size: 13pt;
     margin: 15px;
-    text-transform: capitalize;
     &::placeholder {
-        text-transform: capitalize;
         color: black;
     }
 }
@@ -95,6 +99,10 @@ input[type="text"] {
 
 .align-right {
     align-self: flex-end;
+}
+
+.capitalize {
+    text-transform: capitalize;
 }
 
 @media screen and (max-height: 500px){

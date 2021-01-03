@@ -1,3 +1,10 @@
 .start {
     text-align: center;
+    &__singers {
+        background-color: $grey_light;
+        padding: 15px;
+        width: 60%;
+        margin: auto;
+        color: $black;
+    }
 }
