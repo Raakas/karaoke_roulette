@@ -27,21 +27,21 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      songId: "",
-      title: "",
-      source: "",
-      genre: "rock",
-      type: "tag",
+      songId: '',
+      title: '',
+      source: '',
+      genre: 'rock',
+      type: 'tag',
       queue: [],
-      currentSinger: "",
+      currentSinger: '',
       index: 0,
-      updateCounter: "",
+      updateCounter: '',
       modalVisible: false,
       message: {
-        title: "",
-        message: ""
+        title: '',
+        message: ''
       },
-      path: ""
+      path: ''
     }
 
     this.updateGenre = this.updateGenre.bind(this);
@@ -63,6 +63,11 @@ class App extends React.Component {
 
   updateType(event) {    
     let string = event.target.value.toLowerCase()
+    if(string === 'artist'){
+      this.setState({
+        genre: 'Elvis'
+      })
+    }
 
     this.setState({
       type: string
@@ -114,12 +119,12 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="main">
+      <div className='main'>
         <BrowserRouter>
-          <Route path="/" render={() => (
-            <Redirect to="start" />
+          <Route path='/' render={() => (
+            <Redirect to='start' />
           )} />
-          <Route path="/start" render={() => (
+          <Route path='/start' render={() => (
             <StartComponent
               updateType={this.updateType.bind(this)}
               type={this.state.type}
@@ -128,7 +133,7 @@ class App extends React.Component {
               queue={this.state.queue}
             />
           )} />
-          <Route path="/add-singers" render={() => (
+          <Route path='/add-singers' render={() => (
             <AddSingersComponent
               queue={this.state.queue}
               addSinger={this.addSinger.bind(this)}
@@ -137,7 +142,7 @@ class App extends React.Component {
               resetSingers={this.resetSingers.bind(this)}
             />
           )} />
-          <Route path="/player" render={() => (
+          <Route path='/player' render={() => (
             <PlayerComponent
               title={this.state.title}
               currentSinger={this.state.currentSinger}
@@ -174,7 +179,7 @@ class App extends React.Component {
   }
 
   fetchTracklist = async () => {
-    if (this.state.genre === "" || this.state.genre === " " || this.state.genre === null || this.state.genre === undefined) {
+    if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
       this.state.modalVisible = false;
       this.state.message = {
         title: 'Error',
@@ -195,7 +200,7 @@ class App extends React.Component {
       }
 
       for (let i in response) {
-        this.tracklist[i] = response[i].artist.name + ", " + response[i].name;
+        this.tracklist[i] = response[i].artist.name + ', ' + response[i].name;
       }
     }
     catch (error) {
@@ -218,10 +223,10 @@ class App extends React.Component {
   getSongFromDatabase = async () => {
 
     this.youtubeVideos = [];
-    this.setState({ updateCounter: "" });
+    this.setState({ updateCounter: '' });
 
     let title = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
-    let source = await db.collection("good_songs").doc(this.state.genre).collection(title).doc("details")
+    let source = await db.collection('good_songs').doc(this.state.genre).collection(title).doc('details')
       .get()
       .then(function (doc) {
         if (doc.exists) {
@@ -231,13 +236,13 @@ class App extends React.Component {
         }
       })
       .catch(function (error) {
-        console.log("Error getting document:", error);
+        console.log('Error getting document:', error);
         return this.getSongFromYoutube(title);
       });
     
     if (this.state.queue.length > 0){
       let index = this.state.index
-      if (this.state.currentSinger === ""){
+      if (this.state.currentSinger === ''){
         index = Math.floor(Math.random() * this.state.queue.length)
       }
       else {
@@ -265,7 +270,7 @@ class App extends React.Component {
 
   getSongFromYoutube = (title) => {
     if (this.errorCounter > 5) {
-      console.log("too many errors, try again");
+      console.log('too many errors, try again');
       return;
     }
     this.youtubeVideos = [];
@@ -279,7 +284,7 @@ class App extends React.Component {
           console.log(res.error.message);
         }
 
-        if (res.items === undefined || res.items === "undefined" || res.items.length === 0) {
+        if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
           this.errorCounter++;
           return this.getSongFromYoutube();
         }
@@ -293,7 +298,7 @@ class App extends React.Component {
 
             if(string.includes(artist) || string.includes(track)){
               if(string.includes('karaoke')){
-                this.youtubeVideos.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1&controls=0");
+                this.youtubeVideos.push(YOUTUBE_URL_EMBED + '/' + res.items[i].id.videoId + '?autoplay=1&controls=0');
               }
             }
         }
@@ -308,12 +313,12 @@ class App extends React.Component {
           updateCounter: this.youtubeVideos.length
         });
 
-        db.collection("good_songs").doc(this.state.genre).collection(this.state.title).doc("details").set({
+        db.collection('good_songs').doc(this.state.genre).collection(this.state.title).doc('details').set({
           title: this.state.title,
           source: this.state.source
         })
           .catch(error => {
-            console.error("Error adding document: ", error);
+            console.error('Error adding document: ', error);
           });
       })
       .catch(error => {
@@ -330,7 +335,7 @@ class App extends React.Component {
         updateCounter: this.youtubeVideos.length
       });
 
-      db.collection("good_songs").doc(this.state.genre).collection(this.state.title).doc("details").update({
+      db.collection('good_songs').doc(this.state.genre).collection(this.state.title).doc('details').update({
         source: this.youtubeVideos[0]
       })
     }
@@ -341,11 +346,11 @@ class App extends React.Component {
 
   resetSong() {
     this.setState({
-      title: "",
-      source: "",
-      genre: "rock",
-      currentSinger: "",
-      updateCounter: ""
+      title: '',
+      source: '',
+      genre: 'rock',
+      currentSinger: '',
+      updateCounter: ''
     })
     this.tracklist = [];
     this.youtubeVideos = [];

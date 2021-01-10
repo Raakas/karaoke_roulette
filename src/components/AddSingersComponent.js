@@ -18,7 +18,7 @@ const AddSingersComponent = (props) => {
     }
 
     return (
-        <div className="start">
+        <div className='start'>
             <h1>Karaoke Roulette</h1>
             <p>Add singers: </p>
             <br/>
@@ -26,22 +26,22 @@ const AddSingersComponent = (props) => {
                 <div key={index}>
                     <input 
                         id={item ? item.id : index}
-                        type="text" 
+                        type='text' 
                         value={props.value}
                         onBlur={props.addSinger}
                         placeholder={item ? item.name: `Singer ${index}`}
                     />
-                    <i id={item ? item.id : index} className="remove-singer" onClick={props.removeSinger}>Remove</i>
+                    <i id={item ? item.id : index} className='remove-singer' onClick={props.removeSinger}>Remove</i>
                     <br/>
                 </div>
             ))}
             <br/>
-            <Link to="start">
-                <button className="button button-grey">Back</button>
+            <Link to='start'>
+                <button className='button button-grey'>Back</button>
             </Link>
-            <button className="button button-blue" onClick={props.resetSingers}>Reset</button>
-            <Link to="start" onClick={props.saveSingers}>
-                <button className="button button-orange">Save</button>
+            <button className='button button-blue' onClick={props.resetSingers}>Reset</button>
+            <Link to='start' onClick={props.saveSingers}>
+                <button className='button button-orange'>Save</button>
             </Link>
         </div>
     )
