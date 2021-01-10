@@ -11,8 +11,26 @@ const StartComponent = (props) => {
             
             {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
             <br />
+            <label htmlFor="artist-input">Artist</label>
             <input 
-                id="sing-input"
+                id="artist-input"
+                type="radio" 
+                name="artist-input"
+                value="artist" 
+                onChange={event => props.updateType(event)}
+                checked={props.type === 'artist'}
+            />
+            <label htmlFor="tag-input">Genre</label>
+            <input 
+                id="tag-input"
+                type="radio" 
+                name="tag-input"
+                value="tag"
+                onChange={event => props.updateType(event)}
+                checked={props.type === 'tag'}
+            />
+            <input 
+                id="song-input"
                 type="text" 
                 value={props.value} 
                 onChange={props.updateGenre} 

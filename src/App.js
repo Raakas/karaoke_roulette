@@ -12,7 +12,7 @@ require('dotenv').config();
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
-const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&';
+const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -31,6 +31,7 @@ class App extends React.Component {
       title: "",
       source: "",
       genre: "rock",
+      type: "tag",
       queue: [],
       currentSinger: "",
       index: 0,
@@ -57,6 +58,14 @@ class App extends React.Component {
 
     this.setState({
       genre: string
+    })
+  }
+
+  updateType(event) {    
+    let string = event.target.value.toLowerCase()
+
+    this.setState({
+      type: string
     })
   }
 
@@ -112,6 +121,8 @@ class App extends React.Component {
           )} />
           <Route path="/start" render={() => (
             <StartComponent
+              updateType={this.updateType.bind(this)}
+              type={this.state.type}
               updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               queue={this.state.queue}
@@ -173,9 +184,18 @@ class App extends React.Component {
     }
 
     try {
-      let res = await axios.get(`${LASTFM_URL}tag=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
-      for (let i in res.data.tracks.track) {
-        this.tracklist[i] = res.data.tracks.track[i].artist.name + ", " + res.data.tracks.track[i].name;
+      let res = await axios.get(`${LASTFM_URL}?method=${this.state.type}.gettoptracks&${this.state.type}=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
+      let response = ''
+
+      if(this.state.type === 'artist'){
+        response = res.data.toptracks.track
+      }
+      else {
+        response = res.data.tracks.track
+      }
+
+      for (let i in response) {
+        this.tracklist[i] = response[i].artist.name + ", " + response[i].name;
       }
     }
     catch (error) {
@@ -212,10 +232,8 @@ class App extends React.Component {
       })
       .catch(function (error) {
         console.log("Error getting document:", error);
-        return this.getSongFromYoutube();
+        return this.getSongFromYoutube(title);
       });
-
-    this.setState({ title: title });
     
     if (this.state.queue.length > 0){
       let index = this.state.index
@@ -239,19 +257,20 @@ class App extends React.Component {
     }
     else {
       this.setState({
+        title: title,
         source: source
       })
     }
   }
 
-  getSongFromYoutube() {
+  getSongFromYoutube = (title) => {
     if (this.errorCounter > 5) {
       console.log("too many errors, try again");
       return;
     }
     this.youtubeVideos = [];
-
-    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${this.state.title}&type=video&videoEmbeddable=true&safeSearch=strict`)
+        
+    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${title}&type=video&videoEmbeddable=true&safeSearch=strict`)
       .then(response => response.json())
       .then(res => {
         let i = 0;
@@ -265,11 +284,26 @@ class App extends React.Component {
           return this.getSongFromYoutube();
         }
 
+        let test = title.split(',')
+        let artist = test[0].toLowerCase()
+        let track = test[1].toLowerCase().trim()
+
         for (i in res.items) {
-          this.youtubeVideos.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1");
+          let string = res.items[i].snippet.title.toLowerCase()
+
+            if(string.includes(artist) || string.includes(track)){
+              if(string.includes('karaoke')){
+                this.youtubeVideos.push(YOUTUBE_URL_EMBED + "/" + res.items[i].id.videoId + "?autoplay=1&controls=0");
+              }
+            }
+        }
+
+        if(this.youtubeVideos.length === 0){
+          return this.getSongFromYoutube();
         }
 
         this.setState({
+          title: title,
           source: this.youtubeVideos[0],
           updateCounter: this.youtubeVideos.length
         });
