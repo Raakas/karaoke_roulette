@@ -11,7 +11,7 @@ import './app.scss'
 require('dotenv').config();
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
-const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed';
+const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed/';
 const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
 firebase.initializeApp({
@@ -220,6 +220,34 @@ class App extends React.Component {
     }
   }
 
+  fetchTracklistFromDatabase = async () => {
+    await db.collection(this.state.type === 'artist' ? 'artists' : 'genres').get()
+    .then(querySnapshot => {
+      this.tracklist = []
+      console.log(querySnapshot)
+      querySnapshot.forEach(doc =>{
+          console.log(doc.id)
+          let track = doc.data()
+          for(let a in track){
+            console.log(a)
+            this.tracklist.push(a)
+          }
+      })
+    })
+
+    if (this.tracklist.length > 0) {
+      this.getSongFromDatabase();
+    }
+    else {
+      this.state.modalVisible = false;
+      this.state.message = {
+        title: 'Error',
+        message: 'No tracks found, try again'
+      }
+      return;
+    }
+  }
+
   getSongFromDatabase = async () => {
 
     this.youtubeVideos = [];
@@ -258,13 +286,21 @@ class App extends React.Component {
     }
 
     if (source === undefined) {
-      return this.getSongFromYoutube();
+      return this.getSongFromYoutube(title);
     }
     else {
       this.setState({
         title: title,
         source: source
       })
+      
+      db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
+        [title]: this.state.source
+      }, {merge: true} )
+      .catch(error => {
+        console.error('Error adding document: ', error);
+      });
+      
     }
   }
 
@@ -298,7 +334,7 @@ class App extends React.Component {
 
             if(string.includes(artist) || string.includes(track)){
               if(string.includes('karaoke')){
-                this.youtubeVideos.push(YOUTUBE_URL_EMBED + '/' + res.items[i].id.videoId + '?autoplay=1&controls=0');
+                this.youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId + '?autoplay=1&controls=0');
               }
             }
         }
@@ -312,14 +348,13 @@ class App extends React.Component {
           source: this.youtubeVideos[0],
           updateCounter: this.youtubeVideos.length
         });
-
-        db.collection('good_songs').doc(this.state.genre).collection(this.state.title).doc('details').set({
-          title: this.state.title,
-          source: this.state.source
-        })
-          .catch(error => {
-            console.error('Error adding document: ', error);
-          });
+        
+        db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
+          [title]: this.youtubeVideos[0]
+        }, {merge: true} )
+        .catch(error => {
+          console.error('Error adding document: ', error);
+        });
       })
       .catch(error => {
         console.log(error);
@@ -334,13 +369,16 @@ class App extends React.Component {
         source: this.youtubeVideos[0],
         updateCounter: this.youtubeVideos.length
       });
-
-      db.collection('good_songs').doc(this.state.genre).collection(this.state.title).doc('details').update({
-        source: this.youtubeVideos[0]
-      })
+      
+      db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
+        [this.state.title]: this.youtubeVideos[0]
+      }, {merge: true} )
+      .catch(error => {
+        console.error('Error adding document: ', error);
+      });
     }
     else {
-      this.getSongFromYoutube();
+      this.getSongFromYoutube(this.state.title);
     }
   }
 
