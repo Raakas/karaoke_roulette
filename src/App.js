@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import AddSingersComponent from './components/AddSingersComponent';
@@ -27,7 +28,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      songId: '',
       title: '',
       source: '',
       genre: 'rock',
@@ -41,7 +41,8 @@ class App extends React.Component {
         title: '',
         message: ''
       },
-      path: ''
+      errorLimit: 2,
+      apiError: false,
     }
 
     this.updateGenre = this.updateGenre.bind(this);
@@ -131,6 +132,7 @@ class App extends React.Component {
               updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               queue={this.state.queue}
+              modalVisible={this.state.modalVisible}
             />
           )} />
           <Route path='/add-singers' render={() => (
@@ -148,7 +150,7 @@ class App extends React.Component {
               currentSinger={this.state.currentSinger}
               source={this.state.source}
               resetSong={this.resetSong.bind(this)}
-              getSongFromDatabase={this.getSongFromDatabase.bind(this)}
+              getSong={this.getSong.bind(this)}
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
             />
@@ -156,7 +158,7 @@ class App extends React.Component {
           {this.state.modalVisible
             ? <MessageComponent
               message={this.state.message}
-              setModalVisibility={this.setModalVisibility.bind(this)}
+              setErrorModal={this.setErrorModal.bind(this)}
             />
             : null
           }
@@ -165,10 +167,14 @@ class App extends React.Component {
     );
   }
   
-  setModalVisibility() {
-    if (this.state.modalVisible === true) {
+  setErrorModal(message) {
+    if (message) {
       this.setState({
-        modalVisible: true
+        modalVisible: true,
+        message: {
+          title: 'Error',
+          message: message
+        }
       })
     }
     else {
@@ -178,13 +184,19 @@ class App extends React.Component {
     }
   }
 
-  fetchTracklist = async () => {
+  fetchTracklist = () => {
+    if(this.state.apiError){
+      return this.fetchTracklistFromDatabase()
+    }
+    else {
+      return this.fetchTracklistFromAPI()
+    }
+  }
+
+  fetchTracklistFromAPI = async () => {
+    console.log('fetch tracklist from api')
     if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-      this.state.modalVisible = false;
-      this.state.message = {
-        title: 'Error',
-        message: 'No tracks found, try again'
-      }
+      this.setErrorModal('Empty input, try again')
       return;
     }
 
@@ -211,44 +223,56 @@ class App extends React.Component {
       this.getSongFromDatabase();
     }
     else {
-      this.state.modalVisible = false;
-      this.state.message = {
-        title: 'Error',
-        message: 'No tracks found, try again'
-      }
+      this.setErrorModal('No tracks found from LastFM API, try again')
       return;
     }
   }
 
   fetchTracklistFromDatabase = async () => {
-    await db.collection(this.state.type === 'artist' ? 'artists' : 'genres').get()
+    console.log('fetch tracklist from database')
+    let type = this.state.type === 'artist' ? 'artists' : 'genres'
+    await db.collection(type).get()
     .then(querySnapshot => {
       this.tracklist = []
-      console.log(querySnapshot)
       querySnapshot.forEach(doc =>{
-          console.log(doc.id)
-          let track = doc.data()
-          for(let a in track){
-            console.log(a)
-            this.tracklist.push(a)
+          let tracks = doc.data()
+          for(let a in tracks){
+            this.tracklist.push({[a]: tracks[a]})
           }
       })
     })
 
     if (this.tracklist.length > 0) {
-      this.getSongFromDatabase();
+      this.setErrorModal(false)
+      return this.getSongFromTracklist();
     }
     else {
-      this.state.modalVisible = false;
-      this.state.message = {
-        title: 'Error',
-        message: 'No tracks found, try again'
-      }
+      this.setErrorModal('No tracks found from database, try again')
       return;
     }
   }
 
+  getSong = () => {
+    console.log('get song')
+    if(this.state.apiError){
+      return this.getSongFromTracklist()
+    }
+    else {
+      return this.getSongFromDatabase()
+    }
+  }
+
+  getSongFromTracklist = async () => {
+    console.log('get song from tracklist')
+    let track = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
+    this.setState({
+      title: Object.keys(track)[0],
+      source: Object.values(track)[0]
+    })
+  }
+
   getSongFromDatabase = async () => {
+    console.log('get song from database')
 
     this.youtubeVideos = [];
     this.setState({ updateCounter: '' });
@@ -257,6 +281,7 @@ class App extends React.Component {
     let source = await db.collection('good_songs').doc(this.state.genre).collection(title).doc('details')
       .get()
       .then(function (doc) {
+        console.log(doc)
         if (doc.exists) {
           return doc.data().source;
         } else {
@@ -264,6 +289,7 @@ class App extends React.Component {
         }
       })
       .catch(function (error) {
+        console.log('firestore error')
         console.log('Error getting document:', error);
         return this.getSongFromYoutube(title);
       });
@@ -286,6 +312,7 @@ class App extends React.Component {
     }
 
     if (source === undefined) {
+      console.log('source undefined')
       return this.getSongFromYoutube(title);
     }
     else {
@@ -305,8 +332,12 @@ class App extends React.Component {
   }
 
   getSongFromYoutube = (title) => {
-    if (this.errorCounter > 5) {
-      console.log('too many errors, try again');
+    console.log('get song from youtube')
+    if (this.errorCounter >= this.state.errorLimit) {
+      this.setErrorModal('Too many errors with YouTube')
+      this.setState({
+        apiError: true
+      })
       return;
     }
     this.youtubeVideos = [];
@@ -316,13 +347,17 @@ class App extends React.Component {
       .then(res => {
         let i = 0;
 
-        if (res.error) {
+        if (res.error) {               
+          this.errorCounter++;
+          console.log('res error')
           console.log(res.error.message);
+          return this.getSongFromYoutube(title);
         }
 
         if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
           this.errorCounter++;
-          return this.getSongFromYoutube();
+          console.log('res.items error')
+          return this.getSongFromYoutube(title);
         }
 
         let test = title.split(',')
@@ -340,7 +375,9 @@ class App extends React.Component {
         }
 
         if(this.youtubeVideos.length === 0){
-          return this.getSongFromYoutube();
+          console.log('videos length === 0')
+          this.errorCounter++
+          return this.getSongFromYoutube(title);
         }
 
         this.setState({

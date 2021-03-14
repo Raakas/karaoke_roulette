@@ -21,7 +21,7 @@ const PlayerComponent = (props) => {
               <button className='button button-grey'>Back</button>
           </Link>
           <button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter}</button>
-          <button className='button button-green' onClick={props.getSongFromDatabase}>New song</button>
+          <button className='button button-green' onClick={props.getSong}>New song</button>
         </div>
       </div>
     )

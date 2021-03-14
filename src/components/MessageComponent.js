@@ -1,17 +1,15 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
-const MessageComponent = ({message}, props) => {
+const MessageComponent = (props) => {
     return (
         <div className='message'>
-            <h2>{message.title}</h2>
-            <p>{message.content}</p>
+            <h2>{props.message.title}</h2>
+            <p>{props.message.message}</p>
             <br/>
-                <button 
-                    className='button button-green'
-                    onClick={props.setModalVisibility}
-                >
-                    Ok
-                </button>
+            <Link to='start' onClick={() => props.setModalVisibility(false)}>
+                <button className='button button-grey'>Ok</button>
+            </Link>
             <br/>
         </div>
     )
