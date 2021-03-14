@@ -7,7 +7,7 @@ const MessageComponent = (props) => {
             <h2>{props.message.title}</h2>
             <p>{props.message.message}</p>
             <br/>
-            <Link to='start' onClick={() => props.setModalVisibility(false)}>
+            <Link to='start' onClick={() => props.setErrorModal(false)}>
                 <button className='button button-grey'>Ok</button>
             </Link>
             <br/>

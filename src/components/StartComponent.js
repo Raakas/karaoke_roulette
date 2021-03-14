@@ -8,14 +8,6 @@ const StartComponent = (props) => {
         <div className='start'>
             <h1>Karaoke Roulette</h1>
             <p>The random karaoke party machine</p>
-            {props.modalVisible
-                ? <>
-                    <p>Too many errors. Fetch tracklist from database.</p>
-                    <Link onClick={props.fetchTracklist}>
-                        <button className='button button-green'>Tracklist from database</button>
-                    </Link>
-                </>
-                : <>
                     {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
                     <br />
                     <label htmlFor='artist-input'>Artist</label>
@@ -36,13 +28,16 @@ const StartComponent = (props) => {
                         onChange={event => props.updateType(event)}
                         checked={props.type === 'tag'}
                     />
-                    <input 
-                        id='song-input'
-                        type='text' 
-                        value={props.value} 
-                        onChange={props.updateGenre} 
-                        placeholder={`Type in ${props.type === 'tag' ? 'genre' : 'artist'}`}
-                    />
+                    {props.apiError
+                        ? <p>YouTube API unavailable :( Sing random songs from database.</p>
+                        : <input 
+                            id='song-input'
+                            type='text' 
+                            value={props.value} 
+                            onChange={props.updateGenre} 
+                            placeholder={`Type in ${props.type === 'tag' ? 'genre' : 'artist'}`}
+                        />
+                     }
                     <br/>
                     <Link to='add-singers'>
                         <button className='button button-yellow'>Add singers</button>
@@ -50,8 +45,6 @@ const StartComponent = (props) => {
                     <Link to='player' onClick={props.fetchTracklist}>
                         <button className='button button-green'>Sing</button>
                     </Link>
-                </>
-            }
         </div>
     )
 }

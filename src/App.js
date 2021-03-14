@@ -132,7 +132,7 @@ class App extends React.Component {
               updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               queue={this.state.queue}
-              modalVisible={this.state.modalVisible}
+              apiError={this.state.apiError}
             />
           )} />
           <Route path='/add-singers' render={() => (
@@ -278,11 +278,13 @@ class App extends React.Component {
     this.setState({ updateCounter: '' });
 
     let title = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
+    console.log(this.state.genre)
+    console.log(title)
     let source = await db.collection('good_songs').doc(this.state.genre).collection(title).doc('details')
       .get()
       .then(function (doc) {
-        console.log(doc)
         if (doc.exists) {
+          console.log(doc.data().source)
           return doc.data().source;
         } else {
           return doc.data();
@@ -332,7 +334,7 @@ class App extends React.Component {
   }
 
   getSongFromYoutube = (title) => {
-    console.log('get song from youtube')
+    console.log('get song from youtube ' + title)
     if (this.errorCounter >= this.state.errorLimit) {
       this.setErrorModal('Too many errors with YouTube')
       this.setState({
