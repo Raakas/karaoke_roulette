@@ -1,0 +1,18 @@
+.tracklist {
+    margin-top: 50px;
+    height: 85vh;
+    overflow: auto;
+    &__track {
+        font-size: 1em;
+        margin: 5px;
+        text-align: left;
+    }
+}
+
+
+@media (max-width: 1000px){
+    .tracklist {
+        height: auto;
+        text-align: center;
+    }
+}

@@ -1,5 +1,8 @@
 .start {
+    width: 100%;
     text-align: center;
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
     &__singers {
         background-color: $grey_light;
         padding: 15px;
@@ -7,5 +10,18 @@
         margin: auto;
         color: $black;
         border: 10px double $blue_dark;
+    }
+    &__center {
+        text-align: center;
+    }
+    &__sidebar {
+        text-align: right;
+    }
+}
+
+@media (max-width: 1000px){
+    .start {
+        display: flex;
+        flex-direction: column;
     }
 }

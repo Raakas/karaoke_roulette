@@ -1,15 +1,20 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import CurrentSingersComponent from './CurrentSingersComponent';
+import DisplayTrackListComponent from './DisplayTrackListComponent';
 
 const StartComponent = (props) => {
 
     return (
         <div className='start'>
-            <h1>Karaoke Roulette</h1>
-            <p>The random karaoke party machine</p>
-                    {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
-                    <br />
+            <div className="start__sidebar__left">
+            </div>
+            <div className="start__center">
+                <h1>Karaoke Roulette</h1>
+                <p>The random karaoke party machine</p>
+                {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
+                <br />
+                <div style={{display:"inline-table"}}>
                     <label htmlFor='artist-input'>Artist</label>
                     <input 
                         id='artist-input'
@@ -37,14 +42,23 @@ const StartComponent = (props) => {
                             onChange={props.updateGenre} 
                             placeholder={`Type in ${props.type === 'tag' ? 'genre' : 'artist'}`}
                         />
-                     }
-                    <br/>
-                    <Link to='add-singers'>
-                        <button className='button button-yellow'>Add singers</button>
-                    </Link>
-                    <Link to='player' onClick={props.fetchTracklist}>
+                        }
+                </div>
+                <br/>
+                <Link to='add-singers'>
+                    <button className='button button-yellow'>Add singers</button>
+                </Link>
+                <button onClick={props.fetchTracklist} className='button button-green'>Get tracklist</button>
+                {props.trackList.length > 0
+                    ? <Link to="player" onClick={props.getSong}>
                         <button className='button button-green'>Sing</button>
                     </Link>
+                    : <button className='button button-grey'>Sing</button>
+                }
+            </div>
+            <div className="start__sidebar__right">
+                <DisplayTrackListComponent trackList={props.trackList}/>
+            </div>
         </div>
     )
 }

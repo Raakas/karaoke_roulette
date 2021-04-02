@@ -18,7 +18,7 @@ const AddSingersComponent = (props) => {
     }
 
     return (
-        <div className='start'>
+        <div className='add-singers'>
             <h1>Karaoke Roulette</h1>
             <p>Add singers: </p>
             <br/>
