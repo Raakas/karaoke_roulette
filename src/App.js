@@ -32,6 +32,7 @@ class App extends React.Component {
       source: '',
       genre: 'rock',
       type: 'tag',
+      trackList: [],
       queue: [],
       currentSinger: '',
       index: 0,
@@ -48,7 +49,6 @@ class App extends React.Component {
     this.updateGenre = this.updateGenre.bind(this);
   }
 
-  tracklist = [];
   youtubeVideos = [];
   singers = [];
   errorCounter = 0;
@@ -133,6 +133,7 @@ class App extends React.Component {
               fetchTracklist={this.fetchTracklist.bind(this)}
               queue={this.state.queue}
               apiError={this.state.apiError}
+              trackList={this.state.trackList}
             />
           )} />
           <Route path='/add-singers' render={() => (
@@ -200,6 +201,8 @@ class App extends React.Component {
       return;
     }
 
+    let tracklist = [];
+
     try {
       let res = await axios.get(`${LASTFM_URL}?method=${this.state.type}.gettoptracks&${this.state.type}=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
       let response = ''
@@ -212,17 +215,23 @@ class App extends React.Component {
       }
 
       for (let i in response) {
-        this.tracklist[i] = response[i].artist.name + ', ' + response[i].name;
+        tracklist[i] = response[i].artist.name + ', ' + response[i].name;
       }
     }
     catch (error) {
       console.log(error);
     }
 
-    if (this.tracklist.length > 0) {
+    if (tracklist.length > 0) {
+      this.setState({
+        trackList: tracklist
+      })
       this.getSongFromDatabase();
     }
     else {
+      this.setState({
+        trackList: []
+      })
       this.setErrorModal('No tracks found from LastFM API, try again')
       return;
     }
@@ -231,22 +240,28 @@ class App extends React.Component {
   fetchTracklistFromDatabase = async () => {
     console.log('fetch tracklist from database')
     let type = this.state.type === 'artist' ? 'artists' : 'genres'
+    let tracklist = []
     await db.collection(type).get()
     .then(querySnapshot => {
-      this.tracklist = []
       querySnapshot.forEach(doc =>{
           let tracks = doc.data()
           for(let a in tracks){
-            this.tracklist.push({[a]: tracks[a]})
+            tracklist.push({[a]: tracks[a]})
           }
       })
     })
 
-    if (this.tracklist.length > 0) {
+    if (tracklist.length > 0) {
       this.setErrorModal(false)
+      this.setState({
+        trackList: tracklist
+      })
       return this.getSongFromTracklist();
     }
     else {
+      this.setState({
+        trackList: []
+      })
       this.setErrorModal('No tracks found from database, try again')
       return;
     }
@@ -264,7 +279,7 @@ class App extends React.Component {
 
   getSongFromTracklist = async () => {
     console.log('get song from tracklist')
-    let track = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
+    let track = await this.state.trackList[Math.floor(Math.random() * this.state.tracklist.length)]
     this.setState({
       title: Object.keys(track)[0],
       source: Object.values(track)[0]
@@ -277,7 +292,7 @@ class App extends React.Component {
     this.youtubeVideos = [];
     this.setState({ updateCounter: '' });
 
-    let title = await this.tracklist[Math.floor(Math.random() * this.tracklist.length)]
+    let title = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
     console.log(this.state.genre)
     console.log(title)
     let source = await db.collection('good_songs').doc(this.state.genre).collection(title).doc('details')
@@ -427,9 +442,9 @@ class App extends React.Component {
       source: '',
       genre: 'rock',
       currentSinger: '',
-      updateCounter: ''
+      updateCounter: '',
+      trackList: []
     })
-    this.tracklist = [];
     this.youtubeVideos = [];
     this.errorCounter = 0;
   }
