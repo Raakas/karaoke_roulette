@@ -12,7 +12,7 @@ const DisplayTrackListComponent = (props) => {
                             key={index}
                             className="tracklist__track"
                         >
-                            {item}
+                            {props.apiError ? Object.keys(item)[0] : item}
                         </p>
                     ))}
                 </>

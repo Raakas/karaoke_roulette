@@ -256,7 +256,7 @@ class App extends React.Component {
       this.setState({
         trackList: tracklist
       })
-      return this.getSongFromTracklist();
+      this.getSongFromTracklist()
     }
     else {
       this.setState({
@@ -279,7 +279,7 @@ class App extends React.Component {
 
   getSongFromTracklist = async () => {
     console.log('get song from tracklist')
-    let track = await this.state.trackList[Math.floor(Math.random() * this.state.tracklist.length)]
+    let track = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
     this.setState({
       title: Object.keys(track)[0],
       source: Object.values(track)[0]

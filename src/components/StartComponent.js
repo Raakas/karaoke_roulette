@@ -57,7 +57,7 @@ const StartComponent = (props) => {
                 }
             </div>
             <div className="start__sidebar__right">
-                <DisplayTrackListComponent trackList={props.trackList}/>
+                <DisplayTrackListComponent trackList={props.trackList} apiError={props.apiError}/>
             </div>
         </div>
     )
