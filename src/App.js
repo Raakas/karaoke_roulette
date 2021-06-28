@@ -377,7 +377,8 @@ class App extends React.Component {
           console.log(res.error);
           this.setErrorModal('Youtube api error')
           this.setState({
-            apiError: true
+            apiError: true,
+            trackList: []
           })
           return;
         }
