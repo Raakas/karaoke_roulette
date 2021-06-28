@@ -42,7 +42,7 @@ class App extends React.Component {
         title: '',
         message: ''
       },
-      errorLimit: 2,
+      errorLimit: 5,
       apiError: false,
     }
 
@@ -118,6 +118,25 @@ class App extends React.Component {
     this.setState({ queue: [] })
   }
 
+  getSinger = ()  => {
+    if (this.state.queue.length > 0){
+      let index = this.state.index
+      if (this.state.currentSinger === ''){
+        index = Math.floor(Math.random() * this.state.queue.length)
+      }
+      else {
+        index = index + 1
+        if (index > this.state.queue.length - 1){
+          index = 0
+        }
+      }
+      this.setState({ currentSinger: this.state.queue[index], index: index})
+    }
+    else {
+      this.setState({ currentSinger: '', index: 0})
+    }
+  }
+
   render() {
     return (
       <div className='main'>
@@ -131,6 +150,7 @@ class App extends React.Component {
               type={this.state.type}
               updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
+              getSong={this.getSong.bind(this)}
               queue={this.state.queue}
               apiError={this.state.apiError}
               trackList={this.state.trackList}
@@ -160,6 +180,8 @@ class App extends React.Component {
             ? <MessageComponent
               message={this.state.message}
               setErrorModal={this.setErrorModal.bind(this)}
+              apiError={this.state.apiError}
+              getSong={this.getSong.bind(this)}
             />
             : null
           }
@@ -223,10 +245,10 @@ class App extends React.Component {
     }
 
     if (tracklist.length > 0) {
+      this.setErrorModal(false)
       this.setState({
         trackList: tracklist
       })
-      this.getSongFromDatabase();
     }
     else {
       this.setState({
@@ -250,13 +272,12 @@ class App extends React.Component {
           }
       })
     })
-
+    console.log(tracklist)
     if (tracklist.length > 0) {
       this.setErrorModal(false)
       this.setState({
         trackList: tracklist
       })
-      this.getSongFromTracklist()
     }
     else {
       this.setState({
@@ -268,7 +289,11 @@ class App extends React.Component {
   }
 
   getSong = () => {
+    if(this.state.modalVisible === false){
+      this.getSinger()
+    }
     console.log('get song')
+    this.setErrorModal(false)
     if(this.state.apiError){
       return this.getSongFromTracklist()
     }
@@ -308,28 +333,10 @@ class App extends React.Component {
       .catch(function (error) {
         console.log('firestore error')
         console.log('Error getting document:', error);
-        return this.getSongFromYoutube(title);
       });
-    
-    if (this.state.queue.length > 0){
-      let index = this.state.index
-      if (this.state.currentSinger === ''){
-        index = Math.floor(Math.random() * this.state.queue.length)
-      }
-      else {
-        index = index + 1
-        if (index > this.state.queue.length - 1){
-          index = 0
-        }
-      }
-      this.setState({ currentSinger: this.state.queue[index], index: index})
-    }
-    else {
-      this.setState({ currentSinger: '', index: 0})
-    }
 
     if (source === undefined) {
-      console.log('source undefined')
+      console.log('source undefined, try Youtube')
       return this.getSongFromYoutube(title);
     }
     else {
@@ -351,7 +358,7 @@ class App extends React.Component {
   getSongFromYoutube = (title) => {
     console.log('get song from youtube ' + title)
     if (this.errorCounter >= this.state.errorLimit) {
-      this.setErrorModal('Too many errors with YouTube')
+      this.setErrorModal('Too many errors, try something else')
       this.setState({
         apiError: true
       })
@@ -367,24 +374,29 @@ class App extends React.Component {
         if (res.error) {               
           this.errorCounter++;
           console.log('res error')
-          console.log(res.error.message);
-          return this.getSongFromYoutube(title);
+          console.log(res.error);
+          this.setErrorModal('Youtube api error')
+          this.setState({
+            apiError: true
+          })
+          return;
         }
 
         if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
           this.errorCounter++;
           console.log('res.items error')
-          return this.getSongFromYoutube(title);
+          this.setErrorModal(title + ' not found from Youtube')
+          return;
         }
 
         let test = title.split(',')
         let artist = test[0].toLowerCase()
         let track = test[1].toLowerCase().trim()
-
+        console.log(res.items)
         for (i in res.items) {
           let string = res.items[i].snippet.title.toLowerCase()
 
-            if(string.includes(artist) || string.includes(track)){
+            if(string.includes(artist) && string.includes(track)){
               if(string.includes('karaoke')){
                 this.youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId + '?autoplay=1&controls=0');
               }
@@ -392,9 +404,9 @@ class App extends React.Component {
         }
 
         if(this.youtubeVideos.length === 0){
-          console.log('videos length === 0')
-          this.errorCounter++
-          return this.getSongFromYoutube(title);
+          console.log('videos length === 0, ' + title)
+          this.setErrorModal(title + ' not found from Youtube')
+          return;
         }
 
         this.setState({
@@ -415,7 +427,7 @@ class App extends React.Component {
       });
   }
 
-  updateSong() {
+  updateSong = () => {
     this.youtubeVideos.shift();
 
     if (this.youtubeVideos.length > 0) {
@@ -436,7 +448,7 @@ class App extends React.Component {
     }
   }
 
-  resetSong() {
+  resetSong = () => {
     this.setState({
       title: '',
       source: '',
@@ -449,4 +461,5 @@ class App extends React.Component {
     this.errorCounter = 0;
   }
 }
+
 export default App;
