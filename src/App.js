@@ -344,9 +344,8 @@ class App extends React.Component {
     else {
       this.setState({
         title: title,
-        source: source
+        source: source.split('?')[0]
       })
-      
       this.saveToDatabase(title, this.state.source)
     }
   }
