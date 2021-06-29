@@ -49,11 +49,44 @@ class App extends React.Component {
     }
 
     this.updateGenre = this.updateGenre.bind(this);
+    
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
 
   youtubeVideos = [];
   singers = [];
+  player;
 
+  getYTPlayer() {
+    if(window.YT){
+      console.log('yt found')
+      this.player = new window.YT.Player('player-frame', {
+        events: {
+          'onStateChange': this.onPlayerStateChange.bind(this),
+          'onError': this.onPlayerError.bind(this)
+        }
+      });
+    }
+  }
+
+  onPlayerStateChange(event) {
+    console.log('player event')
+    console.log(event)
+    if(event !== undefined){
+      if(event.data === 0){
+        this.getSong()
+      }
+    }
+  }
+
+  onPlayerError(event){
+    console.log('player error')
+    console.log(event)
+    this.getSong()
+  }
 
   updateGenre(event) {
     let string = event.target.value.toLowerCase().trim()
@@ -170,6 +203,7 @@ class App extends React.Component {
               getSong={this.getSong.bind(this)}
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
+              getYTPlayer={this.getYTPlayer.bind(this)}
             />
           )} />
           {this.state.modalVisible
@@ -288,9 +322,12 @@ class App extends React.Component {
   }
 
   getSong = () => {
-    if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-      this.setErrorModal('Empty input, try again', true)
-      return;
+    console.log('get song')
+    if(this.state.apiError === false){
+      if(this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+        this.setErrorModal('Empty input, try again', true)
+        return;
+      }
     }
     if(this.state.trackList.length <= 0){
       this.fetchTracklist()
@@ -298,8 +335,8 @@ class App extends React.Component {
     if(this.state.modalVisible === false){
       this.getSinger()
     }
-    console.log('get song')
     this.setErrorModal(false)
+    this.getYTPlayer()
     if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
