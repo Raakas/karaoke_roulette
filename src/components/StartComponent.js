@@ -48,12 +48,12 @@ const StartComponent = (props) => {
                 <Link to='add-singers'>
                     <button className='button button-yellow'>Add singers</button>
                 </Link>
-                <button onClick={props.fetchTracklist} className='button button-green'>Get tracklist</button>
+                <button onClick={props.fetchTracklist} className='button button-orange'>Get tracklist</button>
                 {props.trackList.length > 0
                     ? <Link to="player" onClick={props.getSong}>
-                        <button className='button button-green'>Sing</button>
+                        <button className='button button-glory'>Sing</button>
                     </Link>
-                    : <button className='button button-grey'>Sing</button>
+                    : <button className='button button-disabled'>Sing</button>
                 }
             </div>
             <div className="start__sidebar__right">

@@ -70,9 +70,9 @@ input[type="text"] {
     border-radius: 25px;
     margin: 10px;
     &-green {
-        background-color: $orange;
+        background-color: $green;
         &:hover {
-            background-color: $orange_light;
+            background-color: $green_light;
         }
     }
     &-blue {
@@ -99,6 +99,20 @@ input[type="text"] {
             background-color: $orange_light;
         }
     }
+    &-disabled {
+        background-color: $grey;
+        background: linear-gradient(153deg, rgb(105, 105, 110) 0%, rgb(51, 51, 61)48%, rgb(83, 83, 83) 100%); 
+        &:hover {
+            background-color: $grey;
+        }
+    }
+    &-glory {
+        background-color: $orange;
+        &:hover {
+            animation: 15s ease-out glory-effect;
+            background: linear-gradient(153deg, $orange 0%, $orange_light 48%, $orange_dark 100%);
+        }
+    }
 }
 
 .align-left {
@@ -111,6 +125,15 @@ input[type="text"] {
 
 .capitalize {
     text-transform: capitalize;
+}
+
+@keyframes glory-effect {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(2) rotate(10deg);
+    }
 }
 
 @media screen and (max-height: 500px){

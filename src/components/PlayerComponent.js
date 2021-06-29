@@ -20,11 +20,11 @@ const PlayerComponent = (props) => {
           <Link to='start' onClick={props.resetSong}>
               <button className='button button-grey'>Back</button>
           </Link>
-          {props.updateCounter > 0
+          {props.updateCounter > 1
             ? <button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter}</button>
-            : null
+            : <button className='button button-disabled'>Update {props.updateCounter}</button>
           }
-          <button className='button button-green' onClick={props.getSong}>New song</button>
+          <button className='button button-orange' onClick={props.getSong}>New song</button>
         </div>
       </div>
     )

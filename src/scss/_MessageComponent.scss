@@ -12,6 +12,7 @@
     border-radius: 25px;;
     z-index: 1000;
     padding: 25px;
+    animation: 0.1s linear slide-in;
     
     > p {
         font-size: 20pt;
@@ -21,5 +22,10 @@
         right: 25px;
         top: -10px;
     }
+}
+
+@keyframes slide-in {
+    from {transform: scale(0.5); opacity: 0;}
+    to {transform: scale(1); opacity: 100;}
 }
 
