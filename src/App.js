@@ -30,7 +30,7 @@ class App extends React.Component {
     this.state = {
       title: '',
       source: '',
-      genre: 'rock',
+      genre: '',
       type: 'tag',
       trackList: [],
       queue: [],
@@ -40,10 +40,12 @@ class App extends React.Component {
       modalVisible: false,
       message: {
         title: '',
-        message: ''
+        message: '',
+        errorMessage: false,
       },
       errorLimit: 5,
       apiError: false,
+      errorCounter: 0,
     }
 
     this.updateGenre = this.updateGenre.bind(this);
@@ -51,24 +53,18 @@ class App extends React.Component {
 
   youtubeVideos = [];
   singers = [];
-  errorCounter = 0;
 
 
   updateGenre(event) {
-    let string = event.target.value.toLowerCase()
+    let string = event.target.value.toLowerCase().trim()
 
     this.setState({
       genre: string
     })
   }
 
-  updateType(event) {    
+  updateType(event) {
     let string = event.target.value.toLowerCase()
-    if(string === 'artist'){
-      this.setState({
-        genre: 'Elvis'
-      })
-    }
 
     this.setState({
       type: string
@@ -190,13 +186,14 @@ class App extends React.Component {
     );
   }
   
-  setErrorModal(message) {
+  setErrorModal(message, error=false) {
     if (message) {
       this.setState({
         modalVisible: true,
         message: {
           title: 'Error',
-          message: message
+          message: message,
+          errorMessage: error
         }
       })
     }
@@ -217,9 +214,9 @@ class App extends React.Component {
   }
 
   fetchTracklistFromAPI = async () => {
-    console.log('fetch tracklist from api')
+    console.log('fetch tracklist from api ' + this.state.genre)
     if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-      this.setErrorModal('Empty input, try again')
+      this.setErrorModal('Empty input, try again', true)
       return;
     }
 
@@ -254,24 +251,26 @@ class App extends React.Component {
       this.setState({
         trackList: []
       })
-      this.setErrorModal('No tracks found from LastFM API, try again')
+      this.setErrorModal('No tracks found from LastFM API, try again', true)
       return;
     }
   }
 
   fetchTracklistFromDatabase = async () => {
     console.log('fetch tracklist from database')
-    let type = this.state.type === 'artist' ? 'artists' : 'genres'
+    let type = ['artists', 'genres']
     let tracklist = []
-    await db.collection(type).get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc =>{
-          let tracks = doc.data()
-          for(let a in tracks){
-            tracklist.push({[a]: tracks[a]})
-          }
+    for(let a of type){
+      await db.collection(a).get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc =>{
+            let tracks = doc.data()
+            for(let a in tracks){
+              tracklist.push({[a]: tracks[a].split('?')[0]})
+            }
+        })
       })
-    })
+    }
     console.log(tracklist)
     if (tracklist.length > 0) {
       this.setErrorModal(false)
@@ -283,7 +282,7 @@ class App extends React.Component {
       this.setState({
         trackList: []
       })
-      this.setErrorModal('No tracks found from database, try again')
+      this.setErrorModal('No tracks found from database, try again', true)
       return;
     }
   }
@@ -318,9 +317,12 @@ class App extends React.Component {
     this.setState({ updateCounter: '' });
 
     let title = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
-    console.log(this.state.genre)
-    console.log(title)
-    let source = await db.collection('good_songs').doc(this.state.genre).collection(title).doc('details')
+
+    // replace all slashes for querying, but do not save these versions to db
+    let q_title = title.replaceAll('/', ' ').replaceAll('\ ', ' ')
+    let q_genre = this.state.genre.replaceAll('/', ' ').replaceAll('\ ', ' ')
+    
+    let source = await db.collection('good_songs').doc(q_genre).collection(q_title).doc('details')
       .get()
       .then(function (doc) {
         if (doc.exists) {
@@ -345,20 +347,16 @@ class App extends React.Component {
         source: source
       })
       
-      db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
-        [title]: this.state.source
-      }, {merge: true} )
-      .catch(error => {
-        console.error('Error adding document: ', error);
-      });
-      
+      this.saveToDatabase(title, this.state.source)
     }
   }
 
   getSongFromYoutube = (title) => {
+    console.log(this.state.errorCounter)
     console.log('get song from youtube ' + title)
-    if (this.errorCounter >= this.state.errorLimit) {
-      this.setErrorModal('Too many errors, try something else')
+    let errors = this.state.errorCounter
+    if (errors >= this.state.errorLimit) {
+      this.setErrorModal('Too many errors, try something else', true)
       this.setState({
         apiError: true
       })
@@ -371,42 +369,50 @@ class App extends React.Component {
       .then(res => {
         let i = 0;
 
-        if (res.error) {               
-          this.errorCounter++;
+        if (res.error) {
           console.log('res error')
           console.log(res.error);
-          this.setErrorModal('Youtube api error')
+          errors++
+          console.log(errors)
+          this.setErrorModal('Youtube api error', true)
           this.setState({
             apiError: true,
-            trackList: []
+            trackList: [],
+            errorCounter: errors,
           })
           return;
         }
 
         if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
-          this.errorCounter++;
+          errors++
+          console.log(errors)
           console.log('res.items error')
-          this.setErrorModal(title + ' not found from Youtube')
+          this.setErrorModal(title + ' not found')
+          this.setState({
+            errorCounter: errors,
+          })
           return;
         }
 
         let test = title.split(',')
         let artist = test[0].toLowerCase()
         let track = test[1].toLowerCase().trim()
-        console.log(res.items)
+
         for (i in res.items) {
           let string = res.items[i].snippet.title.toLowerCase()
 
-            if(string.includes(artist) && string.includes(track)){
-              if(string.includes('karaoke')){
-                this.youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId + '?autoplay=1&controls=0');
-              }
+          if(string.includes(artist) && string.includes(track) && string.includes('karaoke') && !string.includes('cover')){
+              this.youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId);
             }
         }
 
         if(this.youtubeVideos.length === 0){
-          console.log('videos length === 0, ' + title)
-          this.setErrorModal(title + ' not found from Youtube')
+          let tracks = this.state.trackList
+          tracks = tracks.filter(x => x !== title)
+          this.setState({
+            trackList: tracks,
+          })
+          this.setErrorModal(title + ' not found')
           return;
         }
 
@@ -415,13 +421,8 @@ class App extends React.Component {
           source: this.youtubeVideos[0],
           updateCounter: this.youtubeVideos.length
         });
-        
-        db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
-          [title]: this.youtubeVideos[0]
-        }, {merge: true} )
-        .catch(error => {
-          console.error('Error adding document: ', error);
-        });
+
+        this.saveToDatabase(title, this.youtubeVideos[0])
       })
       .catch(error => {
         console.log(error);
@@ -429,6 +430,7 @@ class App extends React.Component {
   }
 
   updateSong = () => {
+    console.log('update song')
     this.youtubeVideos.shift();
 
     if (this.youtubeVideos.length > 0) {
@@ -437,16 +439,26 @@ class App extends React.Component {
         updateCounter: this.youtubeVideos.length
       });
       
-      db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
-        [this.state.title]: this.youtubeVideos[0]
-      }, {merge: true} )
-      .catch(error => {
-        console.error('Error adding document: ', error);
-      });
+      console.log(this.youtubeVideos)
+
+      this.saveToDatabase(this.state.title, this.youtubeVideos[0])
     }
     else {
       this.getSongFromYoutube(this.state.title);
     }
+  }
+
+  saveToDatabase = (title, source) => {
+    console.log(`save to database ${title} ${source}`)
+    db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
+      [title]: source
+    }, {merge: true} )
+    .catch(error => {
+      console.error('Error adding document: ', error);
+    });
+    this.setState({
+      errorCounter: 0
+    })
   }
 
   resetSong = () => {
@@ -456,10 +468,10 @@ class App extends React.Component {
       genre: 'rock',
       currentSinger: '',
       updateCounter: '',
-      trackList: []
+      trackList: [],
+      errorCounter: 0
     })
     this.youtubeVideos = [];
-    this.errorCounter = 0;
   }
 }
 

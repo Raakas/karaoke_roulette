@@ -12,7 +12,7 @@ const MessageComponent = (props) => {
                 <Link to='start' onClick={() => props.setErrorModal(false)}>
                     <button className='button button-grey'>Back</button>
                 </Link>
-                {props.apiError
+                {props.apiError || props.message.errorMessage
                     ? null
                     : <>
                         <button className='button button-grey' onClick={() => props.setErrorModal(false)}>Close</button>

@@ -10,7 +10,7 @@ const PlayerComponent = (props) => {
         <iframe 
           title='youtube'
           id='player-frame'
-          src={props.source}
+          src={props.source + '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'}
           frameBorder='0'
           allow=''
           allowFullScreen>
