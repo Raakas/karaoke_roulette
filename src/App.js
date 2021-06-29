@@ -288,12 +288,19 @@ class App extends React.Component {
   }
 
   getSong = () => {
+    if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+      this.setErrorModal('Empty input, try again', true)
+      return;
+    }
+    if(this.state.trackList.length <= 0){
+      this.fetchTracklist()
+    }
     if(this.state.modalVisible === false){
       this.getSinger()
     }
     console.log('get song')
     this.setErrorModal(false)
-    if(this.state.apiError){
+    if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
     else {
@@ -315,8 +322,13 @@ class App extends React.Component {
 
     this.youtubeVideos = [];
     this.setState({ updateCounter: '' });
-
-    let title = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
+    let title = ''
+    if(this.state.trackList.length <= 0){
+      title = this.state.genre
+    }
+    else {
+      title = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
+    }
 
     // replace all slashes for querying, but do not save these versions to db
     let q_title = title.replaceAll('/', ' ').replaceAll('\ ', ' ')

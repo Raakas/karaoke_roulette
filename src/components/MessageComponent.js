@@ -4,7 +4,10 @@ import {Link} from 'react-router-dom';
 const MessageComponent = (props) => {
     return (
         <div className='message'>
-            <p className="close" onClick={() => props.setErrorModal(false)}>X</p>
+            {props.apiError || props.message.errorMessage
+                ? null
+                : <p className="close" onClick={() => props.setErrorModal(false)}>X</p>
+            }
             <h2>{props.message.title}</h2>
             <p>{props.message.message}</p>
             <br/>
