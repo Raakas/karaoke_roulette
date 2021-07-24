@@ -1,8 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 
 const PlayerComponent = (props) => {
 
+/*
+  const [player, setPlayer] = useState(false)
+  if(player === false && window.YT){
+    let pl = new window.YT.Player('player-frame', {        
+      events: {
+        'onStateChange': onPlayerStateChange()
+      },
+    });
+    if(pl.h){
+      if(pl.h.id === 'player-frame'){
+        console.log('set player')
+        setPlayer(pl)
+      }
+    }
+  }
+
+  function onPlayerStateChange(event) {
+    console.log('player event')
+    console.log(event)
+    console.log(player)
+    if(event !== undefined){
+      if(event.data === 0){
+        //this.getSong()
+      }
+    }
+  }
+*/
     return (
       <div className='player'>
         <p>{props.currentSinger.name}</p>
@@ -21,8 +48,8 @@ const PlayerComponent = (props) => {
               <button className='button button-grey'>Back</button>
           </Link>
           {props.updateCounter > 1
-            ? <button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter}</button>
-            : <button className='button button-disabled'>Update {props.updateCounter}</button>
+            ? <button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter - 1}</button>
+            : <button className='button button-disabled'>Update</button>
           }
           <button className='button button-orange' onClick={props.getSong}>New song</button>
         </div>

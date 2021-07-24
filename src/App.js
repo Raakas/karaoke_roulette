@@ -49,26 +49,31 @@ class App extends React.Component {
     }
 
     this.updateGenre = this.updateGenre.bind(this);
-    
+    /*
     var tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    */
   }
 
   youtubeVideos = [];
   singers = [];
+
+  /*
   player;
 
-  getYTPlayer() {
-    if(window.YT){
-      console.log('yt found')
-      this.player = new window.YT.Player('player-frame', {
+  getYTPlayer(player) {
+    if(this.state.player === undefined && player !== undefined){
+      let pl = new window.YT.Player(player.h, {
         events: {
-          'onStateChange': this.onPlayerStateChange.bind(this),
-          'onError': this.onPlayerError.bind(this)
-        }
+          onStateChange: this.onPlayerStateChange.bind(this),
+          onError: this.onPlayerError.bind(this)
+        },
       });
+      this.setState({
+        player: pl
+      })
     }
   }
 
@@ -87,13 +92,20 @@ class App extends React.Component {
     console.log(event)
     this.getSong()
   }
+*/
 
   updateGenre(event) {
-    let string = event.target.value.toLowerCase().trim()
+    let string = event.target ? event.target.value.toLowerCase().trim() : event
 
     this.setState({
       genre: string
     })
+
+    if(string === ''){
+      this.setState({
+        trackList: []
+      })
+    }
   }
 
   updateType(event) {
@@ -203,7 +215,6 @@ class App extends React.Component {
               getSong={this.getSong.bind(this)}
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
-              getYTPlayer={this.getYTPlayer.bind(this)}
             />
           )} />
           {this.state.modalVisible
@@ -238,26 +249,27 @@ class App extends React.Component {
     }
   }
 
-  fetchTracklist = () => {
+  fetchTracklist = (value=false) => {
     if(this.state.apiError){
       return this.fetchTracklistFromDatabase()
     }
     else {
-      return this.fetchTracklistFromAPI()
+      return this.fetchTracklistFromAPI(value)
     }
   }
 
-  fetchTracklistFromAPI = async () => {
-    console.log('fetch tracklist from api ' + this.state.genre)
-    if (this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+  fetchTracklistFromAPI = async (value) => {
+    if (value === false && this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+      console.log('fetch tracklist from api ' + this.state.genre)
       this.setErrorModal('Empty input, try again', true)
       return;
     }
 
     let tracklist = [];
+    let search_value = value ? value : this.state.genre
 
     try {
-      let res = await axios.get(`${LASTFM_URL}?method=${this.state.type}.gettoptracks&${this.state.type}=${this.state.genre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
+      let res = await axios.get(`${LASTFM_URL}?method=${this.state.type}.gettoptracks&${this.state.type}=${search_value}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
       let response = ''
 
       if(this.state.type === 'artist'){
@@ -336,7 +348,6 @@ class App extends React.Component {
       this.getSinger()
     }
     this.setErrorModal(false)
-    this.getYTPlayer()
     if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }

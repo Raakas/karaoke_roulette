@@ -1,0 +1,31 @@
+.dropdown {
+    background-color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    & > .results {    
+        position: fixed;
+        background-color: white;
+        color: black;
+        margin-top: -15px;
+        max-width: 200px;
+        & > p {
+            color: black;
+            padding: 3px 10px;
+        }
+        & > p:hover {
+            background-color: $blue;
+            color: black;
+        }
+    }
+}
+
+@media screen and (min-width: 570px){
+    .dropdown > .results {
+        min-width: 350px;
+        max-width: 500px;
+        & > p {
+            padding: 3px 50px;
+        }
+    }
+}
