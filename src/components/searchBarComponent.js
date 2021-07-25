@@ -16,7 +16,11 @@ const SearchBar = (props) => {
         if (value === '' || value === ' ' || value === null || value === undefined) {
             resetQuery();
         }
-        else if(value.length < 4 && value.length > query.length){
+        else if(value.length > 4){
+            let results = searchMatches.filter(a => a.name.toLowerCase().includes(value.toLowerCase()))
+            setSearchMatches(results)
+        }
+        else if(value.length > query.length){
             fetchSearcResultsFromAPI(value)
         }
         props.updateGenre(value)
@@ -74,7 +78,7 @@ const SearchBar = (props) => {
         document.getElementById('song-input').value = ''
         props.updateGenre('')
     }
-    
+
     return (
         <>
             <input 
@@ -84,6 +88,10 @@ const SearchBar = (props) => {
                 onChange={(e) => getQueryParameter(e.target.value)} 
                 placeholder={`Type in ${props.type === 'tag' ? 'genre' : 'artist'}`}
             />
+            {query 
+                ? <a className="reset-button" onClick={() => resetQuery()}>X</a> 
+                : null
+            }
             {searchMatches &&
                 <div className="dropdown">
                     <div class="results">
