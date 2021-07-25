@@ -33,6 +33,7 @@ class App extends React.Component {
       genre: '',
       type: 'tag',
       trackList: [],
+      singerAmount: 3,
       queue: [],
       currentSinger: '',
       index: 0,
@@ -131,11 +132,31 @@ class App extends React.Component {
     if(string !== ''){
       let singer = {
           id: parseInt(event.target.id),
-          name: string
+          name: string,
+          saved: true
       }
       queue.push(singer)
       this.singers = queue
     }
+  }
+
+  addSingerAmount = () => {
+    let amount = this.state.singerAmount
+    amount = amount + 1
+    this.setState({
+      singerAmount: amount
+    })
+  }
+
+  ReduceSingerAmount = () => {
+    let amount = this.state.singerAmount
+    amount = amount - 1
+    if(amount <= 0){
+      amount = 0
+    }
+    this.setState({
+      singerAmount: amount
+    })
   }
 
   saveSingers = () => {
@@ -199,6 +220,9 @@ class App extends React.Component {
           )} />
           <Route path='/add-singers' render={() => (
             <AddSingersComponent
+              singerAmount={this.state.singerAmount}
+              addSingerAmount={this.addSingerAmount.bind(this)}
+              ReduceSingerAmount={this.ReduceSingerAmount.bind(this)}
               queue={this.state.queue}
               addSinger={this.addSinger.bind(this)}
               saveSingers={this.saveSingers.bind(this)}

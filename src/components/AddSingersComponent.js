@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Link} from 'react-router-dom';
 
 const AddSingersComponent = (props) => {
     let all_singers = []
-    let singer_amount = 3
     let i = 0
 
-    while(i < singer_amount){
+    while(i < props.singerAmount){
         if(props.queue !== undefined && props.queue[i] !== undefined){
-            all_singers.push({id: props.queue[i].id, name: props.queue[i].name})
+            all_singers.push({id: props.queue[i].id, name: props.queue[i].name, saved:true})
         }
         else {
             let random = Math.floor(Math.random() * 1000)
-            all_singers.push({id:random, name:'Singer ' + (i + 1)})
+            all_singers.push({id:random, name:'Singer ' + (i + 1), saved:false})
         }
         i++
     }
@@ -31,10 +30,21 @@ const AddSingersComponent = (props) => {
                         onBlur={props.addSinger}
                         placeholder={item ? item.name: `Singer ${index}`}
                     />
-                    <i id={item ? item.id : index} className='remove-singer' onClick={props.removeSinger}>Remove</i>
+                    {item.saved
+                        ? <i id={item ? item.id : index} onClick={props.removeSinger}>Clear</i>
+                        : null
+                    }
                     <br/>
                 </div>
             ))}
+            <div>
+                <button className="button button-yellow" onClick={() => props.ReduceSingerAmount()}>
+                    -
+                </button>
+                <button className="button button-yellow" onClick={() => props.addSingerAmount()}>
+                    +
+                </button>
+            </div>
             <br/>
             <Link to='start'>
                 <button className='button button-grey'>Back</button>
