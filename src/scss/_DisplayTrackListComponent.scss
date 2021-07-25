@@ -10,7 +10,7 @@
 }
 
 
-@media (max-width: 1000px){
+@media (max-width: $desktop-breakpoint){
     .tracklist {
         height: auto;
         text-align: center;

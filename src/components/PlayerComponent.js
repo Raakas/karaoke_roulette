@@ -48,10 +48,10 @@ const PlayerComponent = (props) => {
               <button className='button button-grey'>Back</button>
           </Link>
           {props.updateCounter > 1
-            ? <button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter - 1}</button>
-            : <button className='button button-disabled'>Update</button>
+            ? <a><button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter - 1}</button></a>
+            : <a><button className='button button-disabled'>Update</button></a>
           }
-          <button className='button button-orange' onClick={props.getSong}>New song</button>
+          <a><button className='button button-orange' onClick={props.getSong}>New song</button></a>
         </div>
       </div>
     )

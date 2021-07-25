@@ -6,7 +6,6 @@
     text-align: center;
     background-color: $grey-faint;
     color: $black;
-    width: 500px;
     min-height: 250px;
     border: solid #000 2px;
     border-radius: 25px;;
@@ -27,5 +26,11 @@
 @keyframes slide-in {
     from {transform: scale(0.5); opacity: 0;}
     to {transform: scale(1); opacity: 100;}
+}
+
+@media screen and(min-width:  $mobile-breakpoint){
+    .message {
+        width: 500px;
+    }
 }
 

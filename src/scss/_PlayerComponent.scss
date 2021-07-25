@@ -13,6 +13,25 @@ iframe {
 }
 .buttons {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
+    &-column{
+        flex-direction: column;
+    }
+    &-row{
+        flex-direction: row;
+    }
+}
+
+.buttons-container {    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+@media screen and(min-width:  $mobile-breakpoint){
+    .buttons {
+        flex-direction: row;
+    }
 }

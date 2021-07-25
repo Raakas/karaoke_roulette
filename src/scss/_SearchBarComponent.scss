@@ -37,7 +37,7 @@
     background-color: $white;
 }
 
-@media screen and (min-width: 570px){
+@media screen and (min-width: $mobile-breakpoint){
     .dropdown > .results {
         min-width: 350px;
         max-width: 500px;

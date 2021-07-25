@@ -27,7 +27,7 @@
     }
 }
 
-@media (max-width: 1000px){
+@media (max-width: $desktop-breakpoint){
     .start {
         display: flex;
         flex-direction: column;

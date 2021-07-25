@@ -22,7 +22,7 @@ const AddSingersComponent = (props) => {
             <p>Add singers: </p>
             <br/>
             {all_singers.map((item, index)=>(
-                <div key={index}>
+                <div key={index} className="singer-list">
                     <input 
                         id={item ? item.id : index}
                         type='text' 
@@ -37,22 +37,26 @@ const AddSingersComponent = (props) => {
                     <br/>
                 </div>
             ))}
-            <div>
-                <button className="button button-yellow" onClick={() => props.ReduceSingerAmount()}>
-                    -
-                </button>
-                <button className="button button-yellow" onClick={() => props.addSingerAmount()}>
-                    +
-                </button>
+            <div className="buttons-container">
+                <div className="buttons-row">
+                    <button className="button button-yellow" onClick={() => props.ReduceSingerAmount()}>
+                        -
+                    </button>
+                    <button className="button button-yellow" onClick={() => props.addSingerAmount()}>
+                        +
+                    </button>
+                </div>
+                <br/>
+                <div className="buttons">
+                    <Link to='start'>
+                        <button className='button button-grey'>Back</button>
+                    </Link>
+                    <button className='button button-blue' onClick={props.resetSingers}>Reset</button>
+                    <Link to='start' onClick={props.saveSingers}>
+                        <button className='button button-orange'>Save</button>
+                    </Link>
+                </div>
             </div>
-            <br/>
-            <Link to='start'>
-                <button className='button button-grey'>Back</button>
-            </Link>
-            <button className='button button-blue' onClick={props.resetSingers}>Reset</button>
-            <Link to='start' onClick={props.saveSingers}>
-                <button className='button button-orange'>Save</button>
-            </Link>
         </div>
     )
 }

@@ -51,16 +51,18 @@ const StartComponent = (props) => {
                         }
                 </div>
                 <br/>
-                <Link to='add-singers'>
-                    <button className='button button-yellow'>Add singers</button>
-                </Link>
-                <button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button>
-                {props.trackList.length > 0
-                    ? <Link to="player" onClick={props.getSong}>
-                        <button className='button button-glory'>Sing</button>
+                <div className="buttons">
+                    <Link to='add-singers'>
+                        <button className='button button-yellow'>Add singers</button>
                     </Link>
-                    : <button className='button button-disabled'>Sing</button>
-                }
+                    <a><button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button></a>
+                    {props.trackList.length > 0
+                        ? <Link to="player" onClick={props.getSong}>
+                            <button className='button button-glory'>Sing</button>
+                        </Link>
+                        : <a><button className='button button-disabled'>Sing</button></a>
+                    }
+                </div>
             </div>
             <div className="start__sidebar__right">
                 <DisplayTrackListComponent trackList={props.trackList} apiError={props.apiError}/>
