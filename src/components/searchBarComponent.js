@@ -16,7 +16,7 @@ const SearchBar = (props) => {
         if (value === '' || value === ' ' || value === null || value === undefined) {
             resetQuery();
         }
-        else if(value.length > 4){
+        else if(value.length > 6){
             let results = searchMatches.filter(a => a.name.toLowerCase().includes(value.toLowerCase()))
             setSearchMatches(results)
         }
@@ -34,7 +34,6 @@ const SearchBar = (props) => {
         }
         else {
             try {
-                setQuery(value)
                 let method_url = ''
 
                 if(props.type === 'artist'){

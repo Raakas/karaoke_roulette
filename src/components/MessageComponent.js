@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 const MessageComponent = (props) => {
     return (
         <div className='message'>
-            {props.apiError || props.message.errorMessage
+            {props.apiError || props.message.forceBackToStart
                 ? null
                 : <p className="close" onClick={() => props.setErrorModal(false)}>X</p>
             }
@@ -15,7 +15,7 @@ const MessageComponent = (props) => {
                 <Link to='start' onClick={() => props.setErrorModal(false)}>
                     <button className='button button-grey'>Back</button>
                 </Link>
-                {props.apiError || props.message.errorMessage
+                {props.apiError || props.message.forceBackToStart
                     ? null
                     : <>
                         <button className='button button-grey' onClick={() => props.setErrorModal(false)}>Close</button>

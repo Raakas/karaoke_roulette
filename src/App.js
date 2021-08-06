@@ -59,7 +59,6 @@ class App extends React.Component {
   }
 
   youtubeVideos = [];
-  singers = [];
 
   /*
   player;
@@ -117,29 +116,6 @@ class App extends React.Component {
     })
   }
 
-  addSinger = (event) => {
-    let id = parseInt(event.target.id)
-    let queue = this.state.queue
-
-    let match = queue.find(a => a.id === id)
-
-    if(match !== undefined){
-      queue = queue.filter(a => a !== match)
-    }
-    
-    let string = event.target.value
-    string = string.trim()
-    if(string !== ''){
-      let singer = {
-          id: parseInt(event.target.id),
-          name: string,
-          saved: true
-      }
-      queue.push(singer)
-      this.singers = queue
-    }
-  }
-
   addSingerAmount = () => {
     let amount = this.state.singerAmount
     amount = amount + 1
@@ -159,25 +135,10 @@ class App extends React.Component {
     })
   }
 
-  saveSingers = () => {
+  saveSingers = (singers) => {
       this.setState({
-        queue: this.singers
+        queue: singers
       })
-  }
-
-  removeSinger = (event) => {
-    let id = parseInt(event.target.id)
-    let queue = this.state.queue
-    queue = queue.filter(a => a.id !== id)
-    this.setState({
-      queue: queue
-    })
-    this.singers = queue
-  }
-
-  resetSingers = () => {
-    this.singers = []
-    this.setState({ queue: [] })
   }
 
   getSinger = ()  => {
@@ -210,6 +171,7 @@ class App extends React.Component {
             <StartComponent
               updateType={this.updateType.bind(this)}
               type={this.state.type}
+              genre={this.state.genre}
               updateGenre={this.updateGenre.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               getSong={this.getSong.bind(this)}
@@ -224,10 +186,7 @@ class App extends React.Component {
               addSingerAmount={this.addSingerAmount.bind(this)}
               ReduceSingerAmount={this.ReduceSingerAmount.bind(this)}
               queue={this.state.queue}
-              addSinger={this.addSinger.bind(this)}
               saveSingers={this.saveSingers.bind(this)}
-              removeSinger={this.removeSinger.bind(this)}
-              resetSingers={this.resetSingers.bind(this)}
             />
           )} />
           <Route path='/player' render={() => (
@@ -262,7 +221,7 @@ class App extends React.Component {
         message: {
           title: 'Error',
           message: message,
-          errorMessage: error
+          forceBackToStart: error
         }
       })
     }
@@ -284,7 +243,6 @@ class App extends React.Component {
 
   fetchTracklistFromAPI = async (value) => {
     if (value === false && this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-      console.log('fetch tracklist from api ' + this.state.genre)
       this.setErrorModal('Empty input, try again', true)
       return;
     }
@@ -327,7 +285,6 @@ class App extends React.Component {
   }
 
   fetchTracklistFromDatabase = async () => {
-    console.log('fetch tracklist from database')
     let type = ['artists', 'genres']
     let tracklist = []
     for(let a of type){
@@ -341,7 +298,6 @@ class App extends React.Component {
         })
       })
     }
-    console.log(tracklist)
     if (tracklist.length > 0) {
       this.setErrorModal(false)
       this.setState({
@@ -358,15 +314,17 @@ class App extends React.Component {
   }
 
   getSong = () => {
-    console.log('get song')
     if(this.state.apiError === false){
       if(this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
         this.setErrorModal('Empty input, try again', true)
         return;
       }
     }
-    if(this.state.trackList.length <= 0){
+    if(this.state.trackList.length <= 1){
       this.fetchTracklist()
+    }
+    else {
+      this.setErrorModal('Tracklist empty !', true)
     }
     if(this.state.modalVisible === false){
       this.getSinger()
@@ -381,7 +339,6 @@ class App extends React.Component {
   }
 
   getSongFromTracklist = async () => {
-    console.log('get song from tracklist')
     let track = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
     this.setState({
       title: Object.keys(track)[0],
@@ -390,7 +347,6 @@ class App extends React.Component {
   }
 
   getSongFromDatabase = async () => {
-    console.log('get song from database')
 
     this.youtubeVideos = [];
     this.setState({ updateCounter: '' });
@@ -417,12 +373,10 @@ class App extends React.Component {
         }
       })
       .catch(function (error) {
-        console.log('firestore error')
         console.log('Error getting document:', error);
       });
 
     if (source === undefined) {
-      console.log('source undefined, try Youtube')
       return this.getSongFromYoutube(title);
     }
     else {
@@ -435,8 +389,6 @@ class App extends React.Component {
   }
 
   getSongFromYoutube = (title) => {
-    console.log(this.state.errorCounter)
-    console.log('get song from youtube ' + title)
     let errors = this.state.errorCounter
     if (errors >= this.state.errorLimit) {
       this.setErrorModal('Too many errors, try something else', true)
@@ -453,10 +405,8 @@ class App extends React.Component {
         let i = 0;
 
         if (res.error) {
-          console.log('res error')
           console.log(res.error);
           errors++
-          console.log(errors)
           this.setErrorModal('Youtube api error', true)
           this.setState({
             apiError: true,
@@ -468,8 +418,6 @@ class App extends React.Component {
 
         if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
           errors++
-          console.log(errors)
-          console.log('res.items error')
           this.setErrorModal(title + ' not found')
           this.setState({
             errorCounter: errors,
@@ -513,7 +461,6 @@ class App extends React.Component {
   }
 
   updateSong = () => {
-    console.log('update song')
     this.youtubeVideos.shift();
 
     if (this.youtubeVideos.length > 0) {
