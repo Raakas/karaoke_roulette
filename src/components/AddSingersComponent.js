@@ -25,6 +25,7 @@ const AddSingersComponent = (props) => {
     }
 
     const [singers, setSingers] = useState([])
+    const [random, setRandom] = useState(0)
 
     useEffect(()=>{setSingers(props.queue)},[props.queue])
 
@@ -69,6 +70,16 @@ const AddSingersComponent = (props) => {
         return props.saveSingers([])
     }
 
+    const removeSingersButton = () => {
+        if(props.singerAmount <= singers.length){
+            setRandom(Math.random())
+            return;
+        }
+        else {
+            return props.ReduceSingerAmount();
+        }
+    }
+
     return (
         <div className='start__center'>
             <h1>Karaoke Roulette</h1>
@@ -91,11 +102,11 @@ const AddSingersComponent = (props) => {
                         <br/>
                     </div>
                 ))
-                : <p>{unmotivating_catchphrases_for_the_curious[Math.floor(Math.random() * unmotivating_catchphrases_for_the_curious.length)]}</p>
+                : <p>{unmotivating_catchphrases_for_the_curious[Math.floor(random * unmotivating_catchphrases_for_the_curious.length)]}</p>
             }
             <div className="buttons-container">
                 <div className="buttons-row">
-                    <button className="button button-yellow" onClick={() => props.ReduceSingerAmount()}>
+                    <button className="button button-yellow" onClick={() => removeSingersButton()}>
                         -
                     </button>
                     <button className="button button-yellow" onClick={() => props.addSingerAmount()}>
