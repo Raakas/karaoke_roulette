@@ -56,14 +56,14 @@ const StartComponent = (props) => {
                         <button className='button button-yellow'>Add singers</button>
                     </Link>
                     {props.genre
-                        ? <button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button>
-                        : <button className='button button-disabled'>Get tracklist</button>
+                        ? <a><button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button></a>
+                        : <a><button className='button button-disabled'>Get tracklist</button></a>
                     }
                     {props.trackList.length > 0
                         ? <Link to="player" onClick={props.getSong}>
                             <button className='button button-glory'>Sing</button>
                         </Link>
-                        : <button className='button button-disabled'>Sing</button>
+                        : <a><button className='button button-disabled'>Sing</button></a>
                     }
                 </div>
             </div>
