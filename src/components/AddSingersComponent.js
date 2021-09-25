@@ -115,10 +115,10 @@ const AddSingersComponent = (props) => {
                 </div>
                 <br/>
                 <div className="buttons">
+                    <button className='button button-grey' onClick={() => clearSingers()}>Clear all</button>
                     <Link to='start'>
-                        <button className='button button-grey'>Back</button>
+                        <button className='button button-blue'>Ready</button>
                     </Link>
-                    <button className='button button-blue' onClick={() => clearSingers()}>Clear</button>
                 </div>
             </div>
         </div>
