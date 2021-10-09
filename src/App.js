@@ -50,51 +50,21 @@ class App extends React.Component {
     }
 
     this.updateGenre = this.updateGenre.bind(this);
-    /*
+
     var tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    */
+
   }
 
   youtubeVideos = [];
 
-  /*
-  player;
-
-  getYTPlayer(player) {
-    if(this.state.player === undefined && player !== undefined){
-      let pl = new window.YT.Player(player.h, {
-        events: {
-          onStateChange: this.onPlayerStateChange.bind(this),
-          onError: this.onPlayerError.bind(this)
-        },
-      });
-      this.setState({
-        player: pl
-      })
-    }
-  }
-
-  onPlayerStateChange(event) {
-    console.log('player event')
-    console.log(event)
-    if(event !== undefined){
-      if(event.data === 0){
-        this.getSong()
-      }
-    }
-  }
-
-  onPlayerError(event){
-    console.log('player error')
-    console.log(event)
-    this.getSong()
-  }
-*/
-
   updateGenre(event) {
+    if(event === undefined){
+      return;
+    }
+
     let string = event.target ? event.target.value.toLowerCase().trim() : event
 
     this.setState({
@@ -160,6 +130,21 @@ class App extends React.Component {
     }
   }
 
+  getNewSingerAndSong = () => {
+    this.getSinger();
+
+    let message = 'Nice job!'
+
+    if(this.state.queue.length > 1){
+      message = `Nice! Next singer: ${this.state.currentSinger.name} `
+    }
+
+    this.setErrorModal(message, false)
+    setTimeout(() => {
+      this.getSong();
+    }, 2000);
+  }
+
   render() {
     return (
       <div className='main'>
@@ -198,6 +183,7 @@ class App extends React.Component {
               getSong={this.getSong.bind(this)}
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
+              getNewSingerAndSong={this.getNewSingerAndSong.bind(this)}
             />
           )} />
           {this.state.modalVisible
@@ -316,20 +302,20 @@ class App extends React.Component {
   getSong = () => {
     if(this.state.apiError === false){
       if(this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-        this.setErrorModal('Empty input, try again', true)
-        return;
+        return this.setErrorModal('Empty input, try again', true);
       }
     }
+
     if(this.state.trackList.length <= 1){
       this.fetchTracklist()
     }
-    else {
-      this.setErrorModal('Tracklist empty !', true)
-    }
+
     if(this.state.modalVisible === false){
       this.getSinger()
     }
+
     this.setErrorModal(false)
+
     if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
@@ -366,7 +352,6 @@ class App extends React.Component {
       .get()
       .then(function (doc) {
         if (doc.exists) {
-          console.log(doc.data().source)
           return doc.data().source;
         } else {
           return doc.data();
@@ -468,8 +453,6 @@ class App extends React.Component {
         source: this.youtubeVideos[0],
         updateCounter: this.youtubeVideos.length
       });
-      
-      console.log(this.youtubeVideos)
 
       this.saveToDatabase(this.state.title, this.youtubeVideos[0])
     }
@@ -479,7 +462,6 @@ class App extends React.Component {
   }
 
   saveToDatabase = (title, source) => {
-    console.log(`save to database ${title} ${source}`)
     db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
       [title]: source
     }, {merge: true} )

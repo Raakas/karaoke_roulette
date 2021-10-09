@@ -1,42 +1,40 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import { useState } from 'react';
 
 const PlayerComponent = (props) => {
 
-/*
   const [player, setPlayer] = useState(false)
+
   if(player === false && window.YT){
-    let pl = new window.YT.Player('player-frame', {        
-      events: {
-        'onStateChange': onPlayerStateChange()
-      },
-    });
-    if(pl.h){
-      if(pl.h.id === 'player-frame'){
-        console.log('set player')
-        setPlayer(pl)
+    setTimeout(() => {
+      // use timeout so the DOM iframe loads before events are added
+      let pl = new window.YT.Player('player-frame', {
+        events: {
+          'onStateChange': onPlayerStateChange
+        },
+      });
+      if(pl.h){
+        if(pl.h.id === 'player-frame'){
+          setPlayer(true)
+        }
       }
-    }
+    }, 1000);
   }
 
   function onPlayerStateChange(event) {
-    console.log('player event')
-    console.log(event)
-    console.log(player)
-    if(event !== undefined){
-      if(event.data === 0){
-        //this.getSong()
-      }
+    if(event !== undefined && event.data === 0){
+      return props.getNewSingerAndSong();
     }
   }
-*/
+
     return (
       <div className='player'>
         <p>{props.currentSinger.name}</p>
         <h2>{props.title}</h2>
         <iframe 
-          title='youtube'
           id='player-frame'
+          title='youtube'
           src={props.source + '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'}
           frameBorder='0'
           allow=''
