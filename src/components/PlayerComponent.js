@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { isValidElement } from 'react';
 import {Link} from 'react-router-dom';
 import { useState } from 'react';
 
@@ -11,6 +11,7 @@ const PlayerComponent = (props) => {
       // use timeout so the DOM iframe loads before events are added
       let pl = new window.YT.Player('player-frame', {
         events: {
+          'onReady': onPlayerReady,
           'onStateChange': onPlayerStateChange
         },
       });
@@ -21,6 +22,7 @@ const PlayerComponent = (props) => {
       }
     }, 1000);
   }
+
 
   function onPlayerStateChange(event) {
     if(event !== undefined && event.data === 0){

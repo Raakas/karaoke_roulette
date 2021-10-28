@@ -43,6 +43,7 @@ class App extends React.Component {
         title: '',
         message: '',
         errorMessage: false,
+        timer: 0,
       },
       errorLimit: 5,
       apiError: false,
@@ -132,17 +133,28 @@ class App extends React.Component {
 
   getNewSingerAndSong = () => {
     this.getSinger();
+    let timer = 10; // seconds
+    let timeout = timer * 1000
 
-    let message = 'Nice job!'
+    let message = `Nice!`
 
     if(this.state.queue.length > 1){
       message = `Nice! Next singer: ${this.state.currentSinger.name} `
     }
 
-    this.setErrorModal(message, false)
+    this.setMessageModal(message, false, timer)
     setTimeout(() => {
       this.getSong();
-    }, 2000);
+      this.setState({
+        modalVisible: false,
+        message: {
+          title: '',
+          message: '',
+          errorMessage: false,
+          timer: 0,
+        },
+      })
+    }, timeout);
   }
 
   render() {
@@ -189,7 +201,7 @@ class App extends React.Component {
           {this.state.modalVisible
             ? <MessageComponent
               message={this.state.message}
-              setErrorModal={this.setErrorModal.bind(this)}
+              setMessageModal={this.setMessageModal.bind(this)}
               apiError={this.state.apiError}
               getSong={this.getSong.bind(this)}
             />
@@ -200,14 +212,15 @@ class App extends React.Component {
     );
   }
   
-  setErrorModal(message, error=false) {
+  setMessageModal(message, error=false, timer=0) {
     if (message) {
       this.setState({
         modalVisible: true,
         message: {
-          title: 'Error',
+          title: error ? 'Error' : '',
           message: message,
-          forceBackToStart: error
+          error: error,
+          timer: timer
         }
       })
     }
@@ -229,7 +242,7 @@ class App extends React.Component {
 
   fetchTracklistFromAPI = async (value) => {
     if (value === false && this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-      this.setErrorModal('Empty input, try again', true)
+      this.setMessageModal('Empty input, try again', true)
       return;
     }
 
@@ -256,7 +269,7 @@ class App extends React.Component {
     }
 
     if (tracklist.length > 0) {
-      this.setErrorModal(false)
+      this.setMessageModal(false)
       this.setState({
         trackList: tracklist
       })
@@ -265,7 +278,7 @@ class App extends React.Component {
       this.setState({
         trackList: []
       })
-      this.setErrorModal('No tracks found from LastFM API, try again', true)
+      this.setMessageModal('No tracks found from LastFM API, try again', true)
       return;
     }
   }
@@ -285,7 +298,7 @@ class App extends React.Component {
       })
     }
     if (tracklist.length > 0) {
-      this.setErrorModal(false)
+      this.setMessageModal(false)
       this.setState({
         trackList: tracklist
       })
@@ -294,7 +307,7 @@ class App extends React.Component {
       this.setState({
         trackList: []
       })
-      this.setErrorModal('No tracks found from database, try again', true)
+      this.setMessageModal('No tracks found from database, try again', true)
       return;
     }
   }
@@ -302,7 +315,7 @@ class App extends React.Component {
   getSong = () => {
     if(this.state.apiError === false){
       if(this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
-        return this.setErrorModal('Empty input, try again', true);
+        return this.setMessageModal('Empty input, try again', true);
       }
     }
 
@@ -314,8 +327,9 @@ class App extends React.Component {
       this.getSinger()
     }
 
-    this.setErrorModal(false)
-
+    this.setMessageModal(false)
+    console.log(this.state.apiError)
+    console.log(this.state.trackList.length)
     if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
@@ -358,7 +372,6 @@ class App extends React.Component {
         }
       })
       .catch(function (error) {
-        console.log('Error getting document:', error);
       });
 
     if (source === undefined) {
@@ -376,7 +389,7 @@ class App extends React.Component {
   getSongFromYoutube = (title) => {
     let errors = this.state.errorCounter
     if (errors >= this.state.errorLimit) {
-      this.setErrorModal('Too many errors, try something else', true)
+      this.setMessageModal('Too many errors, try something else', true)
       this.setState({
         apiError: true
       })
@@ -392,7 +405,7 @@ class App extends React.Component {
         if (res.error) {
           console.log(res.error);
           errors++
-          this.setErrorModal('Youtube api error', true)
+          this.setMessageModal('Youtube api error', true)
           this.setState({
             apiError: true,
             trackList: [],
@@ -403,7 +416,7 @@ class App extends React.Component {
 
         if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
           errors++
-          this.setErrorModal(title + ' not found')
+          this.setMessageModal(title + ' not found')
           this.setState({
             errorCounter: errors,
           })
@@ -428,7 +441,7 @@ class App extends React.Component {
           this.setState({
             trackList: tracks,
           })
-          this.setErrorModal(title + ' not found')
+          this.setMessageModal(title + ' not found')
           return;
         }
 

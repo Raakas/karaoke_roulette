@@ -5,7 +5,6 @@ import DisplayTrackListComponent from './DisplayTrackListComponent';
 import SearchBar from './searchBarComponent';
 
 const StartComponent = (props) => {
-
     return (
         <div className='start'>
             <div className="start__sidebar__left">
