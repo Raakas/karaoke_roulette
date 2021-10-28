@@ -15,18 +15,21 @@ const PlayerComponent = (props) => {
           'onStateChange': onPlayerStateChange
         },
       });
-      if(pl.h){
-        if(pl.h.id === 'player-frame'){
-          setPlayer(true)
-        }
-      }
     }, 1000);
   }
 
+  function onPlayerReady() {
+    setPlayer(true)
+  }
 
   function onPlayerStateChange(event) {
     if(event !== undefined && event.data === 0){
-      return props.getNewSingerAndSong();
+      let split = props.title.split(',')
+      let artist = split[0].toLowerCase()
+      let track = split[1].toLowerCase().trim()
+
+      props.getSimilarTracksFromAPI(artist, track)
+      props.getNewSingerAndSong();
     }
   }
 

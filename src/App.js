@@ -62,7 +62,7 @@ class App extends React.Component {
   youtubeVideos = [];
 
   updateGenre(event) {
-    if(event === undefined){
+    if(event === undefined || event === ''){
       return;
     }
 
@@ -196,6 +196,7 @@ class App extends React.Component {
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
               getNewSingerAndSong={this.getNewSingerAndSong.bind(this)}
+              getSimilarTracksFromAPI={this.getSimilarTracksFromAPI.bind(this)}
             />
           )} />
           {this.state.modalVisible
@@ -283,6 +284,35 @@ class App extends React.Component {
     }
   }
 
+  getSimilarTracksFromAPI = async (artist, track) => {
+    let errors = [false, '', ' ', null, undefined]
+    if (errors.includes(artist) || errors.includes(track)) {
+      return;
+    }
+
+    let tracklist = [];
+
+    try {
+      let res = await axios.get(`${LASTFM_URL}?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
+      let response = res.data.similartracks.track
+
+      for (let i in response) {
+        tracklist[i] = response[i].artist.name + ', ' + response[i].name;
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+    
+    if (tracklist.length > 0) {
+      tracklist = tracklist.concat(this.state.trackList)
+      this.setMessageModal(false)
+      this.setState({
+        trackList: tracklist
+      })
+    }
+  }
+
   fetchTracklistFromDatabase = async () => {
     let type = ['artists', 'genres']
     let tracklist = []
@@ -328,8 +358,6 @@ class App extends React.Component {
     }
 
     this.setMessageModal(false)
-    console.log(this.state.apiError)
-    console.log(this.state.trackList.length)
     if(this.state.apiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
