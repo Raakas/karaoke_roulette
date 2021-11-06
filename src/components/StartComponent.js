@@ -67,7 +67,7 @@ const StartComponent = (props) => {
                 </div>
             </div>
             <div className="start__sidebar__right">
-                <DisplayTrackListComponent trackList={props.trackList} youtubeApiError={props.youtubeApiError}/>
+                <DisplayTrackListComponent trackList={props.trackList} youtubeApiError={props.youtubeApiError} removeTrack={props.removeTrack}/>
             </div>
         </div>
     )

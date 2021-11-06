@@ -171,6 +171,7 @@ class App extends React.Component {
               searchParam={this.state.searchParam}
               updateSearchParam={this.updateSearchParam.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
+              removeTrack={this.removeTrack.bind(this)}
               getSong={this.getSong.bind(this)}
               singerQueue={this.state.singerQueue}
               youtubeApiError={this.state.youtubeApiError}
@@ -231,9 +232,23 @@ class App extends React.Component {
     }
   }
 
+  removeTrack = (index) => {
+    let results = this.state.trackList
+    results.splice(index, 1)
+    this.setState({
+      trackList: results
+    })
+  }
+
   fetchTracklist = (value=false) => {
     if(this.state.youtubeApiError){
       return this.fetchTracklistFromDatabase()
+    }
+    else if(this.state.title && this.state.source){
+      let split = this.state.title.split(',')
+      let artist = split[0]
+      let track = split[1]
+      return this.getSimilarTracksFromAPI(artist, track)
     }
     else {
       return this.fetchTracklistFromAPI(value)

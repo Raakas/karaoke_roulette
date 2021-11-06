@@ -24,11 +24,6 @@ const PlayerComponent = (props) => {
 
   function onPlayerStateChange(event) {
     if(event !== undefined && event.data === 0){
-      let split = props.title.split(',')
-      let artist = split[0].toLowerCase()
-      let track = split[1].toLowerCase().trim()
-
-      props.getSimilarTracksFromAPI(artist, track)
       props.getNewSingerAndSong();
     }
   }

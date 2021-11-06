@@ -5,18 +5,20 @@ const DisplayTrackListComponent = (props) => {
         <div className="tracklist">
             {props.trackList.length > 0
                 ? <>
-                    <p className="tracklist__track">Woah! Keep in mind Youtube quality might be shit...</p>
+                    <div className="tracklist__track">
+                        <p className="text-micro">Woah! Keep in mind Youtube quality might be shit...</p>
+                    </div>
                     <br/>
                     {props.trackList.map((item, index) => (
-                        <p 
-                            key={index}
-                            className="tracklist__track"
-                        >
-                            {props.apiError ? Object.keys(item)[0] : item}
-                        </p>
+                        <div className="tracklist__track">
+                            <p className="remove-icon small" onClick={() => props.removeTrack(index)}>X</p>
+                            <p className="text-micro" key={index}>
+                                {props.apiError ? Object.keys(item)[0] : item}
+                            </p>
+                        </div>
                     ))}
                 </>
-                : <p className="tracklist__track">No tracks yet</p>
+                : <div className="tracklist__track">No tracks yet</div>
             }
         </div>
     )
