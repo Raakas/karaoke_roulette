@@ -10,7 +10,7 @@ const SearchBar = (props) => {
 
     useEffect(()=>{
         resetQuery();
-    },[props.type])
+    },[props.searchType])
 
     const getQueryParameter = (value) => {
         if (value === '' || value === ' ' || value === null || value === undefined) {
@@ -23,7 +23,7 @@ const SearchBar = (props) => {
         else if(value.length > query.length){
             fetchSearcResultsFromAPI(value)
         }
-        props.updateGenre(value)
+        props.updateSearchParam(value)
     }
 
     const fetchSearcResultsFromAPI = async (value) => {
@@ -36,7 +36,7 @@ const SearchBar = (props) => {
             try {
                 let method_url = ''
 
-                if(props.type === 'artist'){
+                if(props.searchType === 'artist'){
                     method_url = 'method=artist.search&artist=' + value
                 }
                 else {
@@ -47,7 +47,7 @@ const SearchBar = (props) => {
 
                 let results = []
 
-                if(props.type === 'artist'){
+                if(props.searchType === 'artist'){
                     results = res.data.results.artistmatches.artist
                 }
                 else {
@@ -67,7 +67,7 @@ const SearchBar = (props) => {
     const setSearchResult = (result) => {
         setSearchMatches([])
         document.getElementById('song-input').value = result
-        props.updateGenre(result)
+        props.updateSearchParam(result)
         props.fetchTracklist(result)
     }
 
@@ -75,7 +75,7 @@ const SearchBar = (props) => {
         setQuery('')
         setSearchMatches([])
         document.getElementById('song-input').value = ''
-        props.updateGenre('')
+        props.updateSearchParam('')
     }
 
     return (
@@ -85,7 +85,7 @@ const SearchBar = (props) => {
                 type='text' 
                 value={props.value} 
                 onChange={(e) => getQueryParameter(e.target.value)} 
-                placeholder={`Type in ${props.type === 'tag' ? 'genre' : 'artist'}`}
+                placeholder={`Type in ${props.searchType === 'tag' ? 'genre' : 'artist'}`}
             />
             {query 
                 ? <a className="reset-button" onClick={() => resetQuery()}>X</a> 

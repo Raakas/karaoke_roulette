@@ -25,8 +25,8 @@ const StartComponent = (props) => {
                                     type='radio' 
                                     name='artist-input'
                                     value='artist' 
-                                    onChange={event => props.updateType(event)}
-                                    checked={props.type === 'artist'}
+                                    onChange={event => props.updateSearchType(event)}
+                                    checked={props.searchType === 'artist'}
                                 />
                                 <label htmlFor='tag-input'>Genre</label>
                                 <input 
@@ -34,15 +34,15 @@ const StartComponent = (props) => {
                                     type='radio' 
                                     name='tag-input'
                                     value='tag'
-                                    onChange={event => props.updateType(event)}
-                                    checked={props.type === 'tag'}
+                                    onChange={event => props.updateSearchType(event)}
+                                    checked={props.searchType === 'tag'}
                                 />
                             </div>
                             <div className="start__center">
                                 <SearchBar 
                                     value={props.value}
-                                    type={props.type}
-                                    updateGenre={props.updateGenre}
+                                    type={props.searchType}
+                                    updateSearchParam={props.updateSearchParam}
                                     fetchTracklist={props.fetchTracklist}
                                 />
                             </div>

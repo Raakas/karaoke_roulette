@@ -30,8 +30,8 @@ class App extends React.Component {
     this.state = {
       title: '',
       source: '',
-      genre: '',
-      type: 'tag',
+      searchParam: '',
+      searchType: 'tag',
       trackList: [],
       singerAmount: 3,
       queue: [],
@@ -50,7 +50,7 @@ class App extends React.Component {
       errorCounter: 0,
     }
 
-    this.updateGenre = this.updateGenre.bind(this);
+    this.updateSearchParam = this.updateSearchParam.bind(this);
 
     var tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -61,7 +61,7 @@ class App extends React.Component {
 
   youtubeVideos = [];
 
-  updateGenre(event) {
+  updateSearchParam(event) {
     if(event === undefined || event === ''){
       return;
     }
@@ -69,7 +69,7 @@ class App extends React.Component {
     let string = event.target ? event.target.value.toLowerCase().trim() : event
 
     this.setState({
-      genre: string
+      searchParam: string
     })
 
     if(string === ''){
@@ -79,11 +79,11 @@ class App extends React.Component {
     }
   }
 
-  updateType(event) {
+  updateSearchTypo(event) {
     let string = event.target.value.toLowerCase()
 
     this.setState({
-      type: string
+      searchType: string
     })
   }
 
@@ -136,10 +136,10 @@ class App extends React.Component {
     let timer = 10; // seconds
     let timeout = timer * 1000
 
-    let message = `Nice!`
+    let message = `Nice job! `
 
     if(this.state.queue.length > 1){
-      message = `Nice! Next singer: ${this.state.currentSinger.name} `
+      message += `Next singer: ${this.state.currentSinger.name}`
     }
 
     this.setMessageModal(message, false, timer)
@@ -166,10 +166,10 @@ class App extends React.Component {
           )} />
           <Route path='/start' render={() => (
             <StartComponent
-              updateType={this.updateType.bind(this)}
-              type={this.state.type}
-              genre={this.state.genre}
-              updateGenre={this.updateGenre.bind(this)}
+              updateSearchTypo={this.updateSearchTypo.bind(this)}
+              searchType={this.state.searchType}
+              searchParam={this.state.searchParam}
+              updateSearchParam={this.updateSearchParam.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               getSong={this.getSong.bind(this)}
               queue={this.state.queue}
@@ -242,19 +242,19 @@ class App extends React.Component {
   }
 
   fetchTracklistFromAPI = async (value) => {
-    if (value === false && this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+    if (value === false && this.state.searchParam === '' || this.state.searchParam === ' ' || this.state.searchParam === null || this.state.searchParam === undefined) {
       this.setMessageModal('Empty input, try again', true)
       return;
     }
 
-    let tracklist = [];
-    let search_value = value ? value : this.state.genre
+    let results = [];
+    let search_value = value ? value : this.state.searchParam
 
     try {
-      let res = await axios.get(`${LASTFM_URL}?method=${this.state.type}.gettoptracks&${this.state.type}=${search_value}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
+      let res = await axios.get(`${LASTFM_URL}?method=${this.state.searchType}.gettoptracks&${this.state.searchType}=${search_value}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
       let response = ''
 
-      if(this.state.type === 'artist'){
+      if(this.state.searchType === 'artist'){
         response = res.data.toptracks.track
       }
       else {
@@ -262,17 +262,16 @@ class App extends React.Component {
       }
 
       for (let i in response) {
-        tracklist[i] = response[i].artist.name + ', ' + response[i].name;
+        results[i] = response[i].artist.name + ', ' + response[i].name;
       }
     }
     catch (error) {
       console.log(error);
     }
 
-    if (tracklist.length > 0) {
-      this.setMessageModal(false)
+    if (results.length > 0) {
       this.setState({
-        trackList: tracklist
+        trackList: results
       })
     }
     else {
@@ -290,47 +289,46 @@ class App extends React.Component {
       return;
     }
 
-    let tracklist = [];
+    let results = [];
 
     try {
       let res = await axios.get(`${LASTFM_URL}?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`);
       let response = res.data.similartracks.track
 
       for (let i in response) {
-        tracklist[i] = response[i].artist.name + ', ' + response[i].name;
+        results[i] = response[i].artist.name + ', ' + response[i].name;
       }
     }
     catch (error) {
       console.log(error);
     }
     
-    if (tracklist.length > 0) {
-      tracklist = tracklist.concat(this.state.trackList)
-      this.setMessageModal(false)
+    if (results.length > 0) {
+      results = results.concat(this.state.trackList)
       this.setState({
-        trackList: tracklist
+        trackList: results
       })
     }
   }
 
   fetchTracklistFromDatabase = async () => {
-    let type = ['artists', 'genres']
-    let tracklist = []
-    for(let a of type){
-      await db.collection(a).get()
+    // iterate database and push track title and sources to results
+    let searchType = ['artists', 'genre']
+    let results = []
+    for(let type of searchType){
+      await db.collection(type).get()
       .then(querySnapshot => {
         querySnapshot.forEach(doc =>{
             let tracks = doc.data()
-            for(let a in tracks){
-              tracklist.push({[a]: tracks[a].split('?')[0]})
+            for(let track in tracks){
+              results.push({[track]: tracks[track].split('?')[0]})
             }
         })
       })
     }
-    if (tracklist.length > 0) {
-      this.setMessageModal(false)
+    if (results.length > 0) {
       this.setState({
-        trackList: tracklist
+        trackList: results
       })
     }
     else {
@@ -344,7 +342,7 @@ class App extends React.Component {
 
   getSong = () => {
     if(this.state.apiError === false){
-      if(this.state.genre === '' || this.state.genre === ' ' || this.state.genre === null || this.state.genre === undefined) {
+      if(this.state.searchParam === '' || this.state.searchParam === ' ' || this.state.searchParam === null || this.state.searchParam === undefined) {
         return this.setMessageModal('Empty input, try again', true);
       }
     }
@@ -380,7 +378,7 @@ class App extends React.Component {
     this.setState({ updateCounter: '' });
     let title = ''
     if(this.state.trackList.length <= 0){
-      title = this.state.genre
+      title = this.state.searchParam
     }
     else {
       title = await this.state.trackList[Math.floor(Math.random() * this.state.trackList.length)]
@@ -388,9 +386,9 @@ class App extends React.Component {
 
     // replace all slashes for querying, but do not save these versions to db
     let q_title = title.replaceAll('/', ' ').replaceAll('\ ', ' ')
-    let q_genre = this.state.genre.replaceAll('/', ' ').replaceAll('\ ', ' ')
+    let q_searchParam = this.state.searchParam.replaceAll('/', ' ').replaceAll('\ ', ' ')
     
-    let source = await db.collection('good_songs').doc(q_genre).collection(q_title).doc('details')
+    let source = await db.collection('good_songs').doc(q_searchParam).collection(q_title).doc('details')
       .get()
       .then(function (doc) {
         if (doc.exists) {
@@ -503,7 +501,7 @@ class App extends React.Component {
   }
 
   saveToDatabase = (title, source) => {
-    db.collection(this.state.type === 'artist' ? 'artists' : 'genres').doc(this.state.genre).set({
+    db.collection(this.state.searchType === 'artist' ? 'artists' : 'genre').doc(this.state.searchParam).set({
       [title]: source
     }, {merge: true} )
     .catch(error => {
@@ -518,7 +516,7 @@ class App extends React.Component {
     this.setState({
       title: '',
       source: '',
-      genre: 'rock',
+      searchParam: 'rock',
       currentSinger: '',
       updateCounter: '',
       trackList: [],
