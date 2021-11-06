@@ -12,10 +12,10 @@ const StartComponent = (props) => {
             <div className="start__center">
                 <h1>Karaoke Roulette</h1>
                 <p>The random karaoke party machine</p>
-                {props.queue.length > 0 && <CurrentSingersComponent queue={props.queue} />}
+                {props.singerQueue.length > 0 && <CurrentSingersComponent singerQueue={props.singerQueue} />}
                 <br />
                 <div className="start-container">
-                    {props.apiError
+                    {props.youtubeApiError
                         ? <p>YouTube API unavailable :( Sing random songs from database.</p>
                         : <>
                             <div className="start__center">
@@ -54,7 +54,7 @@ const StartComponent = (props) => {
                     <Link to='add-singers'>
                         <button className='button button-yellow'>Add singers</button>
                     </Link>
-                    {props.genre
+                    {props.searchParam
                         ? <a><button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button></a>
                         : <a><button className='button button-disabled'>Get tracklist</button></a>
                     }
@@ -67,7 +67,7 @@ const StartComponent = (props) => {
                 </div>
             </div>
             <div className="start__sidebar__right">
-                <DisplayTrackListComponent trackList={props.trackList} apiError={props.apiError}/>
+                <DisplayTrackListComponent trackList={props.trackList} youtubeApiError={props.youtubeApiError}/>
             </div>
         </div>
     )

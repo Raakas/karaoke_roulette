@@ -14,8 +14,8 @@ const AddSingersComponent = (props) => {
     let i = 0
 
     while(i < props.singerAmount){
-        if(props.queue !== undefined && props.queue[i] !== undefined){
-            all_singers.push({id: props.queue[i].id, name: props.queue[i].name, saved:true})
+        if(props.singerQueue !== undefined && props.singerQueue[i] !== undefined){
+            all_singers.push({id: props.singerQueue[i].id, name: props.singerQueue[i].name, saved:true})
         }
         else {
             let random = Math.floor(Math.random() * 1000)
@@ -27,15 +27,15 @@ const AddSingersComponent = (props) => {
     const [singers, setSingers] = useState([])
     const [random, setRandom] = useState(0)
 
-    useEffect(()=>{setSingers(props.queue)},[props.queue])
+    useEffect(()=>{setSingers(props.singerQueue)},[props.singerQueue])
 
     const addSinger = (item) => {
-        let queue = singers
+        let singerQueue = singers
 
-        let match = queue.find(a => a.id === parseInt(item.id))
+        let match = singerQueue.find(a => a.id === parseInt(item.id))
 
         if(match !== undefined){
-            queue = queue.filter(a => a !== match)
+            singerQueue = singerQueue.filter(a => a !== match)
         }
 
         if(item.value.trim() !== ''){
@@ -44,17 +44,17 @@ const AddSingersComponent = (props) => {
                 name: item.value.trim(),
                 saved: true
             }
-            queue.push(singer)
-            setSingers(queue)
-            return props.saveSingers(queue)
+            singerQueue.push(singer)
+            setSingers(singerQueue)
+            return props.saveSingers(singerQueue)
         }
     }
 
     const removeSinger = (id) => {
-        let queue = singers.filter(a => a.id !== id)
+        let singerQueue = singers.filter(a => a.id !== id)
         let element = document.getElementById(id)
         element.value = ''
-        return props.saveSingers(queue)
+        return props.saveSingers(singerQueue)
     }
 
     const clearSingers = () => {
@@ -96,7 +96,7 @@ const AddSingersComponent = (props) => {
                             placeholder={item ? item.name: `Singer ${index}`}
                         />
                         {item.saved
-                            ? <i id={item ? item.id : index} onClick={() => removeSinger(item.id)}>Remove</i>
+                            ? <p class="remove-icon" id={item ? item.id : index} onClick={() => removeSinger(item.id)}>X</p>
                             : null
                         }
                         <br/>

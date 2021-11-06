@@ -34,9 +34,9 @@ class App extends React.Component {
       searchType: 'tag',
       trackList: [],
       singerAmount: 3,
-      queue: [],
+      singerQueue: [],
       currentSinger: '',
-      index: 0,
+      currentSingerIndex: 0,
       updateCounter: '',
       modalVisible: false,
       message: {
@@ -46,7 +46,7 @@ class App extends React.Component {
         timer: 0,
       },
       errorLimit: 5,
-      apiError: false,
+      youtubeApiError: false,
       errorCounter: 0,
     }
 
@@ -108,26 +108,26 @@ class App extends React.Component {
 
   saveSingers = (singers) => {
       this.setState({
-        queue: singers
+        singerQueue: singers
       })
   }
 
   getSinger = ()  => {
-    if (this.state.queue.length > 0){
-      let index = this.state.index
+    if (this.state.singerQueue.length > 0){
+      let index = this.state.currentSingerIndex
       if (this.state.currentSinger === ''){
-        index = Math.floor(Math.random() * this.state.queue.length)
+        index = Math.floor(Math.random() * this.state.singerQueue.length)
       }
       else {
         index = index + 1
-        if (index > this.state.queue.length - 1){
+        if (index > this.state.singerQueue.length - 1){
           index = 0
         }
       }
-      this.setState({ currentSinger: this.state.queue[index], index: index})
+      this.setState({ currentSinger: this.state.singerQueue[index], currentSingerIndex: index})
     }
     else {
-      this.setState({ currentSinger: '', index: 0})
+      this.setState({ currentSinger: '', currentSingerIndex: 0})
     }
   }
 
@@ -138,7 +138,7 @@ class App extends React.Component {
 
     let message = `Nice job! `
 
-    if(this.state.queue.length > 1){
+    if(this.state.singerQueue.length > 1){
       message += `Next singer: ${this.state.currentSinger.name}`
     }
 
@@ -172,8 +172,8 @@ class App extends React.Component {
               updateSearchParam={this.updateSearchParam.bind(this)}
               fetchTracklist={this.fetchTracklist.bind(this)}
               getSong={this.getSong.bind(this)}
-              queue={this.state.queue}
-              apiError={this.state.apiError}
+              singerQueue={this.state.singerQueue}
+              youtubeApiError={this.state.youtubeApiError}
               trackList={this.state.trackList}
             />
           )} />
@@ -182,7 +182,7 @@ class App extends React.Component {
               singerAmount={this.state.singerAmount}
               addSingerAmount={this.addSingerAmount.bind(this)}
               ReduceSingerAmount={this.ReduceSingerAmount.bind(this)}
-              queue={this.state.queue}
+              singerQueue={this.state.singerQueue}
               saveSingers={this.saveSingers.bind(this)}
             />
           )} />
@@ -196,14 +196,13 @@ class App extends React.Component {
               updateSong={this.updateSong.bind(this)}
               updateCounter={this.state.updateCounter}
               getNewSingerAndSong={this.getNewSingerAndSong.bind(this)}
-              getSimilarTracksFromAPI={this.getSimilarTracksFromAPI.bind(this)}
             />
           )} />
           {this.state.modalVisible
             ? <MessageComponent
               message={this.state.message}
               setMessageModal={this.setMessageModal.bind(this)}
-              apiError={this.state.apiError}
+              youtubeApiError={this.state.youtubeApiError}
               getSong={this.getSong.bind(this)}
             />
             : null
@@ -233,7 +232,7 @@ class App extends React.Component {
   }
 
   fetchTracklist = (value=false) => {
-    if(this.state.apiError){
+    if(this.state.youtubeApiError){
       return this.fetchTracklistFromDatabase()
     }
     else {
@@ -341,7 +340,7 @@ class App extends React.Component {
   }
 
   getSong = () => {
-    if(this.state.apiError === false){
+    if(this.state.youtubeApiError === false){
       if(this.state.searchParam === '' || this.state.searchParam === ' ' || this.state.searchParam === null || this.state.searchParam === undefined) {
         return this.setMessageModal('Empty input, try again', true);
       }
@@ -356,7 +355,7 @@ class App extends React.Component {
     }
 
     this.setMessageModal(false)
-    if(this.state.apiError && this.state.trackList.length > 0){
+    if(this.state.youtubeApiError && this.state.trackList.length > 0){
       return this.getSongFromTracklist()
     }
     else {
@@ -417,7 +416,7 @@ class App extends React.Component {
     if (errors >= this.state.errorLimit) {
       this.setMessageModal('Too many errors, try something else', true)
       this.setState({
-        apiError: true
+        youtubeApiError: true
       })
       return;
     }
@@ -433,7 +432,7 @@ class App extends React.Component {
           errors++
           this.setMessageModal('Youtube api error', true)
           this.setState({
-            apiError: true,
+            youtubeApiError: true,
             trackList: [],
             errorCounter: errors,
           })

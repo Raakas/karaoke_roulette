@@ -19,7 +19,7 @@ const MessageComponent = (props) => {
 
     return (
         <div className='message'>
-            {props.apiError || props.message.error
+            {props.youtubeApiError || props.message.error
                 ? null
                 : <p className="close" onClick={() => props.setMessageModal(false)}>X</p>
             }
@@ -34,7 +34,7 @@ const MessageComponent = (props) => {
                 <Link to='start' onClick={() => props.setMessageModal(false)}>
                     <button className='button button-grey'>Back</button>
                 </Link>
-                {props.apiError || props.message.error || seconds > 0
+                {props.youtubeApiError || props.message.error || seconds > 0
                     ? null
                     : <>
                         <button className='button button-grey' onClick={() => props.setMessageModal(false)}>Close</button>

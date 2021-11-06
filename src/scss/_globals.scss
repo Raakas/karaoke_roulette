@@ -37,6 +37,15 @@ p {
         margin: 0;
         font-weight: 400;
     }
+    
+    &.remove-icon {
+        font-size: 17pt;
+        margin: 13px 0px;
+        border: 1px solid $red;
+        padding: 5px 9px;
+        border-radius: 10px;
+        background-color: $red;
+    }
 }
 
 label {
