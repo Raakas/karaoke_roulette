@@ -20,8 +20,6 @@ const apiFetchService = new ApiFetchService()
 
 require('dotenv').config();
 
-const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
-const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed/';
 const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
 const Home = () => {
@@ -30,8 +28,6 @@ const Home = () => {
     const dispatch = useDispatch();
 
   const fetchTracklist = async () => {
-    console.log(' fetch track list')
-    console.log(state)
     let tracks = []
     
     if(state.searchParam === ''){
@@ -67,6 +63,7 @@ const Home = () => {
 
   const getSong = async () => {
     let source = ''
+    let counter = 0
     if(state.youtubeApiError === false){
       if(state.searchParam === '' || state.searchParam === ' ' || state.searchParam === null || state.searchParam === undefined) {
         //return this.setMessageModal('Empty input, try again', true);
@@ -99,20 +96,33 @@ const Home = () => {
       dispatch({ type: updateCounter, payload: 0 });
       source = await apiFetchService.getSongFromDatabase(title, state.searchParam)
     }
-    console.log(source)
-    console.log(title)
+
     if (source === undefined) {
-      // return getSongFromYoutube(title);
-    }
-    else {
+      let YoutubeResponse = await apiFetchService.getSongFromYoutube(title, state.trackList);
+      console.log('youtube response ', YoutubeResponse)
+      source = YoutubeResponse.source
       dispatch({
-        type: updateSource, payload: source.split('?')[0]
+        type: updateCounter, payload: YoutubeResponse.counter
       })
-      dispatch({
-        type: updateTitle, payload: title
-      })
-      //saveToDatabase(title, state.source)
     }
+    console.log('source ', source)
+    if(source === ''){
+      let tracks = trackList
+      tracks = tracks.filter(x => x.title !== title)
+      dispatch({
+        type: updateTrackList, payload: tracks,
+      })
+      //this.setMessageModal(title + ' not found')
+      return;
+    }
+
+    dispatch({
+      type: updateSource, payload: source.split('?')[0]
+    })
+    dispatch({
+      type: updateTitle, payload: title
+    })
+    //saveToDatabase(title, state.source)
   }
 
   return (

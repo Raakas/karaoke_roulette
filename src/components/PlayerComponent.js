@@ -1,8 +1,12 @@
-import React, { isValidElement } from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 const PlayerComponent = (props) => {
+  
+  const state = useSelector(initialState => initialState.data);
+  const dispatch = useDispatch();
 
   const [player, setPlayer] = useState(false)
 
@@ -31,13 +35,12 @@ const PlayerComponent = (props) => {
 
     return (
       <div className='player'>
-        <p>asd</p>
-        <p>{props.currentSinger.name}</p>
-        <h2>{props.title}</h2>
+        <p>{state.currentSinger.name}</p>
+        <h2>{state.title}</h2>
         <iframe 
           id='player-frame'
           title='youtube'
-          src={props.source + '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'}
+          src={state.source + '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'}
           frameBorder='0'
           allow=''
           allowFullScreen>
@@ -47,8 +50,8 @@ const PlayerComponent = (props) => {
           <Link to='start' onClick={props.resetSong}>
               <button className='button button-grey'>Back</button>
           </Link>
-          {props.updateCounter > 1
-            ? <a><button className='button button-blue' onClick={props.updateSong}>Update {props.updateCounter - 1}</button></a>
+          {state.updateCounter > 1
+            ? <a><button className='button button-blue' onClick={props.updateSong}>Update {state.updateCounter - 1}</button></a>
             : <a><button className='button button-disabled'>Update</button></a>
           }
           <a><button className='button button-orange' onClick={props.getSong}>New song</button></a>
