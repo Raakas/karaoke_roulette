@@ -3,7 +3,7 @@ import React from 'react'
 const DisplayTrackListComponent = (props) => {
     return (
         <div className="tracklist">
-            {props.trackList.length > 0
+            {props.trackList != undefined && props.trackList.length > 0
                 ? <>
                     <div className="tracklist__track">
                         <p className="text-micro">Woah! Keep in mind Youtube quality might be shit...</p>

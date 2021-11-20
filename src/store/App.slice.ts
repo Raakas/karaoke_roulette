@@ -1,43 +1,52 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 export interface Track {
-    title: string,
-    source: string
+    title: string;
 }
 export interface Singer {
-    name: string
+    name: string;
+}
+
+export interface Artist {
+  name: string;
+}
+
+export interface Song {
+  name: string;
+  artist: Artist;
+  source: string;
 }
 
 export interface Message {
-    title: string,
-    message: string,
-    errorMessage: boolean,
-    timer: number,
-    errorLimit: number,
-    youtubeApiError: boolean,
-    errorCounter: number,
+    title: string;
+    message: string;
+    errorMessage: boolean;
+    timer: number;
+    errorLimit: number;
+    youtubeApiError: boolean;
+    errorCounter: number;
 }
 export interface AppState {
-  value: number,
-    title: string,
-    source: string,
-    searchParam: string,
-    searchType?: string,
-    trackList: Array<Track>,
-    singerAmount: number,
-    singerQueue: Array<Singer>,
-    currentSinger: string,
-    currentSingerIndex: number,
-    updateCounter: number,
-    modalVisible: boolean,
-    message: Message
+    value: number;
+    title: string;
+    source: string;
+    searchParam: string;
+    searchType: string;
+    trackList: Array<Track>;
+    singerAmount: number;
+    singerQueue: Array<Singer>;
+    currentSinger: string;
+    currentSingerIndex: number;
+    updateCounter: number;
+    modalVisible: boolean;
+    message: Message;
 }
 
 const initialState: AppState = {
-  value: 0,
-  title: '',
-  source: '',
+    value: 0,
+    title: '',
+    source: '',
     searchParam: '',
-    searchType: '',
+    searchType: 'tag',
     trackList: [],
     singerAmount: 3,
     singerQueue: [],
@@ -46,38 +55,34 @@ const initialState: AppState = {
     updateCounter: 0,
     modalVisible: false,
     message: {
-    title: '',
-    message: '',
-    errorMessage: false,
-    timer: 0,
-    errorLimit: 0,
-    youtubeApiError: false,
-    errorCounter: 0,
+      title: '',
+      message: '',
+      errorMessage: false,
+      timer: 0,
+      errorLimit: 0,
+      youtubeApiError: false,
+      errorCounter: 0,
     }
-
 }
 
-export const stateSlice = createSlice({
-  name: 'state',
+export const stateSlice: any = createSlice({
+  name: 'data',
   initialState,
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1
+    updateSearchParam: (state, action: PayloadAction<string>) => {
+      state.searchParam = action.payload
     },
-    decrement: (state) => {
-      state.value -= 1
+    updateSearchType: (state, action: PayloadAction<string>) => {
+      state.searchType = action.payload;
     },
-    incrementByAmount: (state, action: PayloadAction<number>) => {
-      state.value += action.payload
+    updateTrackList: (state, action: PayloadAction<Array<Track>>) => {
+      console.log(action.payload)
+      state.trackList = [...action.payload]
     },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = stateSlice.actions
+export const { increment, decrement, incrementByAmount, updateSearchParam, updateSearchType, updateTrackList } = stateSlice.actions
 
 export default stateSlice.reducer

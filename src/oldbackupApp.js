@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/firestore'
-import StartComponent from './components/StartComponent';
+import StartComponent from './components/StartComponentOld';
 import PlayerComponent from './components/PlayerComponent';
 import AddSingersComponent from './components/AddSingersComponent';
 import MessageComponent from './components/MessageComponent';

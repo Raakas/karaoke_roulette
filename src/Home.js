@@ -9,6 +9,10 @@ import AddSingersComponent from './components/AddSingersComponent';
 import MessageComponent from './components/MessageComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import './app.scss'
+import {ApiFetchService} from './services/fetchService';
+import { updateTrackList, Track } from './store/App.slice'
+
+const apiFetchService = new ApiFetchService()
 
 // const dispatch = useDispatch();
 //  const count = useSelector((state: RootState) => state.counter.value)
@@ -31,22 +35,44 @@ firebase.initializeApp({
 const db = firebase.firestore();
 
 const Home = () => {
-    const state = useSelector(state => state);
+    const state = useSelector(state => state.data);
     const dispatch = useDispatch();
 
-  const fetchTracklist = (value=false) => {
+  const fetchTracklist = async () => {
+    console.log(' fetch track list')
+    console.log(state)
+    let tracks = []
+    
+    if(state.searchParam === ''){
+      console.log('Empty input, try again')
+      //this.setMessageModal('Empty input, try again', true)
+      return;
+    }
+
     if(state.youtubeApiError){
-      //return fetchTracklistFromDatabase()
+      //tracks = fetchTracklistFromDatabase()
     }
     else if(state.title && state.source){
       let split = state.title.split(',')
       let artist = split[0]
       let track = split[1]
-      //return getSimilarTracksFromAPI(artist, track)
+      //tracks =  getSimilarTracksFromAPI(artist, track)
     }
     else {
-      //return fetchTracklistFromAPI(value)
+      tracks = await apiFetchService.fetchTracklistFromAPI(state.searchParam, state.searchType).then(result => result);
     }
+    console.log('home ', tracks)
+
+    if(tracks.length <= 0){
+      console.log('No tracks found from LastFM API, try again')
+      //this.setMessageModal('No tracks found from LastFM API, try again', true)
+      return;
+    }
+
+    dispatch({
+      type: updateTrackList, payload: tracks
+    })
+
   }
   
   const removeTrack = (index) => {
@@ -86,9 +112,9 @@ const Home = () => {
       <Routes>
         <Route path='/' element={
           <StartComponent
-          fetchTracklist={fetchTracklist}
-          removeTrack={removeTrack}
-          getSong={getSong}
+            fetchTracklist={fetchTracklist}
+            removeTrack={removeTrack}
+            getSong={getSong}
         />
         }>
         </Route>

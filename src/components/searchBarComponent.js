@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { updateSearchParam } from '../store/App.slice';
 
 const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
@@ -9,16 +10,14 @@ const SearchBar = (props) => {
     const state = useSelector(initialState => initialState);
     const dispatch = useDispatch();
 
-    const updateSearchParam = (event) => {
+    const updateSearchParameter = (event) => {
         if(event === undefined || event === ''){
           return;
         }
     
         let string = event.target ? event.target.value.toLowerCase().trim() : event
-    
-        dispatch({
-          searchParam: string
-        })
+
+        dispatch({type: updateSearchParam, payload: string  })
     
         if(string === ''){
           dispatch({
@@ -28,11 +27,10 @@ const SearchBar = (props) => {
       }
 
     const [searchMatches, setSearchMatches] = useState([]);
-    const [query, setQuery] = useState('')
 
     useEffect(()=>{
         resetQuery();
-    },[props.searchType])
+    },[state.searchType])
 
     const getQueryParameter = (value) => {
         if (value === '' || value === ' ' || value === null || value === undefined) {
@@ -42,10 +40,10 @@ const SearchBar = (props) => {
             let results = searchMatches.filter(a => a.name.toLowerCase().includes(value.toLowerCase()))
             setSearchMatches(results)
         }
-        else if(value.length > query.length){
+        else {
             fetchSearcResultsFromAPI(value)
         }
-        updateSearchParam(value)
+        updateSearchParameter(value)
     }
 
     const fetchSearcResultsFromAPI = async (value) => {
@@ -89,15 +87,14 @@ const SearchBar = (props) => {
     const setSearchResult = (result) => {
         setSearchMatches([])
         document.getElementById('song-input').value = result
-        updateSearchParam(result)
+        updateSearchParameter(result)
         props.fetchTracklist(result)
     }
 
     const resetQuery = () => {
-        setQuery('')
         setSearchMatches([])
         document.getElementById('song-input').value = ''
-        updateSearchParam('')
+        updateSearchParameter('')
     }
 
     return (
@@ -105,19 +102,24 @@ const SearchBar = (props) => {
             <input 
                 id='song-input'
                 type='text' 
-                value={props.value} 
+                value={state.searchParam} 
                 onChange={(e) => getQueryParameter(e.target.value)} 
                 placeholder={`Type in ${props.searchType === 'tag' ? 'genre' : 'artist'}`}
             />
-            {query 
+            {state.searchParam 
                 ? <a className="reset-button" onClick={() => resetQuery()}>X</a> 
                 : null
             }
             {searchMatches &&
                 <div className="dropdown">
-                    <div class="results">
+                    <div className="results">
                         {searchMatches.map(item => (
-                            <p className="text-tiny" onClick={() => setSearchResult(item.name)}>{item.name}</p>
+                            <p 
+                                className="text-tiny" 
+                                key={item.name} onClick={() => setSearchResult(item.name)}
+                            >
+                                {item.name}
+                            </p>
                         ))}
                     </div>
                 </div>

@@ -10,6 +10,7 @@ const PlayerComponent = (props) => {
     setTimeout(() => {
       // use timeout so the DOM iframe loads before events are added
       let pl = new window.YT.Player('player-frame', {
+        playerVars: { 'autoplay': 1, 'controls': 0 },
         events: {
           'onReady': onPlayerReady,
           'onStateChange': onPlayerStateChange
