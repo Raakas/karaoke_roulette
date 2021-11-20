@@ -1,7 +1,9 @@
 import React, { useState} from 'react';
+import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
 import { updateSearchType } from '../store/App.slice'
 import SearchBar from './searchBarComponent';
+import DisplayTrackListComponent from './DisplayTrackListComponent';
 
 const StartComponent = (props) => {
 
@@ -59,8 +61,17 @@ const StartComponent = (props) => {
                 {state.searchParam
                     ? <a><button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button></a>
                     : <a><button className='button button-disabled'>Get tracklist</button></a>
-                }                
+                }
+                {state.trackList.length > 0
+                    ? <Link to="player" onClick={() => props.getSong()}>
+                        <button className='button button-glory'>Sing</button>
+                    </Link>
+                    : <a><button className='button button-disabled'>Sing</button></a>
+                }           
                 </div>
+            </div>
+            <div className="start__sidebar__right">
+                <DisplayTrackListComponent />
             </div>
         </div>
     )

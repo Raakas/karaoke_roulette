@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, Switch } from 'react-router-dom';
-import firebase from 'firebase/compat/app'
-import 'firebase/compat/firestore'
+import { Routes, Route } from 'react-router-dom';
 import StartComponent from './components/StartComponent';
 import PlayerComponent from './components/PlayerComponent';
 import AddSingersComponent from './components/AddSingersComponent';
@@ -10,7 +8,7 @@ import MessageComponent from './components/MessageComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import './app.scss'
 import {ApiFetchService} from './services/fetchService';
-import { updateTrackList, Track } from './store/App.slice'
+import { updateTrackList, updateCounter, updateSource, updateTitle } from './store/App.slice';
 
 const apiFetchService = new ApiFetchService()
 
@@ -26,16 +24,9 @@ const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_URL_EMBED = 'https://www.youtube.com/embed/';
 const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
-firebase.initializeApp({
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID
-})
-
-const db = firebase.firestore();
-
 const Home = () => {
     const state = useSelector(state => state.data);
+    const trackList = useSelector(state => state.data.trackList);
     const dispatch = useDispatch();
 
   const fetchTracklist = async () => {
@@ -61,7 +52,6 @@ const Home = () => {
     else {
       tracks = await apiFetchService.fetchTracklistFromAPI(state.searchParam, state.searchType).then(result => result);
     }
-    console.log('home ', tracks)
 
     if(tracks.length <= 0){
       console.log('No tracks found from LastFM API, try again')
@@ -72,38 +62,56 @@ const Home = () => {
     dispatch({
       type: updateTrackList, payload: tracks
     })
-
-  }
-  
-  const removeTrack = (index) => {
-    let results = state.trackList
-    results.splice(index, 1)
-    this.setState({
-      trackList: results
-    })
+    return tracks
   }
 
-  const getSong = () => {
+  const getSong = async () => {
+    let source = ''
     if(state.youtubeApiError === false){
       if(state.searchParam === '' || state.searchParam === ' ' || state.searchParam === null || state.searchParam === undefined) {
-        return this.setMessageModal('Empty input, try again', true);
+        //return this.setMessageModal('Empty input, try again', true);
       }
     }
 
-    if(state.trackList.length <= 1){
-      this.fetchTracklist()
+    let title = ''
+
+    if(trackList.length <= 1){
+      const refetch = await fetchTracklist()
+      if(refetch.length != 0){
+        let index = Math.floor(Math.random() * refetch.length)
+        title = refetch[index]
+      }
+    }
+    else {
+      let index = Math.floor(Math.random() * trackList.length)
+      title = trackList[index]
     }
 
     if(state.modalVisible === false){
       //getSinger()
     }
 
-    this.setMessageModal(false)
-    if(state.youtubeApiError && state.trackList.length > 0){
+    //this.setMessageModal(false)
+    if(state.youtubeApiError && trackList.length > 0){
       //return getSongFromTracklist()
     }
     else {
-      //return getSongFromDatabase()
+      dispatch({ type: updateCounter, payload: 0 });
+      source = await apiFetchService.getSongFromDatabase(title, state.searchParam)
+    }
+    console.log(source)
+    console.log(title)
+    if (source === undefined) {
+      // return getSongFromYoutube(title);
+    }
+    else {
+      dispatch({
+        type: updateSource, payload: source.split('?')[0]
+      })
+      dispatch({
+        type: updateTitle, payload: title
+      })
+      //saveToDatabase(title, state.source)
     }
   }
 
@@ -113,11 +121,15 @@ const Home = () => {
         <Route path='/' element={
           <StartComponent
             fetchTracklist={fetchTracklist}
-            removeTrack={removeTrack}
             getSong={getSong}
-        />
-        }>
-        </Route>
+          />
+        } />
+        <Route path='/player' element={
+          <PlayerComponent 
+            getSong={getSong}
+          />
+        }/>
+
       </Routes>
     </div>
   );

@@ -31,6 +31,7 @@ const PlayerComponent = (props) => {
 
     return (
       <div className='player'>
+        <p>asd</p>
         <p>{props.currentSinger.name}</p>
         <h2>{props.title}</h2>
         <iframe 

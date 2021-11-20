@@ -1,4 +1,4 @@
-import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 export interface Track {
     title: string;
 }
@@ -76,13 +76,21 @@ export const stateSlice: any = createSlice({
       state.searchType = action.payload;
     },
     updateTrackList: (state, action: PayloadAction<Array<Track>>) => {
-      console.log(action.payload)
       state.trackList = [...action.payload]
     },
+    updateCounter: (state, action: PayloadAction<number>) => {
+      state.updateCounter = action.payload;
+    },
+    updateSource: (state, action: PayloadAction<string>) => {
+      state.source = action.payload;
+    },
+    updateTitle: (state, action: PayloadAction<string>) => {
+      state.title = action.payload;
+    }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount, updateSearchParam, updateSearchType, updateTrackList } = stateSlice.actions
+export const { increment, decrement, incrementByAmount, updateSearchParam, updateSearchType, updateTrackList, updateCounter, updateSource, updateTitle } = stateSlice.actions
 
 export default stateSlice.reducer
