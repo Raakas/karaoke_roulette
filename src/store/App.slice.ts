@@ -53,7 +53,6 @@ const initialState: AppState = {
     errorLimit: 0,
     youtubeApiError: false,
     errorCounter: 0,
-
     }
 
 }

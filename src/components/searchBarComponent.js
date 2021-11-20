@@ -1,9 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 
 const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/';
 
 const SearchBar = (props) => {
+    
+    const state = useSelector(initialState => initialState);
+    const dispatch = useDispatch();
+
+    const updateSearchParam = (event) => {
+        if(event === undefined || event === ''){
+          return;
+        }
+    
+        let string = event.target ? event.target.value.toLowerCase().trim() : event
+    
+        dispatch({
+          searchParam: string
+        })
+    
+        if(string === ''){
+          dispatch({
+            trackList: []
+          })
+        }
+      }
 
     const [searchMatches, setSearchMatches] = useState([]);
     const [query, setQuery] = useState('')
@@ -23,7 +45,7 @@ const SearchBar = (props) => {
         else if(value.length > query.length){
             fetchSearcResultsFromAPI(value)
         }
-        props.updateSearchParam(value)
+        updateSearchParam(value)
     }
 
     const fetchSearcResultsFromAPI = async (value) => {
@@ -67,7 +89,7 @@ const SearchBar = (props) => {
     const setSearchResult = (result) => {
         setSearchMatches([])
         document.getElementById('song-input').value = result
-        props.updateSearchParam(result)
+        updateSearchParam(result)
         props.fetchTracklist(result)
     }
 
@@ -75,7 +97,7 @@ const SearchBar = (props) => {
         setQuery('')
         setSearchMatches([])
         document.getElementById('song-input').value = ''
-        props.updateSearchParam('')
+        updateSearchParam('')
     }
 
     return (

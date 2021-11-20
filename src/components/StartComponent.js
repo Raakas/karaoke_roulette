@@ -3,8 +3,22 @@ import {Link} from 'react-router-dom';
 import CurrentSingersComponent from './CurrentSingersComponent';
 import DisplayTrackListComponent from './DisplayTrackListComponent';
 import SearchBar from './searchBarComponent';
+import { useSelector, useDispatch } from 'react-redux';
 
 const StartComponent = (props) => {
+
+    const state = useSelector(initialState => initialState);
+    const searchParam = state.searchParam;
+    const dispatch = useDispatch();
+
+    const updateSearchType = (event) => {
+        let string = event.target.value.toLowerCase()
+
+        dispatch({
+            searchType: string
+        })
+    }
+
     return (
         <div className='start'>
             <div className="start__sidebar__left">
@@ -12,10 +26,10 @@ const StartComponent = (props) => {
             <div className="start__center">
                 <h1>Karaoke Roulette</h1>
                 <p>The random karaoke party machine</p>
-                {props.singerQueue.length > 0 && <CurrentSingersComponent singerQueue={props.singerQueue} />}
+                {state.singerQueue.length > 0 && <CurrentSingersComponent singerQueue={state.singerQueue} />}
                 <br />
                 <div className="start-container">
-                    {props.youtubeApiError
+                    {state.youtubeApiError
                         ? <p>YouTube API unavailable :( Sing random songs from database.</p>
                         : <>
                             <div className="start__center">
@@ -25,8 +39,8 @@ const StartComponent = (props) => {
                                     type='radio' 
                                     name='artist-input'
                                     value='artist' 
-                                    onChange={event => props.updateSearchType(event)}
-                                    checked={props.searchType === 'artist'}
+                                    onChange={event => updateSearchType(event)}
+                                    checked={state.searchType === 'artist'}
                                 />
                                 <label htmlFor='tag-input'>Genre</label>
                                 <input 
@@ -34,14 +48,14 @@ const StartComponent = (props) => {
                                     type='radio' 
                                     name='tag-input'
                                     value='tag'
-                                    onChange={event => props.updateSearchType(event)}
-                                    checked={props.searchType === 'tag'}
+                                    onChange={event => updateSearchType(event)}
+                                    checked={state.searchType === 'tag'}
                                 />
                             </div>
                             <div className="start__center">
                                 <SearchBar 
                                     value={props.value}
-                                    type={props.searchType}
+                                    type={state.searchType}
                                     updateSearchParam={props.updateSearchParam}
                                     fetchTracklist={props.fetchTracklist}
                                 />
@@ -54,11 +68,11 @@ const StartComponent = (props) => {
                     <Link to='add-singers'>
                         <button className='button button-yellow'>Add singers</button>
                     </Link>
-                    {props.searchParam
+                    {searchParam
                         ? <a><button onClick={() => props.fetchTracklist()} className='button button-orange'>Get tracklist</button></a>
                         : <a><button className='button button-disabled'>Get tracklist</button></a>
                     }
-                    {props.trackList.length > 0
+                    {state.trackList.length > 0
                         ? <Link to="player" onClick={props.getSong}>
                             <button className='button button-glory'>Sing</button>
                         </Link>
@@ -67,7 +81,7 @@ const StartComponent = (props) => {
                 </div>
             </div>
             <div className="start__sidebar__right">
-                <DisplayTrackListComponent trackList={props.trackList} youtubeApiError={props.youtubeApiError} removeTrack={props.removeTrack}/>
+                <DisplayTrackListComponent trackList={state.trackList} youtubeApiError={state.youtubeApiError} removeTrack={props.removeTrack}/>
             </div>
         </div>
     )
