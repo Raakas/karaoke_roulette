@@ -79,7 +79,7 @@ class App extends React.Component {
     }
   }
 
-  updateSearchTypo(event) {
+  updateSearchType(event) {
     let string = event.target.value.toLowerCase()
 
     this.setState({
@@ -166,7 +166,7 @@ class App extends React.Component {
           )} />
           <Route path='/start' render={() => (
             <StartComponent
-              updateSearchTypo={this.updateSearchTypo.bind(this)}
+              updateSearchType={this.updateSearchType.bind(this)}
               searchType={this.state.searchType}
               searchParam={this.state.searchParam}
               updateSearchParam={this.updateSearchParam.bind(this)}

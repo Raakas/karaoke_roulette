@@ -41,7 +41,7 @@ const StartComponent = (props) => {
                             <div className="start__center">
                                 <SearchBar 
                                     value={props.value}
-                                    type={props.searchType}
+                                    searchType={props.searchType}
                                     updateSearchParam={props.updateSearchParam}
                                     fetchTracklist={props.fetchTracklist}
                                 />
