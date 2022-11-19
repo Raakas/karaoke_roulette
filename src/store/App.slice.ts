@@ -66,6 +66,7 @@ export interface AppState {
   youtubeApiError: boolean
   errorCounter: number
   errorLimit: number
+  videoPlayerSaveToDatabaseTimer: number
 }
 
 const initialState = {
@@ -84,6 +85,7 @@ const initialState = {
   youtubeApiError: false,
   errorCounter: 0,
   errorLimit: 3,
+  videoPlayerSaveToDatabaseTimer: 30, // TODO: make global setting type
   message: {
     title: '',
     message: '',

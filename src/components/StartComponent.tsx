@@ -49,7 +49,6 @@ const StartComponent = () => {
         let sourceUrl: string = ''
         let songTitle: string = ''
         let index: number = 0
-        let foundSongFromDatabase = false
 
         if (youtubeApiError === false) {
             if (!searchParam.length || searchParam === null || searchParam === undefined) {
@@ -84,7 +83,6 @@ const StartComponent = () => {
         else {
             dispatch({ type: updateYoutubeVideoCounter, payload: 0 })
             sourceUrl = await apiFetchService.getSongFromOldDatabase(songTitle, searchParam)
-            foundSongFromDatabase = true
         }
 
         if (!!sourceUrl === false && youtubeApiError === false) {
@@ -123,22 +121,18 @@ const StartComponent = () => {
         dispatch({ type: updateTitle, payload: songTitle })
         dispatch({ type: updateSource, payload: sourceUrl.split('?')[0] })
 
-        if(foundSongFromDatabase = false){
-            saveSongToDatabase(songTitle, sourceUrl)
-        }
+        //saveSongToDatabase(songTitle, sourceUrl)
 
-        else {
-            dispatch({ type: resetErrorCounter })
-            setView('video')
-        }
+        dispatch({ type: resetErrorCounter })
+        setView('video')
     }
 
     const saveSongToDatabase = async (songTitle: string, sourceUrl: string ) => {
         let response: FirestoreError = await apiFetchService.saveToDatabase(songTitle, sourceUrl, searchType, searchParam)
 
         if (response.error) {
+            console.log(response.error)
             dispatch({ type: increaseErrorCount })
-            //setMessageModal(response.message, true)
         }
     }
 
@@ -181,6 +175,7 @@ const StartComponent = () => {
                     getSong={GetSong} 
                     resetAndReturnViewToSearch={resetSongAndTracklistAndReturn}
                     updateYoutubeSource={updateYoutubeSource} 
+                    saveSongToDatabase={saveSongToDatabase}
                 />
             }
         </>

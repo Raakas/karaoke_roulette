@@ -163,8 +163,8 @@ export class ApiFetchService {
   }
 
   saveToDatabase = (songTitle: string, source: string, searchType: string, searchParam: string): Promise<FirestoreError> => {
-    if(!!songTitle === false || !!source === false || !!searchParam === false){
-      return Promise.resolve({ error: false, message: '' })
+    if(!!songTitle === false || !!source === false || !!searchParam === false || !!searchType === false){
+      return Promise.resolve({ error: false, message: 'Missing parameter' })
     }
     const db = firebase.firestore()
 
