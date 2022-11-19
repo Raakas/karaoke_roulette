@@ -83,7 +83,7 @@ const StartComponent = () => {
         }
         else {
             dispatch({ type: updateYoutubeVideoCounter, payload: 0 })
-            sourceUrl = await apiFetchService.getSongFromDatabase(songTitle, searchParam)
+            sourceUrl = await apiFetchService.getSongFromOldDatabase(songTitle, searchParam)
             foundSongFromDatabase = true
         }
 

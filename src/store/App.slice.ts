@@ -146,10 +146,6 @@ export const stateSlice = createSlice({
     updateSingerAmount: (state: AppState, action: PayloadAction<number>) => {
       state.singerAmount = action.payload
     },
-    updateCurrentsingerAndIndex: (state: AppState, action: PayloadAction<CurrentSinger>) => {
-      state.currentSinger = action.payload.currentSinger
-      state.currentSingerIndex += action.payload.currentSingerIndex
-    },
     clearSingers: (state: AppState, action: PayloadAction<boolean>) => {
       if (action.payload) state.singerQueue = []
     },
@@ -205,7 +201,6 @@ export const {
   updateSource,
   updateTitle,
   getNewSinger,
-  updateCurrentsingerAndIndex,
   updateSetMessage,
   updateSingers,
   clearSingers,

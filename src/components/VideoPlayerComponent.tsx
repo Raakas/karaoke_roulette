@@ -34,7 +34,7 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
     }
   }
 
-  const onPlayerError = (event: any) => {
+  const onPlayerError = () => {
     return getSong(false)
   }
 

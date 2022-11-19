@@ -56,7 +56,9 @@ const SearchBar = () => {
         }
         else if (value.length > 6) {
             let results
-            if (searchMatches && searchMatches.length > 0) results = searchMatches?.filter((a: LastFmApiResponse) => a.name.toLowerCase().includes(value.toLowerCase()))
+            if (searchMatches && searchMatches.length > 0){ 
+                results = searchMatches?.filter((a: LastFmApiResponse) => a.name.toLowerCase().includes(value.toLowerCase()))
+            }
             setSearchMatches(results)
         }
         else {
