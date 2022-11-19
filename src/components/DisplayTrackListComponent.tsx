@@ -1,15 +1,15 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux';
-import { updateTrackList } from '../store/App.slice';
+import { useSelector, useDispatch } from 'react-redux'
+import { updateTrackList, Song } from '../store/App.slice'
+import { RootState } from '../store/store'
 
 const DisplayTrackListComponent = () => {
-    
-    const state = useSelector(initialState => initialState.data);
-    const dispatch = useDispatch();
+    //todo: state.apiError ? Object.keys(item)[0] : item eli errorille oma state
+    const state = useSelector((state: RootState) => state.data)
+    const dispatch = useDispatch()
 
-    const removeTrack = (index) => {
+    const removeTrack = (index: number) => {
         let results = state.trackList
-        results = [...results.slice(0, index), ...results.slice(index + 1)];
+        results = [...results.slice(0, index), ...results.slice(index + 1)]
         dispatch({
             type: updateTrackList, payload: results
         })
@@ -22,12 +22,12 @@ const DisplayTrackListComponent = () => {
                     <div className="tracklist__track">
                         <p className="text-micro">Woah! Keep in mind Youtube quality might be shit...</p>
                     </div>
-                    <br/>
-                    {state.trackList.map((item, index) => (
-                        <div className="tracklist__track">
+                    <br />
+                    {state.trackList.map((item: Song, index: number) => (
+                        <div className="tracklist__track" key={index}>
                             <p className="remove-icon small" onClick={() => removeTrack(index)}>X</p>
-                            <p className="text-micro" key={index}>
-                                {state.apiError ? Object.keys(item)[0] : item}
+                            <p className="text-micro">
+                                {item.name}
                             </p>
                         </div>
                     ))}
