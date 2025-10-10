@@ -1,4 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { title } from 'process'
+import { RootState } from './store'
+import { Root } from 'react-dom/client'
 
 type CurrentSinger = {
   currentSinger: string
@@ -214,3 +217,29 @@ export const {
 } = stateSlice.actions
 
 export default stateSlice.reducer
+
+export const selectData = (state: RootState) => state.data
+
+export const selectTitle = (state: RootState) => selectData(state).title
+export const selectSource = (state: RootState) => selectData(state).source
+export const selectSearchParam = (state: RootState) => selectData(state).searchParam
+export const selectSearchType = (state: RootState) => selectData(state).searchType
+export const selectTrackList = (state: RootState) => selectData(state).trackList
+export const selectYoutubeSourceUrls = (state: RootState) => selectData(state).youtubeSourceUrls
+export const selectSingerAmount = (state: RootState) => selectData(state).singerAmount
+export const selectSingerQueue = (state: RootState) => selectData(state).singerQueue
+export const selectCurrentSinger = (state: RootState) => selectData(state).currentSinger
+export const selectCurrentSingerIndex = (state: RootState) => selectData(state).currentSingerIndex
+export const selectNextSinger = (state: RootState) => selectData(state).nextSinger
+export const selectYoutubeVideoCounter = (state: RootState) => selectData(state).YoutubeVideoCounter
+
+export const selectMessage = (state: RootState) => selectData(state).message
+export const selectTimer = (state: RootState) => selectMessage(state).timer
+
+export const selectYoutubeApiError = (state: RootState) => selectData(state).youtubeApiError
+export const selectErrorCounter = (state: RootState) => selectData(state).errorCounter
+export const selectErrorLimit = (state: RootState) => selectData(state).errorLimit
+export const selectVideoPlayerSaveToDatabaseTimer = (state: RootState) => selectData(state).videoPlayerSaveToDatabaseTimer
+
+
+

@@ -1,11 +1,28 @@
 import { useState, useEffect} from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../store/store'
-import { updateSetMessage } from '../store/App.slice'
+import { useDispatch } from 'react-redux'
+import { 
+  updateSetMessage,
+  selectTitle,
+  selectSource,
+  selectSingerQueue,
+  selectNextSinger,
+  selectVideoPlayerSaveToDatabaseTimer,
+  selectCurrentSinger,
+  selectYoutubeVideoCounter,
+ } from '../store/App.slice'
+import { useSelector } from 'react-redux'
 
 const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutubeSource, saveSongToDatabase }: any) => {
-  const state = useSelector((initialState: RootState) => initialState.data)
   const dispatch = useDispatch()
+
+  const title = useSelector(selectTitle)
+  const source = useSelector(selectSource)
+  const singerQueue = useSelector(selectSingerQueue)
+  const nextSinger = useSelector(selectNextSinger)
+  const videoPlayerSaveToDatabaseTimer = useSelector(selectVideoPlayerSaveToDatabaseTimer)
+  const currentSinger = useSelector(selectCurrentSinger)
+  const YoutubeVideoCounter = useSelector(selectYoutubeVideoCounter)
+
   const [seconds, setSeconds] = useState(0)
   const [useTimer, setUseTimer] = useState(true)
   const [ytPlayerState, setYtPlayerState] = useState(false)
@@ -43,7 +60,7 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
 
     if (event.data === 0) {
       getNewSingerAndSong()
-      saveSongToDatabase(state.title, state.source)
+      saveSongToDatabase(title, source)
       setTimerChanges()
     } 
     else {
@@ -65,8 +82,8 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
       timer,
     }
 
-    if (state.singerQueue.length > 1) {
-      popup_content.message += `Next singer: ${state.nextSinger}`
+    if (singerQueue.length > 1) {
+      popup_content.message += `Next singer: ${nextSinger}`
     }
     
     dispatch(updateSetMessage(popup_content))
@@ -109,19 +126,19 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
       }
   }, [seconds, useTimer])
 
-  if (seconds === state.videoPlayerSaveToDatabaseTimer){
-    saveSongToDatabase(state.title, state.source)
+  if (seconds === videoPlayerSaveToDatabaseTimer){
+    saveSongToDatabase(title, source)
     setTimerChanges()
   }
 
   return (
     <div className='player'>
-      <p>{state.currentSinger}</p>
-      <h2>{state.title}</h2>
+      <p>{currentSinger}</p>
+      <h2>{title}</h2>
       <iframe
         id='player-frame'
         title='youtube'
-        src={state.source + urlParams}
+        src={source + urlParams}
         frameBorder='0'
         allow=''
         allowFullScreen>
@@ -129,8 +146,8 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
       <br />
       <div className='buttons'>
         <button className='button button-grey' onClick={() => resetAndReturnViewToSearch()}>Back</button>
-        {state.YoutubeVideoCounter > 1
-          ? <button className='button button-blue' onClick={() => updateYoutubeSource()}>Update {state.YoutubeVideoCounter - 1}</button>
+        {YoutubeVideoCounter > 1
+          ? <button className='button button-blue' onClick={() => updateYoutubeSource()}>Update {YoutubeVideoCounter - 1}</button>
           : <button className='button button-disabled' onClick={() => updateYoutubeSource()}>Update</button>
         }
         <button className='button button-orange' onClick={() => getSong()}>New song</button>

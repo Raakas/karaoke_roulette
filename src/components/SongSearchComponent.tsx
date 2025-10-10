@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../store/store'
-import { updateSearchType, updateTrackList } from '../store/App.slice'
+import { selectData, updateSearchType, updateTrackList } from '../store/App.slice'
 
 import { ApiFetchService } from '../services/fetchService'
 
@@ -12,9 +11,9 @@ import CurrentSingersComponent from './CurrentSingersComponent'
 const apiFetchService = new ApiFetchService()
 
 const SongSearchComponent = ({ getSong }: any) => {
+    const state = useSelector(selectData)
 
-    const state = useSelector((state: RootState) => state.data)
-    const { searchType, searchParam, youtubeApiError, title, source, trackList } = { ...state, ...state.message }
+    const { searchType, searchParam, youtubeApiError, title, source, trackList } = state
 
     const dispatch = useDispatch()
 

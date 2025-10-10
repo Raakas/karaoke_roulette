@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { clearSingers, Singer, updateSingerAmount, updateSingers } from '../store/App.slice'
-import { RootState } from '../store/store'
+import { clearSingers, selectSingerAmount, selectSingerQueue, Singer, updateSingerAmount, updateSingers } from '../store/App.slice'
 
 const AddSingersComponent = () => {
-    const state = useSelector((initialState: RootState) => initialState.data)
     const dispatch = useDispatch()
+    
+    const singerAmount = useSelector(selectSingerAmount)
+    const singerQueue = useSelector(selectSingerQueue)
 
     const [singerPlaceHolders, setSingerPlaceHolders] = useState<Array<Singer>>([])
     const [random, setRandom] = useState<number>()
@@ -20,9 +21,9 @@ const AddSingersComponent = () => {
         let all_singers = []
         let i = 0
 
-        while(i < state.singerAmount){
-            if(state.singerQueue !== undefined && state.singerQueue[i] !== undefined){
-                let singer = state.singerQueue[i]
+        while(i < singerAmount){
+            if(singerQueue !== undefined && singerQueue[i] !== undefined){
+                let singer = singerQueue[i]
                 all_singers.push({id: singer.id, name: singer.name, saved:singer.saved})
             }
             else {
@@ -34,7 +35,7 @@ const AddSingersComponent = () => {
 
         all_singers = all_singers.sort((a: Singer, b: Singer) => a.id - b.id)
         setSingerPlaceHolders(all_singers)
-    }, [state.singerQueue, state.singerAmount])
+    }, [singerQueue, singerAmount])
 
     let unmotivating_catchphrases_for_the_curious = [
         `Really? What's the point!?`,
@@ -76,7 +77,7 @@ const AddSingersComponent = () => {
 
     const removeSinger = (id: any) => {
         let singerQueue
-        if (state.singerQueue) singerQueue = singerPlaceHolders.filter(a => a.id !== id)
+        if (singerQueue) singerQueue = singerPlaceHolders.filter(a => a.id !== id)
         if(!singerQueue) return
         dispatch(updateSingers(singerQueue))
     }
@@ -86,9 +87,9 @@ const AddSingersComponent = () => {
     }
 
     const removeSingersButton = () => {    
-        if (state.singerAmount >= 1) {
+        if (singerAmount >= 1) {
             let latest_singer_id = singerPlaceHolders[singerPlaceHolders.length - 1].id
-            let id_to_be_removed = state.singerAmount - 1
+            let id_to_be_removed = singerAmount - 1
 
             singerAmountUpdater(id_to_be_removed)
             removeSinger(latest_singer_id)
@@ -103,7 +104,7 @@ const AddSingersComponent = () => {
             <h1>Karaoke Roulette</h1>
             <p>Add singers: </p>
             <br />
-            {state.singerAmount > 0
+            {singerAmount > 0
                 ? singerPlaceHolders?.map((item, index) => (
                     <div key={index} className="singer-list">
                         <input
@@ -127,7 +128,7 @@ const AddSingersComponent = () => {
                     <button className="button button-yellow" onClick={() => removeSingersButton()}>
                         -
                     </button>
-                    <button className="button button-yellow" onClick={() => singerAmountUpdater(state.singerAmount + 1)}>
+                    <button className="button button-yellow" onClick={() => singerAmountUpdater(singerAmount + 1)}>
                         +
                     </button>
                 </div>

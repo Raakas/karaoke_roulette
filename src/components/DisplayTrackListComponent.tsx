@@ -1,27 +1,27 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { updateTrackList, Song } from '../store/App.slice'
-import { RootState } from '../store/store'
+import { updateTrackList, Song, selectTrackList } from '../store/App.slice'
 
 const DisplayTrackListComponent = () => {
     //todo: state.apiError ? Object.keys(item)[0] : item eli errorille oma state
-    const state = useSelector((state: RootState) => state.data)
+    const trackList = useSelector(selectTrackList)
+    
     const dispatch = useDispatch()
 
     const removeTrack = (index: number) => {
-        let results = state.trackList
+        let results = trackList
         results = [...results.slice(0, index), ...results.slice(index + 1)]
         dispatch(updateTrackList(results))
     }
 
     return (
         <div className="tracklist">
-            {state.trackList.length > 0
+            {trackList.length > 0
                 ? <>
                     <div className="tracklist__track">
                         <p className="text-micro">Woah! Keep in mind Youtube quality might be shit...</p>
                     </div>
                     <br />
-                    {state.trackList.map((item: Song, index: number) => (
+                    {trackList.map((item: Song, index: number) => (
                         <div className="tracklist__track" key={index}>
                             <p className="remove-icon small" onClick={() => removeTrack(index)}>X</p>
                             <p className="text-micro">

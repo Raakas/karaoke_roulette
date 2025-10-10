@@ -18,17 +18,17 @@ import {
     updateSearchParam,
     increaseErrorCount,
     resetErrorCounter,
-    getNewSinger
+    getNewSinger,
+    selectData
 } from "../store/App.slice"
-
-import { RootState } from "../store/store"
 
 const apiFetchService = new ApiFetchService()
 
 const StartComponent = () => {
+    const state = useSelector(selectData)
 
-    const state = useSelector((state: RootState) => state.data)
-    const { searchParam, youtubeApiError, trackList, source, searchType, title, errorCounter, errorLimit, youtubeSourceUrls } = { ...state, ...state.message }
+    const { searchParam, youtubeApiError, trackList, source, searchType, title, errorCounter, errorLimit, youtubeSourceUrls } = state
+
     const dispatch = useDispatch()
 
     const GetSong = async (get_new_singer=true) => {

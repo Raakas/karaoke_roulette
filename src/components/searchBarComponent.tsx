@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { LastFmApiResponse, updateSearchParam, updateTrackList } from '../store/App.slice'
+import { LastFmApiResponse, updateSearchParam, updateTrackList, selectSearchType, selectSearchParam } from '../store/App.slice'
 import { ApiFetchService } from '../services/fetchService'
-import { RootState } from '../store/store'
 
 const apiFetchService = new ApiFetchService()
 
 const SearchBar = () => {
-
-    const state = useSelector((initialState: RootState) => initialState.data)
     const dispatch = useDispatch()
+
+    const searchType = useSelector(selectSearchType)
+    const searchParam = useSelector(selectSearchParam)
+
     const [searchMatches, setSearchMatches] = useState<Array<LastFmApiResponse>>()
 
     const isEmpty = (param: string): boolean => !param || param.length === 0
@@ -34,7 +35,7 @@ const SearchBar = () => {
         }
         else {
 
-            await apiFetchService.searchBarAPI(value, state.searchType).then((result: any): Array<LastFmApiResponse> => {
+            await apiFetchService.searchBarAPI(value, searchType).then((result: any): Array<LastFmApiResponse> => {
                 setSearchMatches(result)
                 return result
             })
@@ -44,7 +45,7 @@ const SearchBar = () => {
     const setSearchResult = async (result: string) => {
         setSearchMatches([])
         updateSearchParameter(result)
-        const newTrackList = await apiFetchService.lastFmTrackFetcher(state.searchParam, state.searchType)
+        const newTrackList = await apiFetchService.lastFmTrackFetcher(searchParam, searchType)
         dispatch(updateTrackList(newTrackList))
     }
 
@@ -71,18 +72,18 @@ const SearchBar = () => {
 
     useEffect(() => {
         resetQuery()
-    }, [state.searchType])
+    }, [searchType])
 
     return (
         <>
             <input
                 id='song-input'
                 type='text'
-                value={state.searchParam}
+                value={searchParam}
                 onChange={(e) => getQueryParameter(e.target.value)}
-                placeholder={`Type in ${state.searchType === 'tag' ? 'genre' : 'artist'}`}
+                placeholder={`Type in ${searchType === 'tag' ? 'genre' : 'artist'}`}
             />
-            {state.searchParam
+            {searchParam
                 ? <a className="reset-button" onClick={() => resetQuery()}>X</a>
                 : null
             }
