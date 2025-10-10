@@ -106,16 +106,16 @@ export class ApiFetchService {
 
     if (youtubeApiError) {
       tracks = await this.fetchTracklistFromDatabase()
-    } else if (!searchParam || searchParam.length === 0) {
-      return []
+    } else if (searchParam && searchParam.length > 0) {
+      tracks = await this.lastFmTrackFetcher(searchParam, searchType)
     } else if (songTitle && source) {
+      // get similar tracks from api in case list runs out
       let artist_and_track = songTitle.split(',')
       let artist = artist_and_track[0]
       let track = artist_and_track[1]
-      //get similar tracks from api.
       tracks = await this.lastFmTrackFetcher(artist, track)
     } else {
-      tracks = await this.lastFmTrackFetcher(searchParam, searchType)
+      return []
     }
 
     if (tracks.length <= 0) {

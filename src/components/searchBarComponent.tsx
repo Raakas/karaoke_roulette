@@ -23,6 +23,7 @@ const SearchBar = () => {
 
   const updateSearchParameter = (event: any) => {
     if (isEmpty(event)) {
+      dispatch(updateSearchParam(''))
       return
     }
 

@@ -40,11 +40,10 @@ const SongSearchComponent = ({ getSong }: any) => {
 
   return (
     <div className="start">
-      <div className="start__sidebar__left"></div>
+      <div className="start__sidebar"></div>
       <div className="start__center">
         <h1>Karaoke Roulette</h1>
         <p>The random karaoke party machine</p>
-        <br />
         <CurrentSingersComponent />
         <div className="start-container">
           {youtubeApiError ? (
@@ -79,7 +78,6 @@ const SongSearchComponent = ({ getSong }: any) => {
             </>
           )}
         </div>
-        <br />
         <div className="buttons">
           <Link to="add-singers">
             <button className="button button-yellow">Add singers</button>
@@ -102,7 +100,7 @@ const SongSearchComponent = ({ getSong }: any) => {
           )}
         </div>
       </div>
-      <div className="start__sidebar__right">
+      <div className="start__sidebar">
         <DisplayTrackListComponent />
       </div>
     </div>

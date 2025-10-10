@@ -68,8 +68,9 @@ const StartComponent = () => {
     }
 
     if (trackList.length <= 1) {
+      // list is running out. Give empty search parameter so search will use title and source for similar songs.
       await apiFetchService
-        .fetchTracklist(searchParam, youtubeApiError, title, source, searchType)
+        .fetchTracklist('', youtubeApiError, title, source, searchType)
         .then((songs: Array<Song>) => {
           dispatch(updateTrackList(songs))
 

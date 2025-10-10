@@ -20,8 +20,8 @@ const App = () => {
           <Route path="/" element={<StartComponent />} />
           <Route path="/add-singers" element={<AddSingersComponent />} />
         </Routes>
+        <MessageComponent />
       </div>
-      <MessageComponent />
     </BrowserRouter>
   )
 }

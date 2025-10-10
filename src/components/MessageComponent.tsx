@@ -47,10 +47,12 @@ const MessageComponent = () => {
           X
         </p>
       )}
+
       <h2>{message.title}</h2>
       <p>{message.message}</p>
+
       {seconds === 0 ? null : <h1> {seconds}</h1>}
-      <br />
+
       <div className="buttons">
         <Link to="/" onClick={() => closeMessageModal()}>
           <button className="button button-grey">Back</button>
@@ -65,7 +67,6 @@ const MessageComponent = () => {
           </>
         )}
       </div>
-      <br />
     </div>
   )
 }
