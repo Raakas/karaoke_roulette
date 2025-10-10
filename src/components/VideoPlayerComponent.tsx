@@ -69,7 +69,7 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
       popup_content.message += `Next singer: ${state.nextSinger}`
     }
     
-    dispatch({type: updateSetMessage, payload: popup_content})
+    dispatch(updateSetMessage(popup_content))
 
     setTimeout(() => {
       return getSong()

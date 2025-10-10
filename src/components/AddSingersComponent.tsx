@@ -47,7 +47,7 @@ const AddSingersComponent = () => {
     ]
 
     const singerAmountUpdater = (amount: number) => {
-        dispatch({ type: updateSingerAmount, payload: amount })
+        dispatch(updateSingerAmount(amount))
     }
 
     const addSinger = (item: any) => {
@@ -69,7 +69,7 @@ const AddSingersComponent = () => {
                 }
                 singerQueue.push(singer)
 
-                dispatch({ type: updateSingers, payload: singerQueue.filter(x => x.name !== "") })
+                dispatch(updateSingers(singerQueue.filter(x => x.name !== "")))
             }
         }
     }
@@ -77,12 +77,12 @@ const AddSingersComponent = () => {
     const removeSinger = (id: any) => {
         let singerQueue
         if (state.singerQueue) singerQueue = singerPlaceHolders.filter(a => a.id !== id)
-
-        dispatch({ type: updateSingers, payload: singerQueue })
+        if(!singerQueue) return
+        dispatch(updateSingers(singerQueue))
     }
 
     const clearAllSingers = () => {
-        dispatch({ type: clearSingers, payload: true })
+        dispatch(clearSingers(true))
     }
 
     const removeSingersButton = () => {    

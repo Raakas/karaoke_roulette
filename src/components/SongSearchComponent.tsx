@@ -20,14 +20,12 @@ const SongSearchComponent = ({ getSong }: any) => {
 
     const updateType = (event: any) => {
         let eventValue: string = event.currentTarget.value.toLowerCase()
-        dispatch({
-            type: updateSearchType, payload: eventValue,
-        })
+        dispatch(updateSearchType(eventValue))
     }
 
     const getTracklistFromDatabase = async () => {
         let tracks = await apiFetchService.fetchTracklist(searchParam, youtubeApiError, title, source, searchType)
-        dispatch({ type: updateTrackList, payload: tracks })
+        dispatch(updateTrackList(tracks))
     }
 
     return (

@@ -20,12 +20,10 @@ const SearchBar = () => {
         }
 
         let searchParam: string = event.target ? event.target.value.toLowerCase().trim() : event
-        dispatch({ type: updateSearchParam, payload: searchParam })
+        dispatch(updateSearchParam(searchParam))
 
         if (isEmpty(searchParam)) {
-            dispatch({
-                type: updateTrackList, payload: []
-            })
+            dispatch(updateTrackList([]))
         }
     }
 
@@ -47,7 +45,7 @@ const SearchBar = () => {
         setSearchMatches([])
         updateSearchParameter(result)
         const newTrackList = await apiFetchService.lastFmTrackFetcher(state.searchParam, state.searchType)
-        dispatch({ type: updateTrackList, payload: newTrackList })
+        dispatch(updateTrackList(newTrackList))
     }
 
     const getQueryParameter = (value: string) => {

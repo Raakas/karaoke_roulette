@@ -35,15 +35,14 @@ const StartComponent = () => {
 
         const setMessageModal = (title?: string, error?: any) => {
 
-            dispatch({
-                type: updateSetMessage,
-                payload: {
-                    title: title,
+            dispatch(updateSetMessage(
+                {
+                    title: title || '',
                     message: '',
                     isErrorMessage: error,
                     timer: 0,
-                }
-            })
+                })
+            )
         }
 
         let sourceUrl: string = ''
@@ -59,9 +58,7 @@ const StartComponent = () => {
         if (trackList.length <= 1) {
             await apiFetchService.fetchTracklist(searchParam, youtubeApiError, title,
                 source, searchType).then((songs: Array<Song>) => {
-                    dispatch({
-                        type: updateTrackList, payload: songs
-                    })
+                    dispatch(updateTrackList(songs))
 
                     index = Math.floor(Math.random() * songs.length)
                     songTitle = songs[index].name
@@ -81,7 +78,7 @@ const StartComponent = () => {
             sourceUrl = track.source
         }
         else {
-            dispatch({ type: updateYoutubeVideoCounter, payload: 0 })
+            dispatch(updateYoutubeVideoCounter(0))
             sourceUrl = await apiFetchService.getSongFromOldDatabase(songTitle, searchParam)
         }
 
@@ -95,35 +92,35 @@ const StartComponent = () => {
 
             if (YoutubeResponse.error) {
                 setMessageModal(YoutubeResponse.message, true)
-                dispatch({ type: setYoutubeApiError, payload: true })
-                dispatch({ type: updateTrackList, payload: [] })
-                dispatch({ type: updateSearchParam, payload: '' })
+                dispatch(setYoutubeApiError(true))
+                dispatch(updateTrackList([]))
+                dispatch(updateSearchParam(''))
                 return
             }
 
             sourceUrl = YoutubeResponse.source
 
-            dispatch({ type: updateYoutubeVideoCounter, payload: YoutubeResponse.counter })
-            dispatch({type: setYoutubeUlrs, payload: YoutubeResponse.urls})
+            dispatch(updateYoutubeVideoCounter(YoutubeResponse.counter))
+            dispatch(setYoutubeUlrs(YoutubeResponse.urls))
         }
 
         if (sourceUrl === '') {
             let tracks = trackList
             tracks = tracks.filter(x => x.name !== songTitle)
-            dispatch({ type: updateTrackList, payload: tracks })
+            dispatch(updateTrackList(tracks))
             setMessageModal(songTitle + ' not found', true)
             return
         }
 
         if(get_new_singer){
-            dispatch({ type: getNewSinger })
+            dispatch(getNewSinger())
         }
-        dispatch({ type: updateTitle, payload: songTitle })
-        dispatch({ type: updateSource, payload: sourceUrl.split('?')[0] })
+        dispatch(updateTitle(songTitle))
+        dispatch(updateSource(sourceUrl.split('?')[0]))
 
         //saveSongToDatabase(songTitle, sourceUrl)
 
-        dispatch({ type: resetErrorCounter })
+        dispatch(resetErrorCounter())
         setView('video')
     }
 
@@ -132,7 +129,7 @@ const StartComponent = () => {
 
         if (response.error) {
             console.log(response.error)
-            dispatch({ type: increaseErrorCount })
+            dispatch(increaseErrorCount())
         }
     }
 
@@ -143,9 +140,9 @@ const StartComponent = () => {
         const updateCounter = youtubeSourceUrls.length
 
         if (!!source){
-            dispatch({ type: updateSource, payload: source })
-            dispatch({ type: updateYoutubeVideoCounter, payload: updateCounter })
-            dispatch({ type: setYoutubeUlrs, payload: sources })
+            dispatch(updateSource(source))
+            dispatch(updateYoutubeVideoCounter(updateCounter))
+            dispatch(setYoutubeUlrs(sources))
 
             saveSongToDatabase(title, source)
         }
@@ -154,14 +151,14 @@ const StartComponent = () => {
     const getSongFromTracklist = () => {
         let track = trackList[Math.floor(Math.random() * trackList.length)]
 
-        dispatch({ type: updateTitle, payload: track.name })
-        dispatch({ type: updateSource, payload: track.source })
+        dispatch(updateTitle(track.name))
+        dispatch(updateSource(track.source))
         setView('video')
         return track
     }
 
     const resetSongAndTracklistAndReturn = async () => {
-        dispatch({ type: resetSongAndTracklist, payload: true })
+        dispatch(resetSongAndTracklist(true))
         setView('search')
     }
 

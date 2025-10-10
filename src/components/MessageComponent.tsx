@@ -21,15 +21,12 @@ const MessageComponent = () => {
     }, [state.message.isErrorMessage, seconds])
 
     const closeMessageModal = () => {
-        dispatch({
-            type: updateSetMessage,
-            payload: {
+        dispatch(updateSetMessage({
                 title: '',
                 message: '',
                 isErrorMessage: false,
                 timer: 0,
-            }
-        })
+            }))
     }
 
     return (

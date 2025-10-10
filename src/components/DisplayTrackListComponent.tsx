@@ -10,9 +10,7 @@ const DisplayTrackListComponent = () => {
     const removeTrack = (index: number) => {
         let results = state.trackList
         results = [...results.slice(0, index), ...results.slice(index + 1)]
-        dispatch({
-            type: updateTrackList, payload: results
-        })
+        dispatch(updateTrackList(results))
     }
 
     return (
