@@ -128,7 +128,7 @@ export class ApiFetchService {
       // get similar tracks from api in case list runs out
       let artist_and_track = songTitle.split(',')
       let artist = artist_and_track[0]
-      let track = artist_and_track[1]
+      // let track = artist_and_track[1]
       tracks = await this.lastFmTrackFetcher(artist, searchType)
     } else {
       return []

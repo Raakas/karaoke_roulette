@@ -9,8 +9,7 @@ import {
   updateYoutubeVideoCounter,
   setYoutubeUlrs,
   updateSetMessage,
-  updateSource,
-  updateTitle,
+  updateCurrentSong,
   updateTrackList,
   resetSongAndTracklist,
   FirestoreError,
@@ -31,13 +30,14 @@ const StartComponent = () => {
     searchParam,
     youtubeApiError,
     trackList,
-    source,
+    currentSong,
     searchType,
-    title,
     errorCounter,
     errorLimit,
     youtubeSourceUrls,
   } = state
+
+  const { name, source } = currentSong
 
   const dispatch = useDispatch()
 
@@ -70,14 +70,14 @@ const StartComponent = () => {
     if (trackList.length <= 1) {
       // list is running out. Give empty search parameter so search will use title and source for similar songs.
       await apiFetchService
-        .fetchTracklist('', youtubeApiError, title, source, searchType)
+        .fetchTracklist('', youtubeApiError, name, source, searchType)
         .then((songs: Array<Song>) => {
           dispatch(updateTrackList(songs))
 
           index = Math.floor(Math.random() * songs.length)
           songTitle = songs[index].name
         })
-        .catch((error: Error) => console.log('error:', error))
+        .catch((error: Error) => console.error('error:', error))
     } else {
       index = Math.floor(Math.random() * trackList.length)
       songTitle = trackList[index].name
@@ -101,10 +101,10 @@ const StartComponent = () => {
       if (errorCounter >= errorLimit) {
         return setMessageModal(songTitle + ' not found, try something else')
       }
-
       let YoutubeResponse = await apiFetchService.getSongFromYoutube(songTitle)
 
       if (YoutubeResponse.error) {
+        console.error(YoutubeResponse.error)
         setMessageModal(YoutubeResponse.message, true)
         dispatch(setYoutubeApiError(true))
         dispatch(updateTrackList([]))
@@ -129,8 +129,12 @@ const StartComponent = () => {
     if (get_new_singer) {
       dispatch(getNewSinger())
     }
-    dispatch(updateTitle(songTitle))
-    dispatch(updateSource(sourceUrl.split('?')[0]))
+    dispatch(
+      updateCurrentSong({
+        name: songTitle,
+        source: sourceUrl.split('?')[0],
+      }),
+    )
 
     //saveSongToDatabase(songTitle, sourceUrl)
 
@@ -147,7 +151,7 @@ const StartComponent = () => {
     )
 
     if (response.error) {
-      console.log(response.error)
+      console.error(response.error)
       dispatch(increaseErrorCount())
     }
   }
@@ -159,19 +163,23 @@ const StartComponent = () => {
     const updateCounter = youtubeSourceUrls.length
 
     if (!!source) {
-      dispatch(updateSource(source))
+      dispatch(
+        updateCurrentSong({
+          name,
+          source,
+        }),
+      )
       dispatch(updateYoutubeVideoCounter(updateCounter))
       dispatch(setYoutubeUlrs(sources))
 
-      saveSongToDatabase(title, source)
+      saveSongToDatabase(name, source)
     }
   }
 
   const getSongFromTracklist = () => {
     let track = trackList[Math.floor(Math.random() * trackList.length)]
 
-    dispatch(updateTitle(track.name))
-    dispatch(updateSource(track.source))
+    dispatch(updateCurrentSong({ ...track }))
     setView('video')
     return track
   }

@@ -40,10 +40,13 @@ export interface Artist {
   name: string
 }
 
-export interface Song {
+interface SongBase {
   name: string
-  artist: Artist
   source: string
+}
+
+export interface Song extends SongBase {
+  artist: Artist
 }
 
 export interface Message {
@@ -54,8 +57,7 @@ export interface Message {
 }
 
 export interface AppState {
-  title: string
-  source: string
+  currentSong: SongBase
   searchParam: string
   searchType: SearchType
   trackList: Array<Song>
@@ -74,8 +76,10 @@ export interface AppState {
 }
 
 const initialState = {
-  title: '',
-  source: '',
+  currentSong: {
+    name: '',
+    source: '',
+  },
   searchParam: '',
   searchType: SearchChoices.GENRE,
   trackList: [],
@@ -111,11 +115,8 @@ export const stateSlice = createSlice({
     updateTrackList: (state: AppState, action: PayloadAction<Array<Song>>) => {
       if (action.payload) state.trackList = action.payload
     },
-    updateSource: (state: AppState, action: PayloadAction<string>) => {
-      state.source = action.payload
-    },
-    updateTitle: (state: AppState, action: PayloadAction<string>) => {
-      state.title = action.payload
+    updateCurrentSong: (state: AppState, action: PayloadAction<SongBase>) => {
+      state.currentSong = action.payload
     },
     getNewSinger: (state: AppState) => {
       if (state.singerQueue.length > 0) {
@@ -162,8 +163,10 @@ export const stateSlice = createSlice({
       if (action.payload) {
         state = {
           ...state,
-          title: '',
-          source: '',
+          currentSong: {
+            name: '',
+            source: '',
+          },
           searchParam: 'rock',
           currentSinger: '',
           currentSingerIndex: 0,
@@ -207,8 +210,7 @@ export const {
   updateTrackList,
   updateYoutubeVideoCounter,
   setYoutubeUlrs,
-  updateSource,
-  updateTitle,
+  updateCurrentSong,
   getNewSinger,
   updateSetMessage,
   updateSingers,
@@ -224,8 +226,11 @@ export default stateSlice.reducer
 
 export const selectData = (state: RootState) => state.data
 
-export const selectTitle = (state: RootState) => selectData(state).title
-export const selectSource = (state: RootState) => selectData(state).source
+export const selectCurrentSong = (state: RootState) =>
+  selectData(state).currentSong
+export const selectTitle = (state: RootState) => selectCurrentSong(state).name
+export const selectSource = (state: RootState) =>
+  selectCurrentSong(state).source
 export const selectSearchParam = (state: RootState) =>
   selectData(state).searchParam
 export const selectSearchType = (state: RootState) =>

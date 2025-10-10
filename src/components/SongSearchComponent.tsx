@@ -18,8 +18,10 @@ const apiFetchService = new ApiFetchService()
 const SongSearchComponent = ({ getSong }: any) => {
   const state = useSelector(selectData)
 
-  const { searchType, searchParam, youtubeApiError, title, source, trackList } =
+  const { searchType, searchParam, youtubeApiError, currentSong, trackList } =
     state
+
+  const { name, source } = currentSong
 
   const dispatch = useDispatch()
 
@@ -31,7 +33,7 @@ const SongSearchComponent = ({ getSong }: any) => {
     let tracks = await apiFetchService.fetchTracklist(
       searchParam,
       youtubeApiError,
-      title,
+      name,
       source,
       searchType,
     )
