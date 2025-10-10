@@ -9,7 +9,7 @@ import {
   selectVideoPlayerSaveToDatabaseTimer,
   selectCurrentSinger,
   selectYoutubeVideoCounter,
-} from '../store/App.slice'
+} from '../store/appSlice'
 import { useSelector } from 'react-redux'
 
 const VideoPlayerComponent = ({

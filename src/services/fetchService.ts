@@ -7,7 +7,7 @@ import {
   LastFmApiResponse,
   Song,
   YoutubeApiResponse,
-} from '../store/App.slice'
+} from '../store/appSlice'
 import { filterYoutubeResponseTitle } from '../utils'
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search'

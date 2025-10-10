@@ -6,7 +6,7 @@ import {
   updateTrackList,
   selectSearchType,
   selectSearchParam,
-} from '../store/App.slice'
+} from '../store/appSlice'
 import { ApiFetchService } from '../services/fetchService'
 
 const apiFetchService = new ApiFetchService()

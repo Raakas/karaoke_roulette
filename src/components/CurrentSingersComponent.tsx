@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { selectSingerQueue } from '../store/App.slice'
+import { selectSingerQueue } from '../store/appSlice'
 
 const CurrentSingersComponent = () => {
   const singerQueue = useSelector(selectSingerQueue)

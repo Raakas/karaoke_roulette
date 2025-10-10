@@ -4,7 +4,7 @@ import {
   selectData,
   updateSearchType,
   updateTrackList,
-} from '../store/App.slice'
+} from '../store/appSlice'
 
 import { ApiFetchService } from '../services/fetchService'
 

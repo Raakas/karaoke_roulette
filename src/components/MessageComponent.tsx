@@ -5,7 +5,7 @@ import {
   selectYoutubeApiError,
   updateSetMessage,
   selectMessage,
-} from '../store/App.slice'
+} from '../store/appSlice'
 
 const MessageComponent = () => {
   const dispatch = useDispatch()

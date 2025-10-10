@@ -8,7 +8,7 @@ import {
   Singer,
   updateSingerAmount,
   updateSingers,
-} from '../store/App.slice'
+} from '../store/appSlice'
 
 const AddSingersComponent = () => {
   const dispatch = useDispatch()

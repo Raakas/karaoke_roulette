@@ -20,7 +20,7 @@ import {
   resetErrorCounter,
   getNewSinger,
   selectData,
-} from '../store/App.slice'
+} from '../store/appSlice'
 
 const apiFetchService = new ApiFetchService()
 
