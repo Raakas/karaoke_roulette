@@ -1,20 +1,19 @@
 .tracklist {
-    margin-top: 50px;
-    height: 85vh;
-    overflow: auto;
-    &__track {
-        display: flex;
-        align-items: center;
-        font-size: 1em;
-        text-align: left;
-    }
+  margin-top: 50px;
+  height: 85vh;
+  overflow: auto;
+  &__track {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    text-align: left;
+  }
 }
 
-
-@media (max-width: $desktop-breakpoint){
-    .tracklist {
-        margin-top: 0px;
-        height: auto;
-        text-align: center;
-    }
+@media (max-width: $desktop-breakpoint) {
+  .tracklist {
+    margin-top: 0px;
+    height: auto;
+    text-align: center;
+  }
 }

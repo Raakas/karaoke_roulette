@@ -1,170 +1,181 @@
 body {
-    color: $white;
-    background-color: $grey_dark;
+  color: $white;
+  background-color: $grey_dark;
 }
 
 .main {
-    display: flex; 
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 h1 {
-    font-family: "header";
-    font-size: 50pt;
+  font-family: 'header';
+  font-size: 50pt;
 }
 
 h2 {
-    font-family: "paragraph";
-    font-size: 20pt;
+  font-family: 'paragraph';
+  font-size: 20pt;
 }
 
 a {
-    font-family: "action";
-    text-decoration: none;
-    color: $white;
+  font-family: 'action';
+  text-decoration: none;
+  color: $white;
 }
 
 p {
-    font-family: "paragraph";
-    font-size: 25pt;
-    &.text-small {
-        font-size: 20pt;
+  font-family: 'paragraph';
+  font-size: 25pt;
+  &.text-small {
+    font-size: 20pt;
+  }
+  &.text-tiny {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16pt;
+    margin: 0;
+    font-weight: 400;
+  }
+  &.text-micro {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  &.remove-icon {
+    font-size: 17pt;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0px;
+    border: 1px solid $red;
+    border-radius: 10px;
+    background-color: $red;
+    cursor: pointer;
+    &.small {
+      margin: 5px;
     }
-    &.text-tiny {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16pt;
-        margin: 0;
-        font-weight: 400;
+    &:hover {
+      background-color: $red_light;
     }
-    &.text-micro {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12pt;
-        margin: 0;
-        font-weight: 400;
-    }
-    
-    &.remove-icon {
-        font-size: 17pt;
-        height: 30px;
-        width: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 15px 0px;
-        border: 1px solid $red;
-        border-radius: 10px;
-        background-color: $red;
-        cursor: pointer;
-        &.small{
-            margin: 5px;
-        }
-        &:hover {
-            background-color: $red_light;
-        }
-    }
+  }
 }
 
 label {
-    font-family: "paragraph";
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14pt;
-    margin: 0;
-    font-weight: 400;
+  font-family: 'paragraph';
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14pt;
+  margin: 0;
+  font-weight: 400;
 }
 
-input[type="text"] {
-    height: 30px;
-    width: 75%;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 13pt;
-    margin: 15px;
-    &::placeholder {
-        color: black;
-    }
+input[type='text'] {
+  height: 30px;
+  width: 75%;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 13pt;
+  margin: 15px;
+  &::placeholder {
+    color: black;
+  }
 }
 
 .button {
-    font-family: "action";
-    font-size: 13pt;
-    color: $black;
-    text-decoration: none;
-    width: 150px;
-    height: 50px;
-    border: none;
-    border-radius: 25px;
-    margin: 10px;
-    &-green {
-        background-color: $green;
-        &:hover {
-            background-color: $green_light;
-        }
+  font-family: 'action';
+  font-size: 13pt;
+  color: $black;
+  text-decoration: none;
+  width: 150px;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  margin: 10px;
+  &-green {
+    background-color: $green;
+    &:hover {
+      background-color: $green_light;
     }
-    &-blue {
-        background-color: $blue;
-        &:hover {
-            background-color: $blue_light;
-        }
+  }
+  &-blue {
+    background-color: $blue;
+    &:hover {
+      background-color: $blue_light;
     }
-    &-yellow {
-        background-color: $yellow;
-        &:hover {
-            background-color: $yellow_light;
-        }
+  }
+  &-yellow {
+    background-color: $yellow;
+    &:hover {
+      background-color: $yellow_light;
     }
-    &-grey {
-        background-color: $grey;
-        &:hover {
-            background-color: $grey_light;
-        }
+  }
+  &-grey {
+    background-color: $grey;
+    &:hover {
+      background-color: $grey_light;
     }
-    &-orange {
-        background-color: $orange;
-        &:hover {
-            background-color: $orange_light;
-        }
+  }
+  &-orange {
+    background-color: $orange;
+    &:hover {
+      background-color: $orange_light;
     }
-    &-disabled {
-        background-color: $grey;
-        background: linear-gradient(153deg, rgb(105, 105, 110) 0%, rgb(51, 51, 61)48%, rgb(83, 83, 83) 100%); 
-        &:hover {
-            background-color: $grey;
-        }
+  }
+  &-disabled {
+    background-color: $grey;
+    background: linear-gradient(
+      153deg,
+      rgb(105, 105, 110) 0%,
+      rgb(51, 51, 61) 48%,
+      rgb(83, 83, 83) 100%
+    );
+    &:hover {
+      background-color: $grey;
     }
-    &-glory {
-        background-color: $orange;
-        &:hover {
-            animation: 15s ease-out glory-effect;
-            background: linear-gradient(153deg, $orange 0%, $orange_light 48%, $orange_dark 100%);
-        }
+  }
+  &-glory {
+    background-color: $orange;
+    &:hover {
+      animation: 15s ease-out glory-effect;
+      background: linear-gradient(
+        153deg,
+        $orange 0%,
+        $orange_light 48%,
+        $orange_dark 100%
+      );
     }
+  }
 }
 
 .align-left {
-    align-self: flex-start;
+  align-self: flex-start;
 }
 
 .align-right {
-    align-self: flex-end;
+  align-self: flex-end;
 }
 
 .capitalize {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 @keyframes glory-effect {
-    from {
-        transform: scale(1) rotate(0deg);
-    }
-    to {
-        transform: scale(2) rotate(10deg);
-    }
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(2) rotate(10deg);
+  }
 }
 
-@media screen and (max-height: 500px){
-    h1, p {
-        padding: 5px;
-        margin: 5px;
-    }
+@media screen and (max-height: 500px) {
+  h1,
+  p {
+    padding: 5px;
+    margin: 5px;
+  }
 }

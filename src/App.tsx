@@ -6,24 +6,19 @@ import AddSingersComponent from './components/AddSingersComponent'
 import './app.scss'
 
 const App = () => {
-
   var tag = document.createElement('script')
   tag.src = 'https://www.youtube.com/iframe_api'
   var firstScriptTag = document.getElementsByTagName('script')[0]
-  if(firstScriptTag !== null && firstScriptTag.parentNode !== null){
+  if (firstScriptTag !== null && firstScriptTag.parentNode !== null) {
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
   }
-  
+
   return (
     <BrowserRouter>
-      <div className='main'>
+      <div className="main">
         <Routes>
-          <Route path='/' element={
-            <StartComponent />
-          } />
-          <Route path='/add-singers' element={
-            <AddSingersComponent />
-          } />
+          <Route path="/" element={<StartComponent />} />
+          <Route path="/add-singers" element={<AddSingersComponent />} />
         </Routes>
       </div>
       <MessageComponent />

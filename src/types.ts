@@ -1,7 +1,7 @@
-export { }
+export {}
 
 declare global {
-    interface Window {
-        YT: any
-    }
+  interface Window {
+    YT: any
+  }
 }

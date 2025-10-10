@@ -1,48 +1,48 @@
 .dropdown {
+  background-color: white;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  & > .results {
+    position: absolute;
+    overflow-y: scroll;
     background-color: white;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    & > .results {
-        position: absolute;
-        overflow-y: scroll;
-        background-color: white;
-        color: black;
-        margin-top: -15px;
-        max-width: 200px;
-        max-height: 500px;
-        & > p {
-            color: black;
-            padding: 3px 10px;
-        }
-        & > p:hover {
-            background-color: $blue;
-            color: black;
-        }
+    color: black;
+    margin-top: -15px;
+    max-width: 200px;
+    max-height: 500px;
+    & > p {
+      color: black;
+      padding: 3px 10px;
     }
+    & > p:hover {
+      background-color: $blue;
+      color: black;
+    }
+  }
 }
 
 .reset-button {
-    position: relative;
-    left: -43px;
-    color: $white;
-    background-color: $red-light;
-    border: 1px solid #aeaeae;
-    padding: 3px 5px;
-    border-radius: 25%;
+  position: relative;
+  left: -43px;
+  color: $white;
+  background-color: $red-light;
+  border: 1px solid #aeaeae;
+  padding: 3px 5px;
+  border-radius: 25%;
 }
 
 .reset-button:hover {
-    color: $red-light;
-    background-color: $white;
+  color: $red-light;
+  background-color: $white;
 }
 
-@media screen and (min-width: $mobile-breakpoint){
-    .dropdown > .results {
-        min-width: 350px;
-        max-width: 500px;
-        & > p {
-            padding: 3px 50px;
-        }
+@media screen and (min-width: $mobile-breakpoint) {
+  .dropdown > .results {
+    min-width: 350px;
+    max-width: 500px;
+    & > p {
+      padding: 3px 50px;
     }
+  }
 }

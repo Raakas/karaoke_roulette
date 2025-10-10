@@ -1,9 +1,13 @@
-
 import axios from 'axios'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/firestore'
 
-import { FirestoreError, LastFmApiResponse, Song, YoutubeApiResponse } from '../store/App.slice'
+import {
+  FirestoreError,
+  LastFmApiResponse,
+  Song,
+  YoutubeApiResponse,
+} from '../store/App.slice'
 import { filterYoutubeResponseTitle } from '../utils'
 
 const YOUTUBE_URL_REQUEST = 'https://www.googleapis.com/youtube/v3/search'
@@ -13,14 +17,18 @@ const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/'
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 })
 
 export class ApiFetchService {
-
-  urlSwitch = (urlTypeParam: string, searchParam?: string, searchType?: string, songTitle?: string): string => {
+  urlSwitch = (
+    urlTypeParam: string,
+    searchParam?: string,
+    searchType?: string,
+    songTitle?: string,
+  ): string => {
     let url: string = ''
-  
+
     switch (urlTypeParam) {
       case 'tag':
         url = `${LASTFM_URL}?method=${searchType}.gettoptags&${searchType}=${searchParam}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
@@ -41,11 +49,21 @@ export class ApiFetchService {
     return url
   }
 
-  axiosFetcher = async (urlTypeParam: string, searchParam?: string, searchType?: string, songTitle?: string): Promise<any> => {
-    return axios.get(this.urlSwitch(urlTypeParam, searchParam, searchType, songTitle)).catch(error => console.log(error))
+  axiosFetcher = async (
+    urlTypeParam: string,
+    searchParam?: string,
+    searchType?: string,
+    songTitle?: string,
+  ): Promise<any> => {
+    return axios
+      .get(this.urlSwitch(urlTypeParam, searchParam, searchType, songTitle))
+      .catch((error) => console.log(error))
   }
 
-  lastFmTrackFetcher = async (searchParam: string, searchType: string): Promise<Array<Song>> => {
+  lastFmTrackFetcher = async (
+    searchParam: string,
+    searchType: string,
+  ): Promise<Array<Song>> => {
     let results: any = Array<Song>()
 
     try {
@@ -54,45 +72,49 @@ export class ApiFetchService {
 
       if (searchType === 'artist') {
         APIRESPONSETRACKLIST = response.data.toptracks.track
-      }
-      else {
+      } else {
         APIRESPONSETRACKLIST = response.data.tracks.track
       }
 
       for (let i in APIRESPONSETRACKLIST) {
         results[i] = {
-          name: APIRESPONSETRACKLIST[i].artist.name + ', ' + APIRESPONSETRACKLIST[i].name,
+          name:
+            APIRESPONSETRACKLIST[i].artist.name +
+            ', ' +
+            APIRESPONSETRACKLIST[i].name,
           artist: {
-            name: APIRESPONSETRACKLIST[i].artist.name
+            name: APIRESPONSETRACKLIST[i].artist.name,
           },
-          source: ''
+          source: '',
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error)
     }
 
     return results
   }
 
-  fetchTracklist = async (searchParam: string, youtubeApiError: boolean, songTitle: string, source: string, searchType: string): Promise<Array<Song>> => {
+  fetchTracklist = async (
+    searchParam: string,
+    youtubeApiError: boolean,
+    songTitle: string,
+    source: string,
+    searchType: string,
+  ): Promise<Array<Song>> => {
     let tracks: Array<Song> = []
 
     if (youtubeApiError) {
       tracks = await this.fetchTracklistFromDatabase()
-    }
-    else if (!searchParam || searchParam.length === 0) {
+    } else if (!searchParam || searchParam.length === 0) {
       return []
-    }
-    else if (songTitle && source) {
+    } else if (songTitle && source) {
       let artist_and_track = songTitle.split(',')
       let artist = artist_and_track[0]
       let track = artist_and_track[1]
-      //get similar tracks from api. 
+      //get similar tracks from api.
       tracks = await this.lastFmTrackFetcher(artist, track)
-    }
-    else {
+    } else {
       tracks = await this.lastFmTrackFetcher(searchParam, searchType)
     }
 
@@ -104,7 +126,10 @@ export class ApiFetchService {
     return tracks
   }
 
-  getSongFromOldDatabase = async (songTitle: string, searchParam: string): Promise<string> => {
+  getSongFromOldDatabase = async (
+    songTitle: string,
+    searchParam: string,
+  ): Promise<string> => {
     const db = firebase.firestore()
 
     // replace all slashes for querying, but do not save these versions to db
@@ -112,9 +137,13 @@ export class ApiFetchService {
     let q_searchParam = searchParam.replaceAll('/', ' ').replaceAll('\ ', ' ')
 
     // raise and show error
-    if(!!q_title === false || !!q_searchParam === false) return ''
-    
-    return await db.collection('good_songs').doc(q_searchParam).collection(q_title).doc('details')
+    if (!!q_title === false || !!q_searchParam === false) return ''
+
+    return await db
+      .collection('good_songs')
+      .doc(q_searchParam)
+      .collection(q_title)
+      .doc('details')
       .get()
       .then(function (doc) {
         if (doc.exists) {
@@ -123,13 +152,11 @@ export class ApiFetchService {
             return data.source
           }
           return ''
-        }
-        else {
+        } else {
           return doc.data()
         }
       })
-      .catch(function (error) {
-      })
+      .catch(function (error) {})
   }
 
   fetchTracklistFromDatabase = async (): Promise<Array<Song>> => {
@@ -140,21 +167,22 @@ export class ApiFetchService {
     let results: Array<Song> = []
 
     for (let type of searchType) {
-      await db.collection(type).get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
+      await db
+        .collection(type)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
             let tracks = doc.data()
 
             for (let track in tracks) {
               results.push({
                 name: track,
                 artist: {
-                  name: doc.id
+                  name: doc.id,
                 },
                 source: tracks[track].split('?')[0],
               })
             }
-
           })
         })
     }
@@ -162,25 +190,54 @@ export class ApiFetchService {
     return Promise.resolve(results)
   }
 
-  saveToDatabase = (songTitle: string, source: string, searchType: string, searchParam: string): Promise<FirestoreError> => {
-    if(!!songTitle === false || !!source === false || !!searchParam === false || !!searchType === false){
-      return Promise.resolve({ error: false, message: 'Missing parameter' })
+  saveToDatabase = (
+    songTitle: string,
+    source: string,
+    searchType: string,
+    searchParam: string,
+  ): Promise<FirestoreError> => {
+    if (
+      !!songTitle === false ||
+      !!source === false ||
+      !!searchParam === false ||
+      !!searchType === false
+    ) {
+      return Promise.resolve({
+        error: false,
+        message: 'Missing parameter',
+      })
     }
     const db = firebase.firestore()
 
-    db.collection(searchType === 'artist' ? 'artists' : 'genre').doc(searchParam).set({
-      [songTitle]: source
-    }, { merge: true })
-      .catch(error => {
+    db.collection(searchType === 'artist' ? 'artists' : 'genre')
+      .doc(searchParam)
+      .set(
+        {
+          [songTitle]: source,
+        },
+        { merge: true },
+      )
+      .catch((error) => {
         console.error(error)
-        return { message: `Error adding song ${songTitle} to database`, error: true }
+        return {
+          message: `Error adding song ${songTitle} to database`,
+          error: true,
+        }
       })
 
     return Promise.resolve({ error: false, message: '' })
   }
 
-  getSongFromYoutube = async (songTitle: string): Promise<YoutubeApiResponse> => {
-    let YoutubeResponse: YoutubeApiResponse = { source: '', counter: 0, error: false, message: '', urls: [] }
+  getSongFromYoutube = async (
+    songTitle: string,
+  ): Promise<YoutubeApiResponse> => {
+    let YoutubeResponse: YoutubeApiResponse = {
+      source: '',
+      counter: 0,
+      error: false,
+      message: '',
+      urls: [],
+    }
 
     const youtubeVideos: any = []
 
@@ -193,7 +250,7 @@ export class ApiFetchService {
       return YoutubeResponse
     }
 
-    const youtube_result = res.data.items 
+    const youtube_result = res.data.items
 
     if (!!youtube_result === false || youtube_result.length === 0) {
       YoutubeResponse.error = true
@@ -210,12 +267,16 @@ export class ApiFetchService {
       artist_name.toLowerCase()
     }
 
-    let track_title = artist_and_track.join(' ').toLowerCase().trim().split(`'`)[0]
+    let track_title = artist_and_track
+      .join(' ')
+      .toLowerCase()
+      .trim()
+      .split(`'`)[0]
 
     for (let video_result of youtube_result) {
       let video_title = video_result.snippet.title.toLowerCase()
 
-      if(filterYoutubeResponseTitle(video_title, track_title)){
+      if (filterYoutubeResponseTitle(video_title, track_title)) {
         youtubeVideos.push(YOUTUBE_URL_EMBED + video_result.id.videoId)
       }
     }
@@ -225,7 +286,7 @@ export class ApiFetchService {
       YoutubeResponse.counter = youtubeVideos.length
       YoutubeResponse.error = false
       YoutubeResponse.message = ''
-      
+
       youtubeVideos.shift()
       YoutubeResponse.urls = youtubeVideos
     }
@@ -233,29 +294,32 @@ export class ApiFetchService {
     return YoutubeResponse
   }
 
-  searchBarAPI = async (searchParam: string, searchType: string): Promise<Array<LastFmApiResponse>> => {
+  searchBarAPI = async (
+    searchParam: string,
+    searchType: string,
+  ): Promise<Array<LastFmApiResponse>> => {
     let lastFMResponse: Array<LastFmApiResponse> = new Array()
     try {
-
       let res
 
       if (searchType === 'artist') {
         res = await this.axiosFetcher('artist', searchParam)
         lastFMResponse = res.data.results.artistmatches.artist
-        lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) => a.name.toLowerCase().includes(searchParam.toLowerCase()))
-      }
-      else {
+        lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) =>
+          a.name.toLowerCase().includes(searchParam.toLowerCase()),
+        )
+      } else {
         res = await this.axiosFetcher('tag', searchParam, searchType)
         lastFMResponse = res.data.toptags.tag
 
-        lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) => a.name.toLowerCase().includes(searchParam.toLowerCase()))
+        lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) =>
+          a.name.toLowerCase().includes(searchParam.toLowerCase()),
+        )
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error)
     }
 
     return lastFMResponse
   }
-
 }

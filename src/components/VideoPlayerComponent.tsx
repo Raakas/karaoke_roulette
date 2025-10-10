@@ -1,6 +1,6 @@
-import { useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { 
+import {
   updateSetMessage,
   selectTitle,
   selectSource,
@@ -9,17 +9,24 @@ import {
   selectVideoPlayerSaveToDatabaseTimer,
   selectCurrentSinger,
   selectYoutubeVideoCounter,
- } from '../store/App.slice'
+} from '../store/App.slice'
 import { useSelector } from 'react-redux'
 
-const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutubeSource, saveSongToDatabase }: any) => {
+const VideoPlayerComponent = ({
+  getSong,
+  resetAndReturnViewToSearch,
+  updateYoutubeSource,
+  saveSongToDatabase,
+}: any) => {
   const dispatch = useDispatch()
 
   const title = useSelector(selectTitle)
   const source = useSelector(selectSource)
   const singerQueue = useSelector(selectSingerQueue)
   const nextSinger = useSelector(selectNextSinger)
-  const videoPlayerSaveToDatabaseTimer = useSelector(selectVideoPlayerSaveToDatabaseTimer)
+  const videoPlayerSaveToDatabaseTimer = useSelector(
+    selectVideoPlayerSaveToDatabaseTimer,
+  )
   const currentSinger = useSelector(selectCurrentSinger)
   const YoutubeVideoCounter = useSelector(selectYoutubeVideoCounter)
 
@@ -27,29 +34,30 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
   const [useTimer, setUseTimer] = useState(true)
   const [ytPlayerState, setYtPlayerState] = useState(false)
 
-  const urlParams: string = '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'
+  const urlParams: string =
+    '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'
 
   if (ytPlayerState === false) {
     setTimeout(() => {
       // use timeout so the DOM iframe loads before events are added
       new window.YT.Player('player-frame', {
-        playerVars: { 'autoplay': 1, 'controls': 0 },
+        playerVars: { autoplay: 1, controls: 0 },
         events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange,
-          'onError': onPlayerError,
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError,
         },
       })
     }, 1000)
   }
 
-  function onPlayerReady(){
+  function onPlayerReady() {
     setYtPlayerState(true)
     setTimerChanges(0)
   }
 
   function onPlayerStateChange(event: any) {
-    if(event === undefined) return
+    if (event === undefined) return
     /*
       event.data:
         0 video ends
@@ -62,8 +70,7 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
       getNewSingerAndSong()
       saveSongToDatabase(title, source)
       setTimerChanges()
-    } 
-    else {
+    } else {
       setTimerChanges(event.data)
     }
   }
@@ -85,7 +92,7 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
     if (singerQueue.length > 1) {
       popup_content.message += `Next singer: ${nextSinger}`
     }
-    
+
     dispatch(updateSetMessage(popup_content))
 
     setTimeout(() => {
@@ -118,39 +125,53 @@ const VideoPlayerComponent = ({ getSong, resetAndReturnViewToSearch, updateYoutu
   }
 
   useEffect(() => {
-      let myInterval = setInterval(() => {
-        if(useTimer) setSeconds(seconds + 1)
-      }, 1000)
-      return () => {
-          clearInterval(myInterval)
-      }
+    let myInterval = setInterval(() => {
+      if (useTimer) setSeconds(seconds + 1)
+    }, 1000)
+    return () => {
+      clearInterval(myInterval)
+    }
   }, [seconds, useTimer])
 
-  if (seconds === videoPlayerSaveToDatabaseTimer){
+  if (seconds === videoPlayerSaveToDatabaseTimer) {
     saveSongToDatabase(title, source)
     setTimerChanges()
   }
 
   return (
-    <div className='player'>
+    <div className="player">
       <p>{currentSinger}</p>
       <h2>{title}</h2>
       <iframe
-        id='player-frame'
-        title='youtube'
+        id="player-frame"
+        title="youtube"
         src={source + urlParams}
-        frameBorder='0'
-        allow=''
-        allowFullScreen>
-      </iframe>
+        frameBorder="0"
+        allow=""
+        allowFullScreen></iframe>
       <br />
-      <div className='buttons'>
-        <button className='button button-grey' onClick={() => resetAndReturnViewToSearch()}>Back</button>
-        {YoutubeVideoCounter > 1
-          ? <button className='button button-blue' onClick={() => updateYoutubeSource()}>Update {YoutubeVideoCounter - 1}</button>
-          : <button className='button button-disabled' onClick={() => updateYoutubeSource()}>Update</button>
-        }
-        <button className='button button-orange' onClick={() => getSong()}>New song</button>
+      <div className="buttons">
+        <button
+          className="button button-grey"
+          onClick={() => resetAndReturnViewToSearch()}>
+          Back
+        </button>
+        {YoutubeVideoCounter > 1 ? (
+          <button
+            className="button button-blue"
+            onClick={() => updateYoutubeSource()}>
+            Update {YoutubeVideoCounter - 1}
+          </button>
+        ) : (
+          <button
+            className="button button-disabled"
+            onClick={() => updateYoutubeSource()}>
+            Update
+          </button>
+        )}
+        <button className="button button-orange" onClick={() => getSong()}>
+          New song
+        </button>
       </div>
     </div>
   )

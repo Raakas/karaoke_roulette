@@ -25,19 +25,19 @@ const LASTFM_URL = 'https://ws.audioscrobbler.com/2.0/'
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 })
 
 const db = firebase.firestore()
 
 const Home = () => {
-    const state = useSelector(state => state)
-    const dispatch = useDispatch()
+  const state = useSelector((state) => state)
+  const dispatch = useDispatch()
 
-    var tag = document.createElement('script')
-    tag.src = 'https://www.youtube.com/iframe_api'
-    var firstScriptTag = document.getElementsByTagName('script')[0]
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+  var tag = document.createElement('script')
+  tag.src = 'https://www.youtube.com/iframe_api'
+  var firstScriptTag = document.getElementsByTagName('script')[0]
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
 
   let youtubeVideos = []
 
@@ -45,43 +45,44 @@ const Home = () => {
     let amount = state.singerAmount
     amount = amount + 1
     this.setState({
-      singerAmount: amount
+      singerAmount: amount,
     })
   }
 
   const ReduceSingerAmount = () => {
     let amount = state.singerAmount
     amount = amount - 1
-    if(amount <= 0){
+    if (amount <= 0) {
       amount = 0
     }
     this.setState({
-      singerAmount: amount
+      singerAmount: amount,
     })
   }
 
   const saveSingers = (singers) => {
-      this.setState({
-        singerQueue: singers
-      })
+    this.setState({
+      singerQueue: singers,
+    })
   }
 
-  const getSinger = ()  => {
-    if (state.singerQueue.length > 0){
+  const getSinger = () => {
+    if (state.singerQueue.length > 0) {
       let index = state.currentSingerIndex
-      if (state.currentSinger === ''){
+      if (state.currentSinger === '') {
         index = Math.floor(Math.random() * state.singerQueue.length)
-      }
-      else {
+      } else {
         index = index + 1
-        if (index > state.singerQueue.length - 1){
+        if (index > state.singerQueue.length - 1) {
           index = 0
         }
       }
-      this.setState({ currentSinger: state.singerQueue[index], currentSingerIndex: index})
-    }
-    else {
-      this.setState({ currentSinger: '', currentSingerIndex: 0})
+      this.setState({
+        currentSinger: state.singerQueue[index],
+        currentSingerIndex: index,
+      })
+    } else {
+      this.setState({ currentSinger: '', currentSingerIndex: 0 })
     }
   }
 
@@ -92,7 +93,7 @@ const Home = () => {
 
     let message = `Nice job! `
 
-    if(state.singerQueue.length > 1){
+    if (state.singerQueue.length > 1) {
       message += `Next singer: ${state.currentSinger.name}`
     }
 
@@ -110,8 +111,8 @@ const Home = () => {
       })
     }, timeout)
   }
-  
-  const setMessageModal = (message, error=false, timer=0) => {
+
+  const setMessageModal = (message, error = false, timer = 0) => {
     if (message) {
       this.setState({
         modalVisible: true,
@@ -119,13 +120,12 @@ const Home = () => {
           title: error ? 'Error' : '',
           message: message,
           error: error,
-          timer: timer
-        }
+          timer: timer,
+        },
       })
-    }
-    else {
+    } else {
       this.setState({
-        modalVisible: false
+        modalVisible: false,
       })
     }
   }
@@ -134,27 +134,30 @@ const Home = () => {
     let results = state.trackList
     results.splice(index, 1)
     this.setState({
-      trackList: results
+      trackList: results,
     })
   }
 
-  const fetchTracklist = (value=false) => {
-    if(state.youtubeApiError){
+  const fetchTracklist = (value = false) => {
+    if (state.youtubeApiError) {
       return fetchTracklistFromDatabase()
-    }
-    else if(state.title && state.source){
+    } else if (state.title && state.source) {
       let split = state.title.split(',')
       let artist = split[0]
       let track = split[1]
       return getSimilarTracksFromAPI(artist, track)
-    }
-    else {
+    } else {
       return fetchTracklistFromAPI(value)
     }
   }
 
   const fetchTracklistFromAPI = async (value) => {
-    if (value === false && state.searchParam === '' || state.searchParam === ' ' || state.searchParam === null || state.searchParam === undefined) {
+    if (
+      (value === false && state.searchParam === '') ||
+      state.searchParam === ' ' ||
+      state.searchParam === null ||
+      state.searchParam === undefined
+    ) {
       this.setMessageModal('Empty input, try again', true)
       return
     }
@@ -163,32 +166,31 @@ const Home = () => {
     let search_value = value ? value : state.searchParam
 
     try {
-      let res = await axios.get(`${LASTFM_URL}?method=${state.searchType}.gettoptracks&${state.searchType}=${search_value}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`)
+      let res = await axios.get(
+        `${LASTFM_URL}?method=${state.searchType}.gettoptracks&${state.searchType}=${search_value}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`,
+      )
       let response = ''
 
-      if(state.searchType === 'artist'){
+      if (state.searchType === 'artist') {
         response = res.data.toptracks.track
-      }
-      else {
+      } else {
         response = res.data.tracks.track
       }
 
       for (let i in response) {
         results[i] = response[i].artist.name + ', ' + response[i].name
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error)
     }
 
     if (results.length > 0) {
       this.setState({
-        trackList: results
+        trackList: results,
       })
-    }
-    else {
+    } else {
       this.setState({
-        trackList: []
+        trackList: [],
       })
       this.setMessageModal('No tracks found from LastFM API, try again', true)
       return
@@ -204,21 +206,22 @@ const Home = () => {
     let results = []
 
     try {
-      let res = await axios.get(`${LASTFM_URL}?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`)
+      let res = await axios.get(
+        `${LASTFM_URL}?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`,
+      )
       let response = res.data.similartracks.track
 
       for (let i in response) {
         results[i] = response[i].artist.name + ', ' + response[i].name
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error)
     }
-    
+
     if (results.length > 0) {
       results = results.concat(state.trackList)
       this.setState({
-        trackList: results
+        trackList: results,
       })
     }
   }
@@ -227,25 +230,28 @@ const Home = () => {
     // iterate database and push track title and sources to results
     let searchType = ['artists', 'genre']
     let results = []
-    for(let type of searchType){
-      await db.collection(type).get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc =>{
+    for (let type of searchType) {
+      await db
+        .collection(type)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
             let tracks = doc.data()
-            for(let track in tracks){
-              results.push({[track]: tracks[track].split('?')[0]})
+            for (let track in tracks) {
+              results.push({
+                [track]: tracks[track].split('?')[0],
+              })
             }
+          })
         })
-      })
     }
     if (results.length > 0) {
       this.setState({
-        trackList: results
+        trackList: results,
       })
-    }
-    else {
+    } else {
       this.setState({
-        trackList: []
+        trackList: [],
       })
       this.setMessageModal('No tracks found from database, try again', true)
       return
@@ -253,54 +259,66 @@ const Home = () => {
   }
 
   const getSong = () => {
-    if(state.youtubeApiError === false){
-      if(state.searchParam === '' || state.searchParam === ' ' || state.searchParam === null || state.searchParam === undefined) {
+    if (state.youtubeApiError === false) {
+      if (
+        state.searchParam === '' ||
+        state.searchParam === ' ' ||
+        state.searchParam === null ||
+        state.searchParam === undefined
+      ) {
         return this.setMessageModal('Empty input, try again', true)
       }
     }
 
-    if(state.trackList.length <= 1){
+    if (state.trackList.length <= 1) {
       this.fetchTracklist()
     }
 
-    if(state.modalVisible === false){
+    if (state.modalVisible === false) {
       getSinger()
     }
 
     this.setMessageModal(false)
-    if(state.youtubeApiError && state.trackList.length > 0){
+    if (state.youtubeApiError && state.trackList.length > 0) {
       return getSongFromTracklist()
-    }
-    else {
+    } else {
       return getSongFromDatabase()
     }
   }
 
   const getSongFromTracklist = async () => {
-    let track = await state.trackList[Math.floor(Math.random() * state.trackList.length)]
+    let track =
+      await state.trackList[Math.floor(Math.random() * state.trackList.length)]
     this.setState({
       title: Object.keys(track)[0],
-      source: Object.values(track)[0]
+      source: Object.values(track)[0],
     })
   }
 
   const getSongFromDatabase = async () => {
-
     youtubeVideos = []
     this.setState({ YoutubeVideoCounter: '' })
     let title = ''
-    if(state.trackList.length <= 0){
+    if (state.trackList.length <= 0) {
       title = state.searchParam
-    }
-    else {
-      title = await state.trackList[Math.floor(Math.random() * state.trackList.length)]
+    } else {
+      title =
+        await state.trackList[
+          Math.floor(Math.random() * state.trackList.length)
+        ]
     }
 
     // replace all slashes for querying, but do not save these versions to db
     let q_title = title.replaceAll('/', ' ').replaceAll('\ ', ' ')
-    let q_searchParam = state.searchParam.replaceAll('/', ' ').replaceAll('\ ', ' ')
-    
-    let source = await db.collection('good_songs').doc(q_searchParam).collection(q_title).doc('details')
+    let q_searchParam = state.searchParam
+      .replaceAll('/', ' ')
+      .replaceAll('\ ', ' ')
+
+    let source = await db
+      .collection('good_songs')
+      .doc(q_searchParam)
+      .collection(q_title)
+      .doc('details')
       .get()
       .then(function (doc) {
         if (doc.exists) {
@@ -309,16 +327,14 @@ const Home = () => {
           return doc.data()
         }
       })
-      .catch(function (error) {
-      })
+      .catch(function (error) {})
 
     if (source === undefined) {
       return getSongFromYoutube(title)
-    }
-    else {
+    } else {
       this.setState({
         title: title,
-        source: source.split('?')[0]
+        source: source.split('?')[0],
       })
       saveToDatabase(title, state.source)
     }
@@ -329,15 +345,17 @@ const Home = () => {
     if (errors >= state.errorLimit) {
       this.setMessageModal('Too many errors, try something else', true)
       this.setState({
-        youtubeApiError: true
+        youtubeApiError: true,
       })
       return
     }
     youtubeVideos = []
-        
-    fetch(`${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${title}&type=video&videoEmbeddable=true&safeSearch=strict`)
-      .then(response => response.json())
-      .then(res => {
+
+    fetch(
+      `${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${title}&type=video&videoEmbeddable=true&safeSearch=strict`,
+    )
+      .then((response) => response.json())
+      .then((res) => {
         let i = 0
 
         if (res.error) {
@@ -352,7 +370,11 @@ const Home = () => {
           return
         }
 
-        if (res.items === undefined || res.items === 'undefined' || res.items.length === 0) {
+        if (
+          res.items === undefined ||
+          res.items === 'undefined' ||
+          res.items.length === 0
+        ) {
           errors++
           this.setMessageModal(title + ' not found')
           this.setState({
@@ -368,14 +390,19 @@ const Home = () => {
         for (i in res.items) {
           let string = res.items[i].snippet.title.toLowerCase()
 
-          if(string.includes(artist) && string.includes(track) && string.includes('karaoke') && !string.includes('cover')){
-              youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId)
-            }
+          if (
+            string.includes(artist) &&
+            string.includes(track) &&
+            string.includes('karaoke') &&
+            !string.includes('cover')
+          ) {
+            youtubeVideos.push(YOUTUBE_URL_EMBED + res.items[i].id.videoId)
+          }
         }
 
-        if(youtubeVideos.length === 0){
+        if (youtubeVideos.length === 0) {
           let tracks = state.trackList
-          tracks = tracks.filter(x => x !== title)
+          tracks = tracks.filter((x) => x !== title)
           this.setState({
             trackList: tracks,
           })
@@ -386,12 +413,12 @@ const Home = () => {
         this.setState({
           title: title,
           source: youtubeVideos[0],
-          YoutubeVideoCounter: youtubeVideos.length
+          YoutubeVideoCounter: youtubeVideos.length,
         })
 
         saveToDatabase(title, youtubeVideos[0])
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error)
       })
   }
@@ -402,25 +429,29 @@ const Home = () => {
     if (youtubeVideos.length > 0) {
       this.setState({
         source: youtubeVideos[0],
-        YoutubeVideoCounter: youtubeVideos.length
+        YoutubeVideoCounter: youtubeVideos.length,
       })
 
       saveToDatabase(state.title, youtubeVideos[0])
-    }
-    else {
+    } else {
       getSongFromYoutube(state.title)
     }
   }
 
   const saveToDatabase = (title, source) => {
-    db.collection(state.searchType === 'artist' ? 'artists' : 'genre').doc(state.searchParam).set({
-      [title]: source
-    }, {merge: true} )
-    .catch(error => {
-      console.error('Error adding document: ', error)
-    })
+    db.collection(state.searchType === 'artist' ? 'artists' : 'genre')
+      .doc(state.searchParam)
+      .set(
+        {
+          [title]: source,
+        },
+        { merge: true },
+      )
+      .catch((error) => {
+        console.error('Error adding document: ', error)
+      })
     this.setState({
-      errorCounter: 0
+      errorCounter: 0,
     })
   }
 
@@ -432,60 +463,66 @@ const Home = () => {
       currentSinger: '',
       YoutubeVideoCounter: '',
       trackList: [],
-      errorCounter: 0
+      errorCounter: 0,
     })
     youtubeVideos = []
   }
-  
+
   return (
-    <div className='main'>
+    <div className="main">
       <Routes>
-        <Route path='/' render={() => (
-          <Navigate to='start' />
-        )} />
-        <Route path='/start' render={() => (
-          <StartComponent
-            searchType={state.searchType}
-            searchParam={state.searchParam}
-            fetchTracklist={fetchTracklist}
-            removeTrack={removeTrack}
-            getSong={getSong}
-            singerQueue={state.singerQueue}
-            youtubeApiError={state.youtubeApiError}
-            trackList={state.trackList}
-          />
-        )} />
-        <Route path='/add-singers' render={() => (
-          <AddSingersComponent
-            singerAmount={state.singerAmount}
-            addSingerAmount={addSingerAmount}
-            ReduceSingerAmount={ReduceSingerAmount}
-            singerQueue={state.singerQueue}
-            saveSingers={saveSingers}
-          />
-        )} />
-        <Route path='/player' render={() => (
-          <PlayerComponent
-            title={state.title}
-            currentSinger={state.currentSinger}
-            source={state.source}
-            resetSong={resetSong}
-            getSong={getSong}
-            updateSong={updateSong}
-            YoutubeVideoCounter={state.YoutubeVideoCounter}
-            getNewSingerAndSong={getNewSingerAndSong}
-          />
-        )} />
-        {state.modalVisible
-          ? <MessageComponent
+        <Route path="/" render={() => <Navigate to="start" />} />
+        <Route
+          path="/start"
+          render={() => (
+            <StartComponent
+              searchType={state.searchType}
+              searchParam={state.searchParam}
+              fetchTracklist={fetchTracklist}
+              removeTrack={removeTrack}
+              getSong={getSong}
+              singerQueue={state.singerQueue}
+              youtubeApiError={state.youtubeApiError}
+              trackList={state.trackList}
+            />
+          )}
+        />
+        <Route
+          path="/add-singers"
+          render={() => (
+            <AddSingersComponent
+              singerAmount={state.singerAmount}
+              addSingerAmount={addSingerAmount}
+              ReduceSingerAmount={ReduceSingerAmount}
+              singerQueue={state.singerQueue}
+              saveSingers={saveSingers}
+            />
+          )}
+        />
+        <Route
+          path="/player"
+          render={() => (
+            <PlayerComponent
+              title={state.title}
+              currentSinger={state.currentSinger}
+              source={state.source}
+              resetSong={resetSong}
+              getSong={getSong}
+              updateSong={updateSong}
+              YoutubeVideoCounter={state.YoutubeVideoCounter}
+              getNewSingerAndSong={getNewSingerAndSong}
+            />
+          )}
+        />
+        {state.modalVisible ? (
+          <MessageComponent
             message={state.message}
             setMessageModal={setMessageModal}
             youtubeApiError={state.youtubeApiError}
             getSong={getSong}
           />
-          : null
-        }
-        </Routes>
+        ) : null}
+      </Routes>
     </div>
   )
 }
