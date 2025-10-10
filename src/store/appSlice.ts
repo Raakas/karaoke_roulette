@@ -29,6 +29,13 @@ export interface Singer {
   saved: boolean
 }
 
+export enum SearchChoices {
+  ARTIST = 'artist',
+  GENRE = 'tag',
+}
+
+export type SearchType = SearchChoices.ARTIST | SearchChoices.GENRE
+
 export interface Artist {
   name: string
 }
@@ -45,11 +52,12 @@ export interface Message {
   isErrorMessage: boolean
   timer: number
 }
+
 export interface AppState {
   title: string
   source: string
   searchParam: string
-  searchType: string
+  searchType: SearchType
   trackList: Array<Song>
   youtubeSourceUrls: Array<string>
   singerAmount: number
@@ -69,7 +77,7 @@ const initialState = {
   title: '',
   source: '',
   searchParam: '',
-  searchType: 'tag',
+  searchType: SearchChoices.GENRE,
   trackList: [],
   youtubeSourceUrls: [],
   singerAmount: 3,
@@ -97,7 +105,7 @@ export const stateSlice = createSlice({
     updateSearchParam: (state: AppState, action: PayloadAction<string>) => {
       state.searchParam = action.payload
     },
-    updateSearchType: (state: AppState, action: PayloadAction<string>) => {
+    updateSearchType: (state: AppState, action: PayloadAction<SearchType>) => {
       return { ...state, searchType: action.payload }
     },
     updateTrackList: (state: AppState, action: PayloadAction<Array<Song>>) => {

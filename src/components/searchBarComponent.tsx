@@ -93,7 +93,7 @@ const SearchBar = () => {
         type="text"
         value={searchParam}
         onChange={(e) => getQueryParameter(e.target.value)}
-        placeholder={`Type in ${searchType === 'tag' ? 'genre' : 'artist'}`}
+        placeholder={`Type in ${searchType}`}
       />
       {searchParam ? (
         <a className="reset-button" onClick={() => resetQuery()}>

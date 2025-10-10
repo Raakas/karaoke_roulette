@@ -5,6 +5,8 @@ import 'firebase/compat/firestore'
 import {
   FirestoreError,
   LastFmApiResponse,
+  SearchChoices,
+  SearchType,
   Song,
   YoutubeApiResponse,
 } from '../store/appSlice'
@@ -20,26 +22,35 @@ firebase.initializeApp({
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 })
 
+export enum UrlTypeParameter {
+  TAG = 'tag',
+  ARTIST = 'artist',
+  TRACK = 'track',
+  YOUTUBE = 'youtube',
+}
+
+export type UrlType = (typeof UrlTypeParameter)[keyof typeof UrlTypeParameter]
+
 export class ApiFetchService {
   urlSwitch = (
-    urlTypeParam: string,
-    searchParam?: string,
-    searchType?: string,
-    songTitle?: string,
+    urlTypeParam: UrlType,
+    searchParam: string | undefined,
+    searchType: SearchType | undefined,
+    songTitle: string | undefined,
   ): string => {
     let url: string = ''
 
     switch (urlTypeParam) {
-      case 'tag':
+      case UrlTypeParameter.TAG:
         url = `${LASTFM_URL}?method=${searchType}.gettoptags&${searchType}=${searchParam}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
         break
-      case 'artist':
+      case UrlTypeParameter.ARTIST:
         url = `${LASTFM_URL}?method=artist.search&artist=${searchParam}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
         break
-      case 'track':
+      case UrlTypeParameter.TRACK:
         url = `${LASTFM_URL}?method=${searchType}.gettoptracks&${searchType}=${searchParam}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
         break
-      case 'youtube':
+      case UrlTypeParameter.YOUTUBE:
         url = `${YOUTUBE_URL_REQUEST}?part=snippet&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&q=karaoke+${songTitle}&type=video&videoEmbeddable=true&safeSearch=strict`
         break
       default:
@@ -50,10 +61,10 @@ export class ApiFetchService {
   }
 
   axiosFetcher = async (
-    urlTypeParam: string,
-    searchParam?: string,
-    searchType?: string,
-    songTitle?: string,
+    urlTypeParam: UrlType,
+    searchParam: string | undefined,
+    searchType: SearchType | undefined,
+    songTitle: string | undefined,
   ): Promise<any> => {
     return axios
       .get(this.urlSwitch(urlTypeParam, searchParam, searchType, songTitle))
@@ -62,12 +73,17 @@ export class ApiFetchService {
 
   lastFmTrackFetcher = async (
     searchParam: string,
-    searchType: string,
+    searchType: SearchType,
   ): Promise<Array<Song>> => {
     let results: any = Array<Song>()
 
     try {
-      let response = await this.axiosFetcher('track', searchParam, searchType)
+      let response = await this.axiosFetcher(
+        UrlTypeParameter.TRACK,
+        searchParam,
+        searchType,
+        undefined,
+      )
       let APIRESPONSETRACKLIST: Array<Song> = Array<Song>()
 
       if (searchType === 'artist') {
@@ -100,7 +116,7 @@ export class ApiFetchService {
     youtubeApiError: boolean,
     songTitle: string,
     source: string,
-    searchType: string,
+    searchType: SearchType,
   ): Promise<Array<Song>> => {
     let tracks: Array<Song> = []
 
@@ -113,7 +129,7 @@ export class ApiFetchService {
       let artist_and_track = songTitle.split(',')
       let artist = artist_and_track[0]
       let track = artist_and_track[1]
-      tracks = await this.lastFmTrackFetcher(artist, track)
+      tracks = await this.lastFmTrackFetcher(artist, searchType)
     } else {
       return []
     }
@@ -241,7 +257,12 @@ export class ApiFetchService {
 
     const youtubeVideos: any = []
 
-    let res: any = await this.axiosFetcher('youtube', '', '', songTitle)
+    let res: any = await this.axiosFetcher(
+      UrlTypeParameter.YOUTUBE,
+      '',
+      undefined,
+      songTitle,
+    )
 
     if (res === undefined || res.error) {
       YoutubeResponse.error = true
@@ -296,20 +317,30 @@ export class ApiFetchService {
 
   searchBarAPI = async (
     searchParam: string,
-    searchType: string,
+    searchType: SearchChoices,
   ): Promise<Array<LastFmApiResponse>> => {
     let lastFMResponse: Array<LastFmApiResponse> = new Array()
     try {
       let res
 
-      if (searchType === 'artist') {
-        res = await this.axiosFetcher('artist', searchParam)
+      if (searchType === SearchChoices.ARTIST) {
+        res = await this.axiosFetcher(
+          UrlTypeParameter.ARTIST,
+          searchParam,
+          undefined,
+          undefined,
+        )
         lastFMResponse = res.data.results.artistmatches.artist
         lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) =>
           a.name.toLowerCase().includes(searchParam.toLowerCase()),
         )
       } else {
-        res = await this.axiosFetcher('tag', searchParam, searchType)
+        res = await this.axiosFetcher(
+          UrlTypeParameter.TAG,
+          searchParam,
+          SearchChoices.GENRE,
+          undefined,
+        )
         lastFMResponse = res.data.toptags.tag
 
         lastFMResponse = lastFMResponse.filter((a: LastFmApiResponse) =>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
+  SearchChoices,
   selectData,
   updateSearchType,
   updateTrackList,
@@ -22,9 +23,8 @@ const SongSearchComponent = ({ getSong }: any) => {
 
   const dispatch = useDispatch()
 
-  const updateType = (event: any) => {
-    let eventValue: string = event.currentTarget.value.toLowerCase()
-    dispatch(updateSearchType(eventValue))
+  const updateType = (value: SearchChoices) => {
+    dispatch(updateSearchType(value))
   }
 
   const getTracklistFromDatabase = async () => {
@@ -58,8 +58,8 @@ const SongSearchComponent = ({ getSong }: any) => {
                   id="artist-input"
                   type="radio"
                   name="artist-input"
-                  value="artist"
-                  onChange={(e) => updateType(e)}
+                  value={SearchChoices.ARTIST}
+                  onChange={(e) => updateType(e.target.value as SearchChoices)}
                   checked={searchType === 'artist'}
                 />
                 <label htmlFor="tag-input">Genre</label>
@@ -67,8 +67,8 @@ const SongSearchComponent = ({ getSong }: any) => {
                   id="tag-input"
                   type="radio"
                   name="tag-input"
-                  value="tag"
-                  onChange={(e) => updateType(e)}
+                  value={SearchChoices.GENRE}
+                  onChange={(e) => updateType(e.target.value as SearchChoices)}
                   checked={searchType === 'tag'}
                 />
               </div>
