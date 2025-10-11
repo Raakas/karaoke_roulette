@@ -78,7 +78,7 @@ export const PlayerView = ({ getSong }: PlayerViewProperties) => {
 
   return (
     <div className="player">
-      <p>{currentSinger}</p>
+      <p>{currentSinger?.name}</p>
       <h2>{name}</h2>
       <VideoPlayerComponent
         getSong={getSong}

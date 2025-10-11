@@ -64,9 +64,9 @@ export interface AppState {
   youtubeSourceUrls: Array<string>
   singerAmount: number
   singerQueue: Array<Singer>
-  currentSinger: string
+  currentSinger: Singer | null
   currentSingerIndex: number
-  nextSinger: string
+  nextSinger: Singer | null
   YoutubeVideoCounter: number
   message: Message
   youtubeApiError: boolean
@@ -88,9 +88,9 @@ const initialState: AppState = {
   youtubeSourceUrls: [],
   singerAmount: 3,
   singerQueue: [],
-  currentSinger: '',
+  currentSinger: null,
   currentSingerIndex: 0,
-  nextSinger: '',
+  nextSinger: null,
   YoutubeVideoCounter: 0,
   youtubeApiError: false,
   errorCounter: 0,
@@ -126,7 +126,7 @@ export const stateSlice = createSlice({
       if (state.singerQueue.length > 0) {
         let index = state.currentSingerIndex
 
-        if (state.currentSinger === '') {
+        if (!state.currentSinger) {
           index = Math.floor(Math.random() * state.singerQueue.length)
         } else {
           index = index + 1
@@ -140,25 +140,25 @@ export const stateSlice = createSlice({
           nextIndex = 0
         }
 
-        state.currentSinger = state.singerQueue[index].name
-        state.nextSinger = state.singerQueue[nextIndex].name
+        state.currentSinger = state.singerQueue[index]
+        state.nextSinger = state.singerQueue[nextIndex]
         state.currentSingerIndex = index
       } else {
-        state.currentSinger = ''
+        state.currentSinger = null
         state.currentSingerIndex = 0
       }
     },
     updateSingers: (state: AppState, action: PayloadAction<Array<Singer>>) => {
-      state.singerQueue = [...action.payload]
+      state.singerQueue = action.payload
     },
     updateSingerAmount: (state: AppState, action: PayloadAction<number>) => {
       state.singerAmount = action.payload
     },
-    clearSingers: (state: AppState, action: PayloadAction<boolean>) => {
-      if (action.payload) state.singerQueue = []
+    clearSingers: (state: AppState) => {
+      state.singerQueue = []
     },
     updateSetMessage: (state: AppState, action: PayloadAction<Message>) => {
-      state.message = { ...action.payload }
+      state.message = action.payload
     },
     resetSongAndTracklist: (state) => ({
       ...state,
@@ -166,7 +166,7 @@ export const stateSlice = createSlice({
         name: '',
         source: '',
       },
-      currentSinger: '',
+      currentSinger: null,
       currentSingerIndex: 0,
       YoutubeVideoCounter: 0,
       errorCounter: 0,
