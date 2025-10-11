@@ -6,9 +6,17 @@ import {
   selectSource,
   selectSingerQueue,
   selectNextSinger,
+  selectTimebeforeNextSong,
   selectVideoPlayerSaveToDatabaseTimer,
 } from '../store/appSlice'
 import { useSelector } from 'react-redux'
+
+enum YoutubeEventType {
+  END = 0,
+  PLAY = 1,
+  PAUSE = 2,
+  REWIND = 3,
+}
 
 const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   const dispatch = useDispatch()
@@ -20,6 +28,7 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   const videoPlayerSaveToDatabaseTimer = useSelector(
     selectVideoPlayerSaveToDatabaseTimer,
   )
+  const timebeforeNextSong = useSelector(selectTimebeforeNextSong)
 
   const [seconds, setSeconds] = useState(0)
   const [useTimer, setUseTimer] = useState(true)
@@ -48,7 +57,7 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   }
 
   function onPlayerStateChange(event: any) {
-    if (event === undefined) return
+    if (!event) return
     /*
       event.data:
         0 video ends
@@ -57,13 +66,14 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
         3 video rewind
     */
 
-    if (event.data === 0) {
+    const { data } = event
+
+    if (data === YoutubeEventType.END) {
       getNewSingerAndSong()
       saveSongToDatabase(title, source)
-      setTimerChanges()
-    } else {
-      setTimerChanges(event.data)
     }
+
+    setTimerChanges(data)
   }
 
   const onPlayerError = () => {
@@ -71,40 +81,38 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   }
 
   const getNewSingerAndSong = () => {
-    let timer = 10 // seconds
-
     let popup_content = {
       title: `Nice job! `,
-      message: '',
+      message: 'Get ready for new song! ',
       isErrorMessage: false,
-      timer,
+      timer: timebeforeNextSong,
     }
 
     if (singerQueue.length > 1) {
-      popup_content.message += `Next singer: ${nextSinger}`
+      popup_content.message += `Next singer: ${nextSinger?.name}`
     }
 
     dispatch(updateSetMessage(popup_content))
 
     setTimeout(() => {
       return getSong()
-    }, timer * 1000)
+    }, timebeforeNextSong * 1000)
   }
 
-  const setTimerChanges = (video_player_event?: number) => {
+  const setTimerChanges = (video_player_event?: YoutubeEventType) => {
     switch (video_player_event) {
-      case 0:
+      case YoutubeEventType.END:
         // start timer
         setSeconds(0)
         setUseTimer(true)
         break
-      case 1:
+      case YoutubeEventType.PLAY:
         setUseTimer(true)
         break
-      case 2:
+      case YoutubeEventType.PAUSE:
         setUseTimer(false)
         break
-      case 3:
+      case YoutubeEventType.REWIND:
         // do nothing
         break
       default:

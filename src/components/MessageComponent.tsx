@@ -17,6 +17,7 @@ const MessageComponent = () => {
   const [seconds, setSeconds] = useState(timer)
 
   useEffect(() => {
+    // countdown for each second
     let myInterval = setInterval(() => {
       if (seconds > 0) {
         setSeconds(seconds - 1)
@@ -25,7 +26,14 @@ const MessageComponent = () => {
     return () => {
       clearInterval(myInterval)
     }
-  }, [isErrorMessage, seconds])
+  }, [seconds])
+
+  useEffect(() => {
+    // activate timer
+    if (timer > 0) {
+      setSeconds(timer)
+    }
+  }, [message])
 
   const closeMessageModal = () => {
     dispatch(

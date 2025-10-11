@@ -72,10 +72,12 @@ export interface AppState {
   youtubeApiError: boolean
   errorCounter: number
   errorLimit: number
+  timebeforeNextSong: number
   videoPlayerSaveToDatabaseTimer: number
 }
 
-const initialState = {
+
+const initialState: AppState = {
   currentSong: {
     name: '',
     source: '',
@@ -92,15 +94,17 @@ const initialState = {
   YoutubeVideoCounter: 0,
   youtubeApiError: false,
   errorCounter: 0,
-  errorLimit: 3,
-  videoPlayerSaveToDatabaseTimer: 30, // TODO: make global setting type
   message: {
     title: '',
     message: '',
     isErrorMessage: false,
     timer: 0,
   },
-} as AppState
+  // TODO: create settings page for these
+  errorLimit: 3,
+  timebeforeNextSong: 10,
+  videoPlayerSaveToDatabaseTimer: 30,
+}
 
 export const stateSlice = createSlice({
   name: 'data',
@@ -251,5 +255,7 @@ export const selectErrorCounter = (state: RootState) =>
   selectData(state).errorCounter
 export const selectErrorLimit = (state: RootState) =>
   selectData(state).errorLimit
+export const selectTimebeforeNextSong = (state: RootState) =>
+  selectData(state).timebeforeNextSong
 export const selectVideoPlayerSaveToDatabaseTimer = (state: RootState) =>
   selectData(state).videoPlayerSaveToDatabaseTimer
