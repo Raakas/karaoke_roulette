@@ -40,7 +40,7 @@ export interface Artist {
   name: string
 }
 
-interface SongBase {
+export interface SongBase {
   name: string
   source: string
 }
@@ -75,7 +75,6 @@ export interface AppState {
   timebeforeNextSong: number
   videoPlayerSaveToDatabaseTimer: number
 }
-
 
 const initialState: AppState = {
   currentSong: {

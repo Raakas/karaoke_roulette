@@ -8,6 +8,7 @@ import {
   SearchChoices,
   SearchType,
   Song,
+  SongBase,
   YoutubeApiResponse,
 } from '../store/appSlice'
 import { filterYoutubeResponseTitle } from '../utils'
@@ -114,19 +115,20 @@ export class ApiFetchService {
   fetchTracklist = async (
     searchParam: string,
     youtubeApiError: boolean,
-    songTitle: string,
-    source: string,
+    song: SongBase,
     searchType: SearchType,
   ): Promise<Array<Song>> => {
     let tracks: Array<Song> = []
+
+    const { name, source } = song
 
     if (youtubeApiError) {
       tracks = await this.fetchTracklistFromDatabase()
     } else if (searchParam && searchParam.length > 0) {
       tracks = await this.lastFmTrackFetcher(searchParam, searchType)
-    } else if (songTitle && source) {
+    } else if (name && source) {
       // get similar tracks from api in case list runs out
-      let artist_and_track = songTitle.split(',')
+      let artist_and_track = name.split(',')
       let artist = artist_and_track[0]
       // let track = artist_and_track[1]
       tracks = await this.lastFmTrackFetcher(artist, searchType)
@@ -143,13 +145,13 @@ export class ApiFetchService {
   }
 
   getSongFromOldDatabase = async (
-    songTitle: string,
+    name: string,
     searchParam: string,
   ): Promise<string> => {
     const db = firebase.firestore()
 
     // replace all slashes for querying, but do not save these versions to db
-    let q_title = songTitle.replaceAll('/', ' ').replaceAll('\ ', ' ')
+    let q_title = name.replaceAll('/', ' ').replaceAll('\ ', ' ')
     let q_searchParam = searchParam.replaceAll('/', ' ').replaceAll('\ ', ' ')
 
     // raise and show error
@@ -319,7 +321,8 @@ export class ApiFetchService {
     searchParam: string,
     searchType: SearchChoices,
   ): Promise<Array<LastFmApiResponse>> => {
-    let lastFMResponse: Array<LastFmApiResponse> = new Array()
+    let lastFMResponse: Array<LastFmApiResponse> = []
+
     try {
       let res
 

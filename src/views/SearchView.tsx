@@ -2,25 +2,18 @@ import React, { useEffect } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import {
-  SearchChoices,
-  selectData,
-  updateSearchType,
-  updateTrackList,
-} from '../store/appSlice'
+import { SearchChoices, selectData, updateSearchType } from '../store/appSlice'
 
-import { ApiFetchService } from '../services/fetchService'
 import CurrentSingersComponent from '../components/CurrentSingersComponent'
 import SearchBar from '../components/searchBarComponent'
 import DisplayTrackListComponent from '../components/DisplayTrackListComponent'
 
-const apiFetchService = new ApiFetchService()
-
 interface SearchViewProperties {
   getSong: () => void
+  getTrackList: () => void
 }
 
-export const SearchView = ({ getSong }: SearchViewProperties) => {
+export const SearchView = ({ getSong, getTrackList }: SearchViewProperties) => {
   const navigate = useNavigate()
 
   const state = useSelector(selectData)
@@ -28,29 +21,17 @@ export const SearchView = ({ getSong }: SearchViewProperties) => {
   const { searchType, searchParam, youtubeApiError, currentSong, trackList } =
     state
 
-  const { name, source } = currentSong
-
   const dispatch = useDispatch()
 
   const updateType = (value: SearchChoices) => {
     dispatch(updateSearchType(value))
   }
 
-  const getTracklistFromDatabase = async () => {
-    let tracks = await apiFetchService.fetchTracklist(
-      searchParam,
-      youtubeApiError,
-      name,
-      source,
-      searchType,
-    )
-    dispatch(updateTrackList(tracks))
-  }
-
   useEffect(() => {
     if (currentSong.name && currentSong.source) {
       navigate('player')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSong])
 
   return (
@@ -62,9 +43,12 @@ export const SearchView = ({ getSong }: SearchViewProperties) => {
         <CurrentSingersComponent />
         <div className="start-container">
           {youtubeApiError ? (
-            <p className="text-tiny">
-              YouTube API is down :( fetch tracklist from database
-            </p>
+            <div className="error-message">
+              <p className="text-micro">YouTube API is down :(</p>
+              <p className="text-micro">
+                Tracklist is from the database. Search cannot be used currently.
+              </p>
+            </div>
           ) : (
             <>
               <div className="start__center">
@@ -99,7 +83,7 @@ export const SearchView = ({ getSong }: SearchViewProperties) => {
           </Link>
           {searchParam || youtubeApiError === true ? (
             <button
-              onClick={() => getTracklistFromDatabase()}
+              onClick={() => getTrackList()}
               className="button button-orange">
               Get tracklist
             </button>

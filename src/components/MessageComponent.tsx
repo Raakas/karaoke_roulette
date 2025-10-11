@@ -33,7 +33,7 @@ const MessageComponent = () => {
     if (timer > 0) {
       setSeconds(timer)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message])
 
   const closeMessageModal = () => {

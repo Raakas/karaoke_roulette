@@ -58,13 +58,6 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
 
   function onPlayerStateChange(event: any) {
     if (!event) return
-    /*
-      event.data:
-        0 video ends
-        1 video plays
-        2 video pauses
-        3 video rewind
-    */
 
     const { data } = event
 
@@ -77,7 +70,7 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   }
 
   const onPlayerError = () => {
-    return getSong(false)
+    return getSong()
   }
 
   const getNewSingerAndSong = () => {
