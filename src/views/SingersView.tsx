@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -10,7 +12,7 @@ import {
   updateSingers,
 } from '../store/appSlice'
 
-const AddSingersComponent = () => {
+export const SingersView = () => {
   const dispatch = useDispatch()
 
   const singerAmount = useSelector(selectSingerAmount)
@@ -181,5 +183,3 @@ const AddSingersComponent = () => {
     </div>
   )
 }
-
-export default AddSingersComponent

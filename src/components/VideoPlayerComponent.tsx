@@ -7,17 +7,10 @@ import {
   selectSingerQueue,
   selectNextSinger,
   selectVideoPlayerSaveToDatabaseTimer,
-  selectCurrentSinger,
-  selectYoutubeVideoCounter,
 } from '../store/appSlice'
 import { useSelector } from 'react-redux'
 
-const VideoPlayerComponent = ({
-  getSong,
-  resetAndReturnViewToSearch,
-  updateYoutubeSource,
-  saveSongToDatabase,
-}: any) => {
+const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   const dispatch = useDispatch()
 
   const title = useSelector(selectTitle)
@@ -27,8 +20,6 @@ const VideoPlayerComponent = ({
   const videoPlayerSaveToDatabaseTimer = useSelector(
     selectVideoPlayerSaveToDatabaseTimer,
   )
-  const currentSinger = useSelector(selectCurrentSinger)
-  const YoutubeVideoCounter = useSelector(selectYoutubeVideoCounter)
 
   const [seconds, setSeconds] = useState(0)
   const [useTimer, setUseTimer] = useState(true)
@@ -139,41 +130,14 @@ const VideoPlayerComponent = ({
   }
 
   return (
-    <div className="player">
-      <p>{currentSinger}</p>
-      <h2>{title}</h2>
-      <iframe
-        id="player-frame"
-        title="youtube"
-        src={source + urlParams}
-        frameBorder="0"
-        allow=""
-        allowFullScreen></iframe>
-      <br />
-      <div className="buttons">
-        <button
-          className="button button-grey"
-          onClick={() => resetAndReturnViewToSearch()}>
-          Back
-        </button>
-        {YoutubeVideoCounter > 1 ? (
-          <button
-            className="button button-blue"
-            onClick={() => updateYoutubeSource()}>
-            Update {YoutubeVideoCounter - 1}
-          </button>
-        ) : (
-          <button
-            className="button button-disabled"
-            onClick={() => updateYoutubeSource()}>
-            Update
-          </button>
-        )}
-        <button className="button button-orange" onClick={() => getSong()}>
-          New song
-        </button>
-      </div>
-    </div>
+    <iframe
+      id="player-frame"
+      title="youtube"
+      src={source + urlParams}
+      frameBorder="0"
+      allow=""
+      allowFullScreen
+    />
   )
 }
 

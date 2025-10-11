@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   SearchChoices,
@@ -8,14 +10,19 @@ import {
 } from '../store/appSlice'
 
 import { ApiFetchService } from '../services/fetchService'
-
-import SearchBar from './searchBarComponent'
-import DisplayTrackListComponent from './DisplayTrackListComponent'
-import CurrentSingersComponent from './CurrentSingersComponent'
+import CurrentSingersComponent from '../components/CurrentSingersComponent'
+import SearchBar from '../components/searchBarComponent'
+import DisplayTrackListComponent from '../components/DisplayTrackListComponent'
 
 const apiFetchService = new ApiFetchService()
 
-const SongSearchComponent = ({ getSong }: any) => {
+interface SearchViewProperties {
+  getSong: () => void
+}
+
+export const SearchView = ({ getSong }: SearchViewProperties) => {
+  const navigate = useNavigate()
+
   const state = useSelector(selectData)
 
   const { searchType, searchParam, youtubeApiError, currentSong, trackList } =
@@ -39,6 +46,12 @@ const SongSearchComponent = ({ getSong }: any) => {
     )
     dispatch(updateTrackList(tracks))
   }
+
+  useEffect(() => {
+    if (currentSong.name && currentSong.source) {
+      navigate('player')
+    }
+  }, [currentSong])
 
   return (
     <div className="start">
@@ -109,4 +122,4 @@ const SongSearchComponent = ({ getSong }: any) => {
   )
 }
 
-export default SongSearchComponent
+export default SearchView

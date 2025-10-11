@@ -76,11 +76,10 @@ label {
 
 input[type='text'] {
   height: 30px;
-  width: 75%;
+  width: 100%;
   border-radius: 5px;
   text-align: center;
   font-size: 13pt;
-  margin: 15px;
   &::placeholder {
     color: black;
   }

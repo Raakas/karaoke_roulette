@@ -156,32 +156,23 @@ export const stateSlice = createSlice({
     updateSetMessage: (state: AppState, action: PayloadAction<Message>) => {
       state.message = { ...action.payload }
     },
-    resetSongAndTracklist: (
-      state: AppState,
-      action: PayloadAction<boolean>,
-    ) => {
-      if (action.payload) {
-        state = {
-          ...state,
-          currentSong: {
-            name: '',
-            source: '',
-          },
-          searchParam: 'rock',
-          currentSinger: '',
-          currentSingerIndex: 0,
-          YoutubeVideoCounter: 0,
-          trackList: [],
-          errorCounter: 0,
-        }
-        state.message = {
-          title: '',
-          message: '',
-          isErrorMessage: false,
-          timer: 0,
-        }
-      }
-    },
+    resetSongAndTracklist: (state) => ({
+      ...state,
+      currentSong: {
+        name: '',
+        source: '',
+      },
+      currentSinger: '',
+      currentSingerIndex: 0,
+      YoutubeVideoCounter: 0,
+      errorCounter: 0,
+      message: {
+        title: '',
+        message: '',
+        isErrorMessage: false,
+        timer: 0,
+      },
+    }),
     updateYoutubeVideoCounter: (
       state: AppState,
       action: PayloadAction<number>,

@@ -39,7 +39,7 @@ const SearchBar = () => {
 
   const fetchSearcResultsFromAPI = async (value: string) => {
     if (isEmpty(value)) {
-      resetQuery()
+      resetSearch()
     } else {
       await apiFetchService
         .searchBarAPI(value, searchType)
@@ -62,7 +62,7 @@ const SearchBar = () => {
 
   const getQueryParameter = (value: string) => {
     if (isEmpty(value)) {
-      resetQuery()
+      resetSearch()
     } else if (value.length > 6) {
       let results
       if (searchMatches && searchMatches.length > 0) {
@@ -77,44 +77,43 @@ const SearchBar = () => {
     updateSearchParameter(value)
   }
 
-  const resetQuery = () => {
+  const resetSearch = () => {
     dispatch(updateSearchParam(''))
     setSearchMatches([])
   }
 
-  useEffect(() => {
-    resetQuery()
-  }, [searchType])
-
   return (
-    <>
-      <input
-        id="song-input"
-        type="text"
-        value={searchParam}
-        onChange={(e) => getQueryParameter(e.target.value)}
-        placeholder={`Type in ${searchType}`}
-      />
-      {searchParam ? (
-        <a className="reset-button" onClick={() => resetQuery()}>
-          X
-        </a>
-      ) : null}
-      {searchMatches && (
-        <div className="dropdown">
-          <div className="results">
-            {searchMatches.map((item: LastFmApiResponse) => (
-              <p
-                className="text-tiny"
-                key={item.name}
-                onClick={() => setSearchResult(item.name)}>
-                {item.name}
-              </p>
-            ))}
-          </div>
+    <div className="search-bar">
+      <div className="search-controls">
+        <input
+          className="song-input"
+          type="text"
+          value={searchParam}
+          onChange={(e) => getQueryParameter(e.target.value)}
+          placeholder={`Type in ${searchType}`}
+        />
+        {searchParam && (
+          <a className="reset-button" onClick={() => resetSearch()}>
+            X
+          </a>
+        )}
+      </div>
+      {searchMatches && searchMatches.length > 0 && (
+        <div className="results">
+          {searchMatches?.map((item: LastFmApiResponse) => (
+            <p
+              key={item.name}
+              className="text-tiny"
+              onClick={() => setSearchResult(item.name)}>
+              {item.name}
+            </p>
+          ))}
         </div>
       )}
-    </>
+      {searchParam && searchMatches && (
+        <p>Nothing found, but try to get track list !</p>
+      )}
+    </div>
   )
 }
 

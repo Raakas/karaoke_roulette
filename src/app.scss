@@ -1,8 +1,10 @@
-@import './scss/_variables.scss';
-@import './scss/_globals.scss';
-@import './scss/_StartComponent.scss';
-@import './scss/_PlayerComponent.scss';
-@import './scss/_MessageComponent.scss';
-@import './scss/_DisplayTrackListComponent.scss';
+@import './scss/variables.scss';
+@import './scss/globals.scss';
+
+@import './scss/SearchView.scss';
+@import './scss/SingersView.scss';
+@import './scss/PlayerView.scss';
+
+@import './scss/MessageComponent.scss';
+@import './scss/DisplayTrackListComponent.scss';
 @import './scss/SearchBarComponent.scss';
-@import './scss/addSingersComponent.scss';
