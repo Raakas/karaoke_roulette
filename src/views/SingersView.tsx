@@ -11,6 +11,7 @@ import {
   updateSingerAmount,
   updateSingers,
 } from '../store/appSlice'
+import { RemoveIcon } from '../components/RemoveButton'
 
 export const SingersView = () => {
   const dispatch = useDispatch()
@@ -71,38 +72,36 @@ export const SingersView = () => {
     dispatch(updateSingerAmount(amount))
   }
 
-  const addSinger = (item: any) => {
+  const updateSinger = (item: Singer) => {
+    const { id, name } = item
+
     let singerQueue = [...singerPlaceHolders]
 
     if (singerQueue) {
-      const match = singerQueue.find((a) => a.id === parseInt(item.id))
+      const match = singerQueue.find((a) => a.id === id)
 
       if (match !== undefined) {
         singerQueue = singerQueue.filter((a) => a !== match)
       }
 
-      if (item.value.trim() !== '') {
-        let singer = {
-          id: parseInt(item.id),
-          name: item.value.trim(),
+      if (name.trim() !== '') {
+        const singer = {
+          id: item.id,
+          name: name.trim(),
           saved: true,
         }
-        singerQueue.push(singer)
-
-        dispatch(updateSingers(singerQueue.filter((x) => x.name !== '')))
+        dispatch(updateSingers([...singerQueue, singer]))
       }
     }
   }
 
-  const removeSinger = (id: any) => {
-    let singerQueue
-    if (singerQueue) singerQueue = singerPlaceHolders.filter((a) => a.id !== id)
-    if (!singerQueue) return
-    dispatch(updateSingers(singerQueue))
+  const removeSinger = (id: number) => {
+    const singerQueue = singerPlaceHolders.filter((a) => a.id !== id)
+    dispatch(updateSingers(singerQueue.filter((s) => s.name.trim() !== '')))
   }
 
   const clearAllSingers = () => {
-    dispatch(clearSingers(true))
+    dispatch(clearSingers())
   }
 
   const removeSingersButton = () => {
@@ -114,6 +113,7 @@ export const SingersView = () => {
       singerAmountUpdater(id_to_be_removed)
       removeSinger(latest_singer_id)
     } else {
+      // show unmotivating catch phrases for the curious
       setRandom(Math.random())
     }
   }
@@ -127,20 +127,15 @@ export const SingersView = () => {
         singerPlaceHolders?.map((item, index) => (
           <div key={index} className="singer-list">
             <input
-              id={item ? `${item.id}` : `${index}`}
+              id={index.toString()}
               type="text"
               value={item.name}
               placeholder={`Singer ${index + 1}`}
-              onChange={(e) => addSinger(e.target)}
+              onChange={(e) => updateSinger({ ...item, name: e.target.value })}
             />
-            {item.saved ? (
-              <p
-                className="remove-icon"
-                id={item ? `${item.id}` : `${index}`}
-                onClick={() => removeSinger(item.id)}>
-                X
-              </p>
-            ) : null}
+            {item.saved && (
+              <RemoveIcon id={item ? item.id : index} onClick={removeSinger} />
+            )}
             <br />
           </div>
         ))
@@ -169,7 +164,7 @@ export const SingersView = () => {
           </button>
         </div>
         <br />
-        <div className="buttons">
+        <div className="buttons-row">
           <button
             className="button button-grey"
             onClick={() => clearAllSingers()}>
