@@ -44,25 +44,27 @@ p {
     margin: 0;
     font-weight: 400;
   }
+}
 
-  &.remove-icon {
-    font-size: 17pt;
-    height: 30px;
-    width: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 15px 0px;
-    border: 1px solid $red;
-    border-radius: 10px;
-    background-color: $red;
-    cursor: pointer;
-    &.small {
-      margin: 5px;
-    }
-    &:hover {
-      background-color: $red_light;
-    }
+.remove-icon {
+  font-size: 17pt;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  border-radius: 25%;
+  color: $red-light;
+  background-color: 'transparent';
+  cursor: pointer;
+
+  &.small {
+    margin: 5px;
+  }
+  &:hover {
+    color: $white;
+    background-color: $red-light;
   }
 }
 

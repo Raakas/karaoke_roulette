@@ -5,6 +5,7 @@ import {
   selectSearchType,
   selectSearchParam,
 } from '../store/appSlice'
+import { RemoveIcon } from './RemoveButton'
 
 const SearchBar = () => {
   const dispatch = useDispatch()
@@ -38,11 +39,7 @@ const SearchBar = () => {
           onChange={(e) => updateSearchParameter(e.target.value)}
           placeholder={`Type in ${searchType}`}
         />
-        {searchParam && (
-          <a className="reset-button" onClick={() => resetSearch()}>
-            X
-          </a>
-        )}
+        {searchParam && <RemoveIcon id={Number.NaN} onClick={resetSearch} />}
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { updateTrackList, Song, selectTrackList } from '../store/appSlice'
+import { RemoveIcon } from './RemoveButton'
 
 const DisplayTrackListComponent = () => {
   //todo: state.apiError ? Object.keys(item)[0] : item eli errorille oma state
@@ -25,11 +26,7 @@ const DisplayTrackListComponent = () => {
           <br />
           {trackList.map((item: Song, index: number) => (
             <div className="tracklist__track" key={index}>
-              <p
-                className="remove-icon small"
-                onClick={() => removeTrack(index)}>
-                X
-              </p>
+              <RemoveIcon id={index} onClick={removeTrack} />
               <p className="text-micro">{item.name}</p>
             </div>
           ))}

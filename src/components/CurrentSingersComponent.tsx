@@ -11,8 +11,7 @@ const CurrentSingersComponent = () => {
           <p className="text-tiny">Current singers:</p>
           {singerQueue.map((item, index) => (
             <p className="text-tiny" key={index}>
-              {' '}
-              {item.name}{' '}
+              {item.name}
             </p>
           ))}
         </div>
