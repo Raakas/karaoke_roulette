@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store'
 
+export enum AppPaths {
+  HOME = '/',
+  PLAYER = '/player',
+  SINGERS = '/singers',
+}
+
 export interface LastFmApiResponse {
   name: string
   count: number

@@ -12,6 +12,7 @@ import {
   FirestoreError,
   increaseErrorCount,
   selectData,
+  AppPaths,
 } from '../store/appSlice'
 
 const apiFetchService = new ApiFetchService()
@@ -73,7 +74,7 @@ export const PlayerView = ({ getSong }: PlayerViewProperties) => {
 
   const resetSongAndTracklistAndReturn = async () => {
     dispatch(resetSongAndTracklist())
-    navigate('/')
+    navigate(AppPaths.HOME)
   }
 
   return (

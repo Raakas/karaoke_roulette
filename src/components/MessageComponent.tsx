@@ -5,6 +5,7 @@ import {
   selectYoutubeApiError,
   updateSetMessage,
   selectMessage,
+  AppPaths,
 } from '../store/appSlice'
 
 const MessageComponent = () => {
@@ -63,7 +64,7 @@ const MessageComponent = () => {
       {seconds === 0 ? null : <h1> {seconds}</h1>}
 
       <div className="buttons">
-        <Link to="/" onClick={() => closeMessageModal()}>
+        <Link to={AppPaths.HOME} onClick={() => closeMessageModal()}>
           <button className="button button-grey">Back</button>
         </Link>
         {youtubeApiError || isErrorMessage || seconds > 0 ? null : (

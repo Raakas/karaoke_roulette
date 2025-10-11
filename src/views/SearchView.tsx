@@ -2,7 +2,12 @@ import React, { useEffect } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { SearchChoices, selectData, updateSearchType } from '../store/appSlice'
+import {
+  AppPaths,
+  SearchChoices,
+  selectData,
+  updateSearchType,
+} from '../store/appSlice'
 
 import CurrentSingersComponent from '../components/CurrentSingersComponent'
 import SearchBar from '../components/searchBarComponent'
@@ -29,7 +34,7 @@ export const SearchView = ({ getSong, getTrackList }: SearchViewProperties) => {
 
   useEffect(() => {
     if (currentSong.name && currentSong.source) {
-      navigate('player')
+      navigate(AppPaths.PLAYER)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSong])
@@ -78,7 +83,7 @@ export const SearchView = ({ getSong, getTrackList }: SearchViewProperties) => {
           )}
         </div>
         <div className="buttons">
-          <Link to="add-singers">
+          <Link to={AppPaths.SINGERS}>
             <button className="button button-yellow">Add singers</button>
           </Link>
           {searchParam || youtubeApiError === true ? (

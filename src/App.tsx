@@ -20,6 +20,7 @@ import {
   resetErrorCounter,
   getNewSinger,
   selectData,
+  AppPaths,
 } from './store/appSlice'
 
 const apiFetchService = new ApiFetchService()
@@ -177,13 +178,16 @@ const App = () => {
       <div className="main">
         <Routes>
           <Route
-            path="/"
+            path={AppPaths.HOME}
             element={
               <SearchView getSong={GetSong} getTrackList={fetchNewTracklist} />
             }
           />
-          <Route path="/player" element={<PlayerView getSong={GetSong} />} />
-          <Route path="/add-singers" element={<SingersView />} />
+          <Route
+            path={AppPaths.PLAYER}
+            element={<PlayerView getSong={GetSong} />}
+          />
+          <Route path={AppPaths.SINGERS} element={<SingersView />} />
         </Routes>
         <MessageComponent />
       </div>

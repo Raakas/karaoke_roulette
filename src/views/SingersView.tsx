@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import {
+  AppPaths,
   clearSingers,
   selectSingerAmount,
   selectSingerQueue,
@@ -170,7 +171,7 @@ export const SingersView = () => {
             onClick={() => clearAllSingers()}>
             Clear all
           </button>
-          <Link to="/">
+          <Link to={AppPaths.HOME}>
             <button className="button button-blue">Ready</button>
           </Link>
         </div>
