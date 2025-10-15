@@ -11,6 +11,34 @@ import {
 } from '../store/appSlice'
 import { useSelector } from 'react-redux'
 
+const VideoPlayer = () => {
+  const source = useSelector(selectSource)
+
+  const commonProperties = {
+    id: 'player-frame',
+    title: 'Karaoke roulette',
+    frameBorder: '0',
+    allow: '',
+    allowFullScreen: true
+  }
+
+  if (!source) {
+    // iframe without source breaks
+    return (
+      <iframe
+        {...commonProperties}
+        srcDoc="<p>Loading amazing songs!</p>"
+      />
+    )
+  }
+
+  const urlParams = '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'
+
+  return (
+    <iframe {...commonProperties} src={source + urlParams} />
+  )
+}
+
 enum YoutubeEventType {
   END = 0,
   PLAY = 1,
@@ -33,9 +61,6 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
   const [seconds, setSeconds] = useState(0)
   const [useTimer, setUseTimer] = useState(true)
   const [ytPlayerState, setYtPlayerState] = useState(false)
-
-  const urlParams: string =
-    '?autoplay=1&controls=0&fs=1&enablejsapi=1&enablecastapi=1'
 
   if (ytPlayerState === false) {
     setTimeout(() => {
@@ -130,16 +155,7 @@ const VideoPlayerComponent = ({ getSong, saveSongToDatabase }: any) => {
     setTimerChanges()
   }
 
-  return (
-    <iframe
-      id="player-frame"
-      title="youtube"
-      src={source + urlParams}
-      frameBorder="0"
-      allow=""
-      allowFullScreen
-    />
-  )
+  return <VideoPlayer />
 }
 
 export default VideoPlayerComponent
