@@ -23,6 +23,13 @@ firebase.initializeApp({
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 })
 
+enum DB_COLLECTIONS {
+  ARTISTS = 'artists',
+  GENRES = 'genres',
+  // deprecated
+  GOOD_SONGS = 'good_songs',
+}
+
 export enum UrlTypeParameter {
   TAG = 'tag',
   ARTIST = 'artist',
@@ -158,7 +165,7 @@ export class ApiFetchService {
     if (!!q_title === false || !!q_searchParam === false) return ''
 
     return await db
-      .collection('good_songs')
+      .collection(DB_COLLECTIONS.GOOD_SONGS)
       .doc(q_searchParam)
       .collection(q_title)
       .doc('details')
@@ -181,7 +188,7 @@ export class ApiFetchService {
     const db = firebase.firestore()
 
     // iterate database and push track title and sources to results
-    let searchType = ['artists', 'genre']
+    let searchType = [DB_COLLECTIONS.ARTISTS, DB_COLLECTIONS.GENRES]
     let results: Array<Song> = []
 
     for (let type of searchType) {
@@ -227,7 +234,9 @@ export class ApiFetchService {
     }
     const db = firebase.firestore()
 
-    db.collection(searchType === 'artist' ? 'artists' : 'genre')
+    db.collection(
+      searchType === 'artist' ? DB_COLLECTIONS.ARTISTS : DB_COLLECTIONS.GENRES,
+    )
       .doc(searchParam)
       .set(
         {
